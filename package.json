@@ -4,11 +4,11 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --port 3000",
+    "start": "vite --port 3000",
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "pages": "wrangler pages dev --compatibility-date=2023-08-07 --proxy 3000 -- npm run dev"
+    "dev": "wrangler pages dev --compatibility-date=2023-08-07 --proxy 3000 --r2=storage -- npm run start"
   },
   "dependencies": {
     "react": "^18.2.0",
