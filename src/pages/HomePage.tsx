@@ -1,9 +1,9 @@
 import { memo, useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "../../store";
-import { fetchAuction } from "../../modules/auction";
+import { useAppDispatch, useAppSelector } from "../store";
+import { fetchAuction } from "../modules/auction";
 import './HomePage.css'
 
-const HomePage = memo(() => {
+export const HomePage = memo(() => {
   const dispatch = useAppDispatch()
 
   const auction = useAppSelector(state => state.auction.data)
@@ -14,5 +14,3 @@ const HomePage = memo(() => {
 
   return <div className="HomePage">{JSON.stringify(auction, null, 2)}</div>
 });
-
-export default HomePage
