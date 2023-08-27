@@ -3,8 +3,8 @@ import { Provider } from 'react-redux'
 import ReactDOM from 'react-dom/client'
 import { RouterProvider } from 'react-router-dom'
 
-import { store } from './modules/store'
-import { router } from './modules/router'
+import { store } from './store'
+import { router } from './router'
 
 import 'decentraland-ui/lib/styles.css'
 import 'decentraland-ui/lib/dark-theme.css'
