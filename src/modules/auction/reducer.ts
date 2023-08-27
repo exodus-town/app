@@ -1,4 +1,3 @@
-import { LoadingState, loadingReducer } from 'decentraland-dapps/dist/modules/loading/reducer'
 import { Auction } from './types'
 import {
   FETCH_AUCTION_FALIURE,
@@ -11,13 +10,13 @@ import {
 
 type AuctionState = {
   data: Auction | null
-  loading: LoadingState
+  loading: boolean
   error: string | null
 }
 
 const initialState: AuctionState = {
   data: null,
-  loading: [],
+  loading: false,
   error: null,
 }
 
@@ -28,14 +27,14 @@ export function auctionReducer(state = initialState, action: AuctionReducerActio
     case FETCH_AUCTION_REQUEST: {
       return {
         ...state,
-        loading: loadingReducer(state.loading, action),
+        loading: true,
         error: null,
       }
     }
     case FETCH_AUCTION_FALIURE: {
       return {
         ...state,
-        loading: loadingReducer(state.loading, action),
+        loading: false,
         error: action.payload.error,
       }
     }
@@ -43,7 +42,7 @@ export function auctionReducer(state = initialState, action: AuctionReducerActio
       return {
         ...state,
         data: action.payload.auction,
-        loading: loadingReducer(state.loading, action),
+        loading: false,
         error: null,
       }
     }
