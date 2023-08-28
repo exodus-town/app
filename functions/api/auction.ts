@@ -2,14 +2,14 @@ import { ethers } from "ethers";
 
 import { Auction } from "../../src/types";
 import { Env } from "../lib/env";
-import { getAuction } from "../lib/contracts";
+import { getAuctionHouse } from "../lib/contracts";
 import { json } from "../lib/json";
 
 export const onRequest: PagesFunction<Env> = async (context) => {
-  const Auction = getAuction(context.env);
+  const AuctionHouse = getAuctionHouse(context.env);
 
   const [{ tokenId, amount, bidder, startTime, endTime, settled }, reserve] =
-    await Promise.all([Auction.auction(), Auction.reservePrice()]);
+    await Promise.all([AuctionHouse.auction(), AuctionHouse.reservePrice()]);
 
   const auction: Auction = {
     tokenId: tokenId.toString(),
