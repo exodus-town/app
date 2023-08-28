@@ -3,6 +3,7 @@ import { ethers } from "ethers";
 import { Auction } from "../../src/types";
 import { Env } from "../lib/env";
 import { getAuction } from "../lib/contracts";
+import { json } from "../lib/json";
 
 export const onRequest: PagesFunction<Env> = async (context) => {
   const Auction = getAuction(context.env);
@@ -20,7 +21,5 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     settled,
   };
 
-  const response = new Response(JSON.stringify(auction, null, 2));
-  response.headers.set("Content-Type", "application/json");
-  return response;
+  return json(auction);
 };
