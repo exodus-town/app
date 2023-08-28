@@ -1,29 +1,31 @@
-import { ethers, JsonRpcProvider } from "ethers";
-import TownTokenABI from "@exodus.town/contracts/abi/TownToken.json";
-import AuctionHouseABI from "@exodus.town/contracts/abi/AuctionHouse.json";
-import { AuctionHouse, TownToken } from "@exodus.town/contracts";
+import { createPublicClient, getContract, http } from "viem";
+import { auctionHouseABI, townTokenABI } from "@exodus.town/contracts";
 import { Env } from "./env";
 
-export function getProvider(env: Env) {
-  return new JsonRpcProvider(env.RPC_URL);
+export function getClient(env: Env) {
+  const client = createPublicClient({
+    // TODO: add another provider as fallback: fallback([http(RPC_1), http(RPC_2)])
+    transport: http(env.RPC_URL),
+  });
+  return client;
 }
 
 export function getAuctionHouse(env: Env) {
-  const provider = getProvider(env);
-  const contract = new ethers.Contract(
-    env.AUCTION_HOUSE_CONTRACT_ADDRESS,
-    AuctionHouseABI,
-    provider
-  );
-  return contract as unknown as AuctionHouse;
+  const client = getClient(env);
+  const contract = getContract({
+    publicClient: client,
+    address: env.AUCTION_HOUSE_CONTRACT_ADDRESS,
+    abi: auctionHouseABI,
+  });
+  return contract;
 }
 
 export function getTownToken(env: Env) {
-  const provider = getProvider(env);
-  const contract = new ethers.Contract(
-    env.TOWN_TOKEN_CONTRACT_ADDRESS,
-    TownTokenABI,
-    provider
-  );
-  return contract as unknown as TownToken;
+  const client = getClient(env);
+  const contract = getContract({
+    publicClient: client,
+    address: env.TOWN_TOKEN_CONTRACT_ADDRESS,
+    abi: townTokenABI,
+  });
+  return contract;
 }
