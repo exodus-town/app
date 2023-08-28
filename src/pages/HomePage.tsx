@@ -1,16 +1,10 @@
-import { memo, useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "../store";
-import { fetchAuction } from "../modules/auction";
+import { memo } from "react";
+import { useGetAuctionQuery } from "../modules/api";
 import './HomePage.css'
 
 export const HomePage = memo(() => {
-  const dispatch = useAppDispatch()
 
-  const auction = useAppSelector(state => state.auction.data)
+  const { data: auction, isLoading } = useGetAuctionQuery()
 
-  useEffect(() => {
-    dispatch(fetchAuction())
-  }, [dispatch])
-
-  return <div className="HomePage">{JSON.stringify(auction, null, 2)}</div>
+  return <div className="HomePage">{isLoading ? 'Loading...' : JSON.stringify(auction, null, 2)}</div>
 });

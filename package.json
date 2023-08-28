@@ -1,5 +1,5 @@
 {
-  "name": "app",
+  "name": "@exodus.town/app",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -14,8 +14,10 @@
     "@dcl/mini-rpc": "^1.0.7",
     "@dcl/sdk": "^7.3.11",
     "@dcl/ui-env": "^1.4.0",
+    "@exodus.town/contracts": "^0.1.2",
     "@reduxjs/toolkit": "^1.9.5",
     "decentraland-ui": "^4.7.0",
+    "ethers": "^6.7.1",
     "history": "^5.3.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

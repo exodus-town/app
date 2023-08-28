@@ -1,8 +1,8 @@
 import { Store, combineReducers } from "redux";
-import auction from "./modules/auction";
+import { api } from "./modules/api";
 
 export const reducer = combineReducers({
-  auction,
+  [api.reducerPath]: api.reducer,
 });
 
 export type RootState = ReturnType<typeof reducer>;
