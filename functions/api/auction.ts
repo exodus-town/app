@@ -17,7 +17,7 @@ export const onRequest: PagesFunction<Env> = async (context) => {
     tokenId: tokenId.toString(),
     amount: Number(formatEther(amount)),
     reserve: Number(formatEther(reserve)),
-    bidder: bidder,
+    bidder,
     endTime: Number(endTime) * 1000,
     startTime: Number(startTime) * 1000,
     settled,

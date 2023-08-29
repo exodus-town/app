@@ -1,11 +1,10 @@
-import { createPublicClient, getContract, http } from "viem";
+import { createPublicClient, fallback, getContract, http } from "viem";
 import { auctionHouseABI, townTokenABI } from "@exodus.town/contracts";
 import { Env } from "./env";
 
 export function getClient(env: Env) {
   const client = createPublicClient({
-    // TODO: add another provider as fallback: fallback([http(RPC_1), http(RPC_2)])
-    transport: http(env.RPC_URL),
+    transport: fallback([http(env.ALCHEMY_RPC_URL), http(env.INFURA_RPC_URL)]),
   });
   return client;
 }

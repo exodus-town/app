@@ -3,6 +3,7 @@ export interface Env {
   TOWN_TOKEN_CONTRACT_ADDRESS: `0x${string}`;
   AUCTION_HOUSE_CONTRACT_ADDRESS: `0x${string}`;
   EXODUS_DAO_CONTRACT_ADDRESS: `0x${string}`;
-  RPC_URL: string;
+  ALCHEMY_RPC_URL: string;
+  INFURA_RPC_URL: string;
   storage: R2Bucket;
 }
