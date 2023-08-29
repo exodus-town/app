@@ -9,7 +9,10 @@ export const config = createConfig(
   },
   {
     systemEnvVariables: {
-      DCL_DEFAULT_ENV: location.hostname === 'localhost' ? Env.DEVELOPMENT : Env.PRODUCTION,
+      DCL_DEFAULT_ENV:
+        location.hostname === "localhost" || location.hostname === "127.0.0.1"
+          ? Env.DEVELOPMENT
+          : Env.PRODUCTION,
     },
   }
-)
+);
