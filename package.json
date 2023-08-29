@@ -16,6 +16,8 @@
     "@dcl/ui-env": "^1.4.0",
     "@exodus.town/contracts": "^0.2.0",
     "@reduxjs/toolkit": "^1.9.5",
+    "@web3modal/ethereum": "^2.7.1",
+    "@web3modal/react": "^2.7.1",
     "decentraland-ui": "^4.7.0",
     "history": "^5.3.0",
     "react": "^18.2.0",

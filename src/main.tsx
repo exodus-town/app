@@ -2,34 +2,31 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import ReactDOM from 'react-dom/client'
 import { RouterProvider } from 'react-router-dom'
-import { WagmiConfig, createConfig, configureChains } from 'wagmi'
-import { polygon, polygonMumbai } from 'wagmi/chains'
-import { publicProvider } from 'wagmi/providers/public'
+import { WagmiConfig } from 'wagmi'
+import { Web3Modal } from '@web3modal/react'
+import { EthereumClient } from '@web3modal/ethereum'
 
 import { store } from './store'
 import { router } from './router'
+import { chains, config, walletConnectProjectId } from './wagmi'
 
 import 'decentraland-ui/lib/styles.css'
 import 'decentraland-ui/lib/dark-theme.css'
 
 
-const { publicClient, webSocketPublicClient } = configureChains(
-  [polygon, polygonMumbai],
-  [publicProvider()],
-)
 
-const config = createConfig({
-  autoConnect: true,
-  publicClient,
-  webSocketPublicClient,
-})
+const ethereumClient = new EthereumClient(config, chains)
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <WagmiConfig config={config}>
-      <Provider store={store}>
+    <Provider store={store}>
+      <WagmiConfig config={config}>
         <RouterProvider router={router} />
-      </Provider>
+        <Web3Modal
+          projectId={walletConnectProjectId}
+          ethereumClient={ethereumClient}
+        />
     </WagmiConfig>
+    </Provider>
   </React.StrictMode>,
 )
