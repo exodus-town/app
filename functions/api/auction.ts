@@ -7,16 +7,25 @@ import { json } from "../lib/json";
 export const onRequest: PagesFunction<Env> = async (context) => {
   const auctionHouse = getAuctionHouse(context.env);
 
-  const [[tokenId, amount, startTime, endTime, bidder, settled], reserve] =
-    await Promise.all([
-      auctionHouse.read.auction(),
-      auctionHouse.read.reservePrice(),
-    ]);
+  const [
+    [tokenId, amount, startTime, endTime, bidder, settled],
+    reserve,
+    minBidIncrementPercentage,
+  ] = await Promise.all([
+    auctionHouse.read.auction(),
+    auctionHouse.read.reservePrice(),
+    auctionHouse.read.minBidIncrementPercentage(),
+  ]);
 
   const auction: Auction = {
     tokenId: tokenId.toString(),
     amount: Number(formatEther(amount)),
-    reserve: Number(formatEther(reserve)),
+    min: Math.max(
+      Number(formatEther(reserve)),
+      Math.ceil(
+        Number(formatEther(amount)) * (1 + minBidIncrementPercentage / 100)
+      )
+    ),
     bidder,
     endTime: Number(endTime) * 1000,
     startTime: Number(startTime) * 1000,

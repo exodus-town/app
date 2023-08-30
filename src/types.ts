@@ -1,7 +1,7 @@
 export type Auction = {
   tokenId: string;
   amount: number;
-  reserve: number;
+  min: number;
   startTime: number;
   endTime: number;
   bidder: string;
