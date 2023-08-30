@@ -1,20 +1,24 @@
-import { memo, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { formatUnits, parseUnits } from "viem";
+import { useWeb3Modal } from "@web3modal/react";
 import { auctionHouseABI } from "@exodus.town/contracts";
-import { erc20ABI, useAccount, useConnect, useContractRead, useContractWrite, useWaitForTransaction } from "wagmi";
-import { InjectedConnector } from "wagmi/connectors/injected";
+import { erc20ABI, useAccount, useContractRead, useContractWrite, useDisconnect, useNetwork, useWaitForTransaction } from "wagmi";
 import { useAuction } from "../modules/api";
-import { AUCTION_HOUSE_CONTRACT_ADDRESS, MANA_TOKEN_CONTRACT_ADDRESS } from "../eth";
+import { AUCTION_HOUSE_CONTRACT_ADDRESS, MANA_TOKEN_CONTRACT_ADDRESS, getChain } from "../eth";
 import './HomePage.css'
 
 export const HomePage = memo(() => {
 
   const { data: auction, isLoading } = useAuction()
 
+  const { chain } = useNetwork()
   const { address, isConnected } = useAccount()
-  const { connect } = useConnect({
-    connector: new InjectedConnector(),
-  })
+  const { open, setDefaultChain } = useWeb3Modal()
+  const { disconnect } = useDisconnect()
+
+  useEffect(() => {
+    setDefaultChain(getChain())
+  }, [setDefaultChain])
 
   const [bidAmount, setBidAmount] = useState('')
 
@@ -59,6 +63,7 @@ export const HomePage = memo(() => {
   console.log(createBidTransaction)
 
   return <div className="HomePage">
+    {chain ? <div>Chain ID: {chain.name} {chain.id === getChain().id ? 'is ok' : 'wrong network'}</div> : null}
     <div>{isLoading ? 'Loading...' : JSON.stringify(auction, null, 2)}</div>
     <div>MANA: {isLoadingMana ? 'Loading...' : formatUnits(mana || 0n, 18)}</div>
     <div>Allowance: {isLoadingAllowance ? 'Loading...' : formatUnits(allowance || 0n, 18)} <button disabled={isApproved} onClick={() => approve!()}>Approve</button> {approveStatus} {JSON.stringify(approveData, null, 2)}</div>
@@ -77,9 +82,11 @@ export const HomePage = memo(() => {
           }
         </div>
       </>
-      : <button onClick={() => connect()}>Connect Wallet</button>}
+      : <button onClick={() => open()}>Connect Wallet</button>}
     </div>
     {status}
     {isCreateBidError ? <div>{error?.message}</div> : null}
+    <br />
+    {isConnected && <button onClick={() => disconnect()}>Disconnect</button>}
   </div >
 });

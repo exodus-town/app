@@ -1,11 +1,11 @@
 import { w3mConnectors, w3mProvider } from "@web3modal/ethereum";
 import { configureChains, createConfig } from "wagmi";
-import { polygon, polygonMumbai } from "wagmi/chains";
+import { getChain } from "./eth";
 
 export const walletConnectProjectId = "3fc6e87bfba56db006d7cc717107019f";
 
 const { chains, publicClient, webSocketPublicClient } = configureChains(
-  [polygon, polygonMumbai],
+  [getChain()],
   [w3mProvider({ projectId: walletConnectProjectId })]
 );
 
