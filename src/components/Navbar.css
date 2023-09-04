@@ -1,0 +1,8 @@
+.Navbar.dcl.navbar {
+  margin-bottom: 0px;
+}
+
+.Navbar.dcl.navbar .dcl.navbar-logo .dcl.logo {
+  background-image: url(../images/logo.svg);
+  border-radius: 0px;
+}

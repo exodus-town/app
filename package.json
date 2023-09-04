@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@dcl/mini-rpc": "^1.0.7",
+    "@dcl/schemas": "^9.4.1",
     "@dcl/sdk": "^7.3.11",
     "@dcl/ui-env": "^1.4.0",
     "@exodus.town/contracts": "^0.2.0",

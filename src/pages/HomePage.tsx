@@ -1,10 +1,12 @@
-import { memo, useEffect, useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import { formatUnits, parseUnits } from "viem";
-import { useWeb3Modal } from "@web3modal/react";
 import { auctionHouseABI } from "@exodus.town/contracts";
-import { erc20ABI, useAccount, useContractRead, useContractWrite, useDisconnect, useNetwork, useWaitForTransaction } from "wagmi";
+import { erc20ABI, useAccount, useContractRead, useContractWrite, useNetwork, useWaitForTransaction } from "wagmi";
+import { Atlas, AtlasTile, Container, Layer } from "decentraland-ui";
 import { useAuction } from "../modules/api";
 import { AUCTION_HOUSE_CONTRACT_ADDRESS, MANA_TOKEN_CONTRACT_ADDRESS, getChain } from "../eth";
+import { toCoords } from "../lib/coords";
+import { Navbar } from "../components/Navbar";
 import './HomePage.css'
 
 export const HomePage = memo(() => {
@@ -13,21 +15,9 @@ export const HomePage = memo(() => {
 
   const { chain } = useNetwork()
   const { address, isConnected } = useAccount()
-  const { open, setDefaultChain } = useWeb3Modal()
-  const { disconnect } = useDisconnect()
 
-  useEffect(() => {
-    setDefaultChain(getChain())
-  }, [setDefaultChain])
 
   const [bidAmount, setBidAmount] = useState('')
-
-  const { data: mana, isLoading: isLoadingMana } = useContractRead({
-    address: MANA_TOKEN_CONTRACT_ADDRESS,
-    abi: erc20ABI,
-    functionName: 'balanceOf',
-    args: [address!]
-  })
 
   const { data: allowance, isLoading: isLoadingAllowance } = useContractRead({
     address: MANA_TOKEN_CONTRACT_ADDRESS,
@@ -52,7 +42,7 @@ export const HomePage = memo(() => {
     args: [BigInt(auction?.tokenId || 0), parseUnits(parseInt(bidAmount || '0').toString(), 18)],
   })
 
-  const { write: reset } = useContractWrite({
+  const { write: settle } = useContractWrite({
     address: AUCTION_HOUSE_CONTRACT_ADDRESS,
     abi: auctionHouseABI,
     functionName: 'settleCurrentAndCreateNewAuction'
@@ -62,31 +52,83 @@ export const HomePage = memo(() => {
 
   console.log(createBidTransaction)
 
-  return <div className="HomePage">
-    {chain ? <div>Chain ID: {chain.name} {chain.id === getChain().id ? 'is ok' : 'wrong network'}</div> : null}
-    <div>{isLoading ? 'Loading...' : JSON.stringify(auction, null, 2)}</div>
-    <div>MANA: {isLoadingMana ? 'Loading...' : formatUnits(mana || 0n, 18)}</div>
-    <div>Allowance: {isLoadingAllowance ? 'Loading...' : formatUnits(allowance || 0n, 18)} <button disabled={isApproved} onClick={() => approve!()}>Approve</button> {approveStatus} {JSON.stringify(approveData, null, 2)}</div>
-    <div>{isConnected
-      ? <>
-        <div>Connected to {address}</div>
-        <div>
-          {!auction || auction.endTime < Date.now()
-            ? <button onClick={() => reset()}>Reset</button>
-            : isApproved
-              ? <>
-                <input type="number" value={bidAmount} onChange={e => setBidAmount(e.target.value)} />
-                <button onClick={() => createBid()}>Bid</button> {createBidStatus} {JSON.stringify(createBidData, null, 2)}
-              </>
-              : null
-          }
+  const tiles = useMemo(() => {
+    const tiles: Record<string, AtlasTile> = {}
+    if (auction) {
+      const lastId = Number(auction.tokenId)
+      for (let id = 0; id < lastId; id++) {
+        const [x, y] = toCoords(id)
+        tiles[`${x},${y}`] = {
+          x,
+          y,
+          type: 7,
+          owner: '0x'
+        }
+      }
+    }
+    return tiles
+  }, [auction])
+
+  const isSelected = useCallback((x: number, y: number) => {
+    if (auction) {
+      const [x2, y2] = toCoords(Number(auction.tokenId))
+      if (x === x2 && y === y2) {
+        return true
+      }
+    }
+    return false
+  }, [auction])
+
+  const selectedStrokeLayer: Layer = useCallback((x, y) => {
+    return isSelected(x, y) ? { color: '#ff0044', scale: 1.4 } : null
+  }, [isSelected])
+
+  const selectedFillLayer: Layer = useCallback((x, y) => {
+    return isSelected(x, y) ? { color: '#ff9990', scale: 1.2 } : null
+  }, [isSelected])
+
+  const layers = useMemo(() => {
+    return [
+      selectedStrokeLayer,
+      selectedFillLayer
+    ]
+  }, [selectedStrokeLayer, selectedFillLayer])
+
+  const [x, y] = useMemo(() => {
+    if (auction) {
+      return toCoords(Number(auction.tokenId))
+    }
+    return [0, 0]
+  }, [auction])
+
+  return <>
+    <Navbar />
+    <Atlas tiles={tiles} isDraggable={false} x={x + 15} y={y} height={320} layers={layers}></Atlas>
+    <div className="HomePage dcl page">
+      <Container>{chain ? <div>Chain ID: {chain.name} {chain.id === getChain().id ? 'is ok' : 'wrong network'}</div> : null}
+        <div>{isLoading ? 'Loading...' : JSON.stringify(auction, null, 2)}</div>
+        <div>Allowance: {isLoadingAllowance ? 'Loading...' : formatUnits(allowance || 0n, 18)} <button disabled={isApproved} onClick={() => approve!()}>Approve</button> {approveStatus} {JSON.stringify(approveData, null, 2)}</div>
+        <div>{isConnected
+          ? <>
+            <div>Connected to {address}</div>
+            <div>
+              {!auction || auction.endTime < Date.now()
+                ? <button onClick={() => settle()}>Reset</button>
+                : isApproved
+                  ? <>
+                    <input type="number" value={bidAmount} onChange={e => setBidAmount(e.target.value)} />
+                    <button onClick={() => createBid()}>Bid</button> {createBidStatus} {JSON.stringify(createBidData, null, 2)}
+                  </>
+                  : null
+              }
+            </div>
+          </>
+          : null}
         </div>
-      </>
-      : <button onClick={() => open()}>Connect Wallet</button>}
-    </div>
-    {status}
-    {isCreateBidError ? <div>{error?.message}</div> : null}
-    <br />
-    {isConnected && <button onClick={() => disconnect()}>Disconnect</button>}
-  </div >
+        {status}
+        {isCreateBidError ? <div>{error?.message}</div> : null}
+        <br />
+      </ Container>
+    </div >
+  </>
 });
