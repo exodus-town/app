@@ -1,3 +1,9 @@
-.HomePage {
-  color: var(--primary);
+.HomePage .content {
+  position: relative;
+}
+
+.HomePage .Auction {
+  position: absolute;
+  right: 0px;
+  top: 200px;
 }

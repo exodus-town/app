@@ -1,23 +1,19 @@
-import { Container, Menu, UserMenu } from "decentraland-ui";
-import { memo, useEffect } from "react";
-import './Navbar.css'
+import { memo } from "react";
+import { formatEther } from "viem";
 import { erc20ABI, useAccount, useContractRead, useDisconnect } from "wagmi";
-import { useWeb3Modal } from "@web3modal/react";
-import { MANA_TOKEN_CONTRACT_ADDRESS, getChain } from "../eth";
+import { Container, Menu, UserMenu } from "decentraland-ui";
+import { Network } from "@dcl/schemas";
+import { MANA_TOKEN_CONTRACT_ADDRESS } from "../eth";
 import { useAvatar } from "../modules/avatar";
 import { config } from "../config";
-import { Network } from "@dcl/schemas";
-import { formatEther } from "viem";
+import './Navbar.css'
+import { useLogin } from "../modules/login";
 
 export const Navbar = memo(() => {
   const { address, isConnected } = useAccount()
-  const { open, isOpen, setDefaultChain } = useWeb3Modal()
+  const { login, isLoggingIn } = useLogin()
   const { disconnect } = useDisconnect()
   const { avatar } = useAvatar(address)
-
-  useEffect(() => {
-    setDefaultChain(getChain())
-  }, [setDefaultChain])
 
   const { data: mana, isLoading } = useContractRead({
     address: MANA_TOKEN_CONTRACT_ADDRESS,
@@ -25,8 +21,6 @@ export const Navbar = memo(() => {
     functionName: 'balanceOf',
     args: [address!]
   })
-
-  console.log(mana)
 
   return (
     <div className="dcl navbar Navbar">
@@ -42,7 +36,7 @@ export const Navbar = memo(() => {
         <div className="dcl navbar-account">
           <div className="dcl column right">
             <Menu secondary className="dcl navbar-account-menu">
-              {isConnected ? <UserMenu manaBalances={isLoading ? undefined : { [Network.MATIC]: +formatEther(mana!) }} address={address} avatar={avatar} onSignOut={disconnect} isSignedIn /> : <Menu.Item disabled={isOpen} onClick={open}>Sign In</Menu.Item>}
+              {isConnected ? <UserMenu manaBalances={isLoading ? undefined : { [Network.MATIC]: +formatEther(mana!) }} address={address} avatar={avatar} onSignOut={disconnect} isSignedIn /> : <Menu.Item disabled={isLoggingIn} onClick={login}>Sign In</Menu.Item>}
             </Menu>
           </div>
         </div>

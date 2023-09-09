@@ -1,14 +1,9 @@
 import { toCoords } from "../../lib/coords";
+import { Env } from "../../lib/env";
 import { json } from "../../lib/json";
 
-export const onRequest: PagesFunction = async (context) => {
-  const tokenId = Number(context.params.id);
-  if (isNaN(tokenId)) {
-    throw new Error(`Invalid tokenId=${context.params.id}`);
-  }
-  if (tokenId < 0) {
-    throw new Error(`Invalid tokenId can't be less than 0`);
-  }
+export const onRequest: PagesFunction<Env, "id"> = async (context) => {
+  const tokenId = context.params.id as string;
   const [x, y] = toCoords(tokenId);
   const name = `${x},${y}`;
   const result = {

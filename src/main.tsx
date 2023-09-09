@@ -12,7 +12,7 @@ import { chains, config, walletConnectProjectId } from './wagmi'
 
 import 'decentraland-ui/lib/styles.css'
 import 'decentraland-ui/lib/dark-theme.css'
-
+import './theme.css'
 
 
 const ethereumClient = new EthereumClient(config, chains)
