@@ -5,12 +5,12 @@
 .HomePage .Auction {
   position: absolute;
   right: 0px;
-  top: 200px;
+  top: -120px;
 }
 @media (max-width: 768px) {
   .HomePage .Auction {
     position: absolute;
-    top: 300px;
-    right: calc(50% - var(--auction-widget-width) / 2);
+    top: -20px;
+      right: 30px;
   }
 }
