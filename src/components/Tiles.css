@@ -1,3 +1,5 @@
 .Tiles {
   height: 320px;
+  border-bottom: 1px solid var(--secondary);
+    overflow: hidden;
 }

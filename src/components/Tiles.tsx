@@ -1,20 +1,24 @@
 import { memo, useCallback, useMemo } from "react";
 import { Atlas, AtlasTile, Layer } from "decentraland-ui";
 import { toCoords } from "../lib/coords";
-import { useAuction } from "../modules/api";
 import useIsMobile from "../modules/layout";
+import { useAuction } from "../modules/auction";
 import './Tiles.css'
 
-export const Tiles = memo(() => {
-  const { data: auction } = useAuction()
+type Props = {
+  tokenId?: string
+}
 
+export const Tiles = memo<Props>(({ tokenId }) => {
+
+  const { auction } = useAuction()
   const isMobile = useIsMobile()
 
   const tiles = useMemo(() => {
     const tiles: Record<string, AtlasTile> = {}
     if (auction) {
       const lastId = Number(auction.tokenId)
-      for (let id = 0; id < lastId; id++) {
+      for (let id = 0; id <= lastId; id++) {
         const [x, y] = toCoords(id)
         tiles[`${x},${y}`] = {
           x,
@@ -28,14 +32,14 @@ export const Tiles = memo(() => {
   }, [auction])
 
   const isSelected = useCallback((x: number, y: number) => {
-    if (auction) {
-      const [x2, y2] = toCoords(Number(auction.tokenId))
+    if (tokenId) {
+      const [x2, y2] = toCoords(Number(tokenId))
       if (x === x2 && y === y2) {
         return true
       }
     }
     return false
-  }, [auction])
+  }, [tokenId])
 
   const selectedStrokeLayer: Layer = useCallback((x, y) => {
     return isSelected(x, y) ? { color: '#a524b3', scale: 1.4 } : null
@@ -53,11 +57,11 @@ export const Tiles = memo(() => {
   }, [selectedStrokeLayer, selectedFillLayer])
 
   const [x, y] = useMemo(() => {
-    if (auction) {
-      return toCoords(Number(auction.tokenId))
+    if (tokenId) {
+      return toCoords(Number(tokenId))
     }
     return [0, 0]
-  }, [auction])
+  }, [tokenId])
 
   const offset = isMobile ? 0 : 15
 

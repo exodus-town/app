@@ -22,6 +22,9 @@ export const Navbar = memo(() => {
     args: [address!]
   })
 
+  const balance = mana ? +formatEther(mana) | 0 : 0
+  const prettyBalance = balance.toLocaleString()
+
   return (
     <div className="dcl navbar Navbar">
       <Container className="row">
@@ -38,7 +41,7 @@ export const Navbar = memo(() => {
             {isConnected
               ?
               <>
-                {isLoadingBalance ? null : <Mana inline network={Network.MATIC}>{+formatEther(mana!) | 0}</Mana>}
+                {isLoadingBalance ? null : <Mana inline network={Network.MATIC}>{prettyBalance}</Mana>}
                 <UserMenu address={address} avatar={avatar} onSignOut={disconnect} isSignedIn />
               </>
               : <Menu.Item disabled={isLoggingIn} onClick={login}>Sign In</Menu.Item>
