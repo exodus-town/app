@@ -6,3 +6,38 @@
   background-image: url(../images/logo.svg);
   border-radius: 0px;
 }
+.Navbar.dcl.navbar .ui.navbar-menu {
+  display: flex;
+  align-items: center;
+}
+
+.Navbar.dcl.navbar .ui.navbar-menu .item {
+  flex: none
+}
+
+.Navbar.dcl.navbar .ui.container.row {
+  display: flex;
+}
+
+.Navbar.dcl.navbar .user-menu-wrapper {
+  margin-left: 16px;
+}
+
+.Navbar.dcl.navbar .user-menu-wrapper .activity-bell {
+  display: none;
+}
+
+.Navbar.dcl.navbar .navbar-account-menu {
+  display: flex;
+  align-items: center;
+}
+
+.Navbar.dcl.navbar .navbar-account-menu .mana {
+  margin-bottom: 0px;
+}
+
+@media (max-width: 768px) {
+  .Navbar.dcl.navbar .dcl.navbar-account .ui.menu.ui.menu.secondary.navbar-account-menu {
+    margin: 0px;
+  }
+}

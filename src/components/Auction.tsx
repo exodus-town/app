@@ -127,7 +127,7 @@ export const Auction = memo(() => {
         </div>
         <div className="action">
           {!isConnected
-            ? <Button className="login" primary onClick={login} disabled={isLoggingIn}>Sign in</Button>
+            ? <Button className="login" primary onClick={login} disabled={isLoggingIn} loading={isLoggingIn}>Sign in</Button>
             : isWrongNetwork
               ? <Button className="switch-network" primary onClick={() => switchNetwork ? switchNetwork() : void 0} disabled={isSwitchingNetwork}>Switch Network</Button>
               : !isApproved && shouldApprove

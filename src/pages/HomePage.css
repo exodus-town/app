@@ -7,3 +7,10 @@
   right: 0px;
   top: 200px;
 }
+@media (max-width: 768px) {
+  .HomePage .Auction {
+    position: absolute;
+    top: 300px;
+    right: calc(50% - var(--auction-widget-width) / 2);
+  }
+}

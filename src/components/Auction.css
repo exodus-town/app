@@ -2,7 +2,7 @@
   background-color: #2a262f;
   padding: 24px;
   border-radius: 12px;
-  width: 360px;
+  width: var(--auction-widget-width);
   justify-content: stretch;
   min-height: 100px;
 }

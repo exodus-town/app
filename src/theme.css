@@ -1,4 +1,5 @@
 :root {
-  --primary: var(--luisxvi-violet);
+  --primary: #a524b3;
   --primary-hover: #be42cc;
+  --auction-widget-width: 360px;
 }
