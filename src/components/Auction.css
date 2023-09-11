@@ -122,6 +122,7 @@
   width: 28px;
   height: 28px;
   opacity: 0.5;
+  user-select: none;
 }
 
 .Auction .controls svg+svg {
