@@ -1,4 +1,4 @@
-import { memo, useCallback, useMemo } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import { Atlas, AtlasTile, Layer } from "decentraland-ui";
 import { toCoords } from "../lib/coords";
 import useIsMobile from "../modules/layout";
@@ -6,16 +6,17 @@ import { useAuction } from "../modules/auction";
 import './Tiles.css'
 
 type Props = {
-  tokenId?: string
+  tokenId?: string,
+  setTokenId: (tokenId: string) => void
 }
 
-export const Tiles = memo<Props>(({ tokenId }) => {
+export const Tiles = memo<Props>(({ tokenId, setTokenId }) => {
 
   const { auction } = useAuction()
   const isMobile = useIsMobile()
 
   const tiles = useMemo(() => {
-    const tiles: Record<string, AtlasTile> = {}
+    const tiles: Record<string, AtlasTile & { tokenId: string }> = {}
     if (auction) {
       const lastId = Number(auction.tokenId)
       for (let id = 0; id <= lastId; id++) {
@@ -24,7 +25,8 @@ export const Tiles = memo<Props>(({ tokenId }) => {
           x,
           y,
           type: 7,
-          owner: '0x'
+          owner: '0x',
+          tokenId: id.toString()
         }
       }
     }
@@ -49,13 +51,6 @@ export const Tiles = memo<Props>(({ tokenId }) => {
     return isSelected(x, y) ? { color: '#e153f0', scale: 1.2 } : null
   }, [isSelected])
 
-  const layers = useMemo(() => {
-    return [
-      selectedStrokeLayer,
-      selectedFillLayer
-    ]
-  }, [selectedStrokeLayer, selectedFillLayer])
-
   const [x, y] = useMemo(() => {
     if (tokenId) {
       return toCoords(Number(tokenId))
@@ -65,9 +60,40 @@ export const Tiles = memo<Props>(({ tokenId }) => {
 
   const offset = isMobile ? 0 : 15
 
+  const [hover, setHover] = useState<string>()
+
+  const handleHover = useCallback((x: number, y: number) => {
+    const id = `${x},${y}`
+    if (tiles[id]) {
+      setHover(id)
+    } else {
+      setHover(void 0)
+    }
+  }, [tiles])
+
+  const hoverLayer: Layer = useCallback((x, y) => {
+    const id = `${x},${y}`
+    return id === hover ? { color: '#e153f0', scale: 1 } : null
+  }, [hover])
+
+  const layers = useMemo(() => {
+    return [
+      hoverLayer,
+      selectedStrokeLayer,
+      selectedFillLayer
+    ]
+  }, [hoverLayer, selectedStrokeLayer, selectedFillLayer])
+
+  const handleClick = useCallback((x: number, y: number) => {
+    const id = `${x},${y}`
+    if (tiles[id]) {
+      setTokenId(tiles[id].tokenId)
+    }
+  }, [tiles, setTokenId])
+
   return (
-    <div className="Tiles">
-      <Atlas tiles={tiles} isDraggable={false} x={x + offset} y={y} layers={layers} />
+    <div className={`Tiles ${hover ? 'hover' : ''}`.trim()}>
+      <Atlas tiles={tiles} isDraggable={false} x={x + offset} y={y} layers={layers} onHover={handleHover} onClick={handleClick} />
     </div>
   )
 })

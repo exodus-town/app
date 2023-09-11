@@ -20,7 +20,7 @@ export const HomePage = memo(() => {
 
   return <>
     <Navbar />
-    <Tiles tokenId={tokenId} />
+    <Tiles tokenId={tokenId} setTokenId={setTokenId} />
     <div className="HomePage dcl page">
       <Container className="content">
         <Auction tokenId={tokenId} setTokenId={setTokenId} />

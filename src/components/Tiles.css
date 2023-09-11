@@ -3,3 +3,10 @@
   border-bottom: 1px solid var(--secondary);
     overflow: hidden;
 }
+.Tiles .react-tile-map-canvas.clickable {
+  cursor: default;
+}
+
+.Tiles.hover .react-tile-map-canvas.clickable {
+  cursor: pointer;
+}
