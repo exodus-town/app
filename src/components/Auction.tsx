@@ -3,6 +3,7 @@ import { formatUnits, parseUnits } from "viem";
 import { erc20ABI, erc721ABI, useAccount, useContractRead, useContractWrite, useNetwork, useSwitchNetwork, useWaitForTransaction } from "wagmi";
 import { formatDistanceToNow } from 'date-fns'
 import { Button, Loader, Mana } from "decentraland-ui";
+import { Link } from "react-router-dom";
 import { auctionHouseABI } from "@exodus.town/contracts";
 import { Network } from "@dcl/schemas";
 import { FaUnlock } from 'react-icons/fa'
@@ -11,8 +12,8 @@ import { AUCTION_HOUSE_CONTRACT_ADDRESS, MANA_TOKEN_CONTRACT_ADDRESS, TOWN_TOKEN
 import { toCoords } from "../lib/coords";
 import { useLogin } from "../modules/login";
 import { useAuction } from "../modules/auction";
-import './Auction.css'
 import { User } from "./User";
+import './Auction.css'
 
 type Props = {
   tokenId?: string
@@ -168,7 +169,7 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
               <div className="label">Owner</div>
               <div className="value">{<User address={parcelOwner} />}</div>
             </div>
-            <Button primary className="jump-in" href={`https://play.decentraland.org?realm=exodus.town&position=${tokenId ? toCoords(tokenId).join(',') : '0,0'}`} target="_blank">Jump In <i className="jump-in-icon" /></Button>
+            <Button as={Link} primary className="jump-in" to={`/tokens/${tokenId}`}>{parcelOwner === address ? 'Edit' : 'View'} <i className="jump-in-icon" /></Button>
           </div>
           : null
         }

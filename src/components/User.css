@@ -4,6 +4,7 @@
   height: 24px;
 }
 
-.User .name {
+.User .name,
+.User .loading {
   margin-left: 8px;
 }

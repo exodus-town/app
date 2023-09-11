@@ -3,6 +3,7 @@ import { Atlas, AtlasTile, Layer } from "decentraland-ui";
 import { toCoords } from "../lib/coords";
 import useIsMobile from "../modules/layout";
 import { useAuction } from "../modules/auction";
+import { useTown } from "../modules/town";
 import './Tiles.css'
 
 type Props = {
@@ -13,6 +14,7 @@ type Props = {
 export const Tiles = memo<Props>(({ tokenId, setTokenId }) => {
 
   const { auction } = useAuction()
+  const { ownedCoords } = useTown()
   const isMobile = useIsMobile()
 
   const tiles = useMemo(() => {
@@ -73,16 +75,22 @@ export const Tiles = memo<Props>(({ tokenId, setTokenId }) => {
 
   const hoverLayer: Layer = useCallback((x, y) => {
     const id = `${x},${y}`
-    return id === hover ? { color: '#e153f0', scale: 1 } : null
-  }, [hover])
+    return id === hover ? { color: ownedCoords.has(id) ? '#e7a0ee' : '#9a95a8', scale: 1 } : null
+  }, [hover, ownedCoords])
+
+  const ownerLayer: Layer = useCallback((x, y) => {
+    const id = `${x},${y}`
+    return ownedCoords.has(id) ? { color: '#e153f0', scale: 1 } : null
+  }, [ownedCoords])
 
   const layers = useMemo(() => {
     return [
+      ownerLayer,
       hoverLayer,
       selectedStrokeLayer,
       selectedFillLayer
     ]
-  }, [hoverLayer, selectedStrokeLayer, selectedFillLayer])
+  }, [ownerLayer, hoverLayer, selectedStrokeLayer, selectedFillLayer])
 
   const handleClick = useCallback((x: number, y: number) => {
     const id = `${x},${y}`
