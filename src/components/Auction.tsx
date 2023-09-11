@@ -152,9 +152,11 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
       ? <Loader active />
       : <>
         <div className="header">
-          <div className="parcel">Parcel {tokenId && <div className="coords"><i className="pin" />{toCoords(tokenId).join(',')}</div>}</div>
           <div className="controls">
             <PiCaretCircleLeft className={isPrevEnabled ? 'enabled' : ''} onClick={handlePrev} />
+          </div>
+          <div className="parcel">Parcel {tokenId && <div className="coords"><i className="pin" />{toCoords(tokenId).join(',')}</div>}</div>
+          <div className="controls">
             <PiCaretCircleRight className={isNextEnabled ? 'enabled' : ''} onClick={handleNext} />
           </div>
         </div>
