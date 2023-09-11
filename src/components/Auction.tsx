@@ -12,6 +12,7 @@ import { toCoords } from "../lib/coords";
 import { useLogin } from "../modules/login";
 import { useAuction } from "../modules/auction";
 import './Auction.css'
+import { User } from "./User";
 
 type Props = {
   tokenId?: string
@@ -137,7 +138,7 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
   }, [setTokenId, tokenId, isPrevEnabled])
 
   let showParcelOwner = false
-  let parcelOwner = null
+  let parcelOwner
   if (Number(tokenId) < Number(auction?.tokenId)) {
     showParcelOwner = true
     parcelOwner = owner
@@ -165,7 +166,7 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
           ? <div className="row info owner-info">
             <div className="column owner">
               <div className="label">Owner</div>
-              <div className="value">{parcelOwner ? parcelOwner.slice(0, 6) : 'Loading...'}</div>
+              <div className="value">{<User address={parcelOwner} />}</div>
             </div>
             <Button primary className="jump-in" href={`https://play.decentraland.org?realm=exodus.town&position=${tokenId ? toCoords(tokenId).join(',') : '0,0'}`} target="_blank">Jump In <i className="jump-in-icon" /></Button>
           </div>

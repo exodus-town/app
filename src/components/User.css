@@ -1,0 +1,9 @@
+.User {
+  display: flex;
+  align-items: center;
+  height: 24px;
+}
+
+.User .name {
+  margin-left: 8px;
+}

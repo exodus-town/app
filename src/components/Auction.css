@@ -136,9 +136,12 @@
 
 .Auction .owner-info {
   margin-bottom: 0px;
-  align-items: center;
+  align-items: end;
 }
 
+.Auction .owner-info .User {
+  margin-top: 8px;
+}
 .Auction .ui.button.jump-in {
   display: flex;
   align-items: center;
