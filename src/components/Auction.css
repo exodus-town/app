@@ -142,7 +142,7 @@
 .Auction .owner-info .User {
   margin-top: 8px;
 }
-.Auction .ui.button.jump-in {
+.Auction .ui.button.action-button {
   display: flex;
   align-items: center;
   font-size: 13px;
@@ -153,20 +153,12 @@
   min-width: auto;
 }
 
-.Auction .ui.button.jump-in:hover {
-  transform: none;
+.Auction .ui.button.action-button svg {
+  margin-left: 4px
 }
 
-.Auction .jump-in .jump-in-icon {
-  display: inline-block;
-  background-image: url(../images/jump_in.svg);
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  margin-left: 6px;
+.Auction .ui.button.action-button:hover {
+  transform: none;
 }
 
 .Auction .error {

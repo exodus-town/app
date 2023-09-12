@@ -7,6 +7,8 @@ import { Link } from "react-router-dom";
 import { auctionHouseABI } from "@exodus.town/contracts";
 import { Network } from "@dcl/schemas";
 import { FaUnlock } from 'react-icons/fa'
+import { BiSolidPencil } from 'react-icons/bi'
+import { HiEye } from 'react-icons/hi'
 import { PiCaretCircleLeft, PiCaretCircleRight } from 'react-icons/pi'
 import { AUCTION_HOUSE_CONTRACT_ADDRESS, MANA_TOKEN_CONTRACT_ADDRESS, TOWN_TOKEN_CONTRACT_ADDRESS, getChain } from "../eth";
 import { toCoords } from "../lib/coords";
@@ -149,6 +151,8 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
     parcelOwner = auction!.bidder
   }
 
+  const isEdit = parcelOwner === address
+
   return <div className="Auction">
     {isLoading
       ? <Loader active />
@@ -169,7 +173,7 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
               <div className="label">Owner</div>
               <div className="value">{<User address={parcelOwner} />}</div>
             </div>
-            <Button as={Link} primary className="jump-in" to={`/tokens/${tokenId}`}>{parcelOwner === address ? 'Edit' : 'View'} <i className="jump-in-icon" /></Button>
+            <Button as={Link} primary className="action-button" to={`/tokens/${tokenId}`}>{isEdit ? 'Edit' : 'View'} {isEdit ? <BiSolidPencil /> : <HiEye />}</Button>
           </div>
           : null
         }
@@ -184,11 +188,11 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
                 : <> 
                   <div className="column current-bid">
                     <div className="label">Current bid</div>
-                    <div className="value"><Mana network={Network.MATIC} inline />{auction!.amount}</div>
+                    <div className="value"><Mana network={Network.MATIC} inline />{auction?.amount || 0}</div>
                   </div>
                   <div className="column ends-in">
                     <div className="label">Ends in</div>
-                    <div className="value">{formatDistanceToNow(auction!.endTime, { addSuffix: false })}</div>
+                    <div className="value">{formatDistanceToNow(auction?.endTime || Date.now(), { addSuffix: false })}</div>
                   </div>
                 </>
               }

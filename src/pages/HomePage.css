@@ -7,10 +7,68 @@
   right: 0px;
   top: -120px;
 }
+.HomePage .content {
+  padding-top: 24px;
+  font-size: 15px;
+  line-height: 24px;
+  padding-bottom: 48px;
+}
+
+.HomePage .content h3 {
+  color: #7e7a87;
+}
+
+.HomePage .content a {
+  color: var(--primary-hover);
+}
+
+.HomePage .content h1 {
+  display: flex;
+  align-items: center;
+}
+
+.HomePage .content .jump-in {
+  margin-left: 16px
+}
+
+.HomePage .content .ui.button.jump-in {
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  height: 32px;
+  line-height: 18px;
+  padding: 7px 12px;
+  width: auto;
+  min-width: auto;
+}
+
+.HomePage .content .ui.button.jump-in:hover {
+  transform: none;
+}
+
+.HomePage .content .jump-in .jump-in-icon {
+  display: inline-block;
+  background-image: url(../images/jump_in.svg);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-left: 6px;
+}
 @media (max-width: 768px) {
   .HomePage .Auction {
     position: absolute;
+    right: 30px;
     top: -20px;
-      right: 30px;
+    }
+    
+    .HomePage .content {
+      padding-top: 116px;
+    }
+    
+    .HomePage .content h1 {
+      justify-content: space-between;
   }
 }

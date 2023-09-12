@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useEffect } from "react";
 import { formatEther } from "viem";
 import { erc20ABI, useAccount, useContractRead, useDisconnect } from "wagmi";
 import { Container, Mana, Menu, UserMenu } from "decentraland-ui";
@@ -8,14 +8,16 @@ import { useLogin } from "../modules/login";
 import { MANA_TOKEN_CONTRACT_ADDRESS } from "../eth";
 import { config } from "../config";
 import './Navbar.css'
+import { useAuction } from "../modules/auction";
 
 export const Navbar = memo(() => {
   const { address, isConnected } = useAccount()
   const { login, isLoggingIn } = useLogin()
   const { disconnect } = useDisconnect()
   const { avatar } = useAvatar(address)
+  const { auction } = useAuction()
 
-  const { data: mana, isLoading: isLoadingBalance } = useContractRead({
+  const { data: mana, isLoading: isLoadingBalance, refetch } = useContractRead({
     address: MANA_TOKEN_CONTRACT_ADDRESS,
     abi: erc20ABI,
     functionName: 'balanceOf',
@@ -24,6 +26,12 @@ export const Navbar = memo(() => {
 
   const balance = mana ? +formatEther(mana) | 0 : 0
   const prettyBalance = balance.toLocaleString()
+
+  useEffect(() => {
+    if (auction) {
+      refetch()
+    }
+  }, [auction, refetch])
 
   return (
     <div className="dcl navbar Navbar">
