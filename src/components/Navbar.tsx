@@ -40,9 +40,9 @@ export const Navbar = memo(() => {
           <div className="dcl navbar-logo">
             <div className="dcl logo"></div>
           </div>
-          <Menu.Item href="https://play.decentraland.org?realm=exodus.town" target="_blank">Play</Menu.Item>
-          <Menu.Item href={config.get('DAO_URL')} target="_blank">DAO</Menu.Item>
-          <Menu.Item href={config.get('TREASURY_URL') + config.get('EXODUS_DAO_CONTRACT_ADDRESS')} target="_blank">Treasury</Menu.Item>
+          <Menu.Item href="https://play.decentraland.org?realm=exodus.town">Play</Menu.Item>
+          <Menu.Item href={config.get('DAO_URL')}>DAO</Menu.Item>
+          <Menu.Item href={config.get('TREASURY_URL') + config.get('EXODUS_DAO_CONTRACT_ADDRESS')}>Treasury</Menu.Item>
         </Menu>
         <div className="dcl navbar-account">
             <Menu secondary className="dcl navbar-account-menu">

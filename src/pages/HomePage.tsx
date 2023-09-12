@@ -31,7 +31,7 @@ export const HomePage = memo(() => {
       <Container className="content">
         <Auction tokenId={tokenId} setTokenId={setTokenId} />
         <div className="content">
-          <h1>Welcome to Exodus Town <Button primary className="jump-in">Jump In <i className="jump-in-icon" /></Button></h1>
+          <h1>Welcome to Exodus Town <Button primary className="jump-in" href="https://play.decentraland.org?realm=exodus.town">Jump In <i className="jump-in-icon" /></Button></h1>
 
           <h3>The World</h3>
           <p>Exodus Town is an experiment on Decentraland Worlds, continuous issuance, and DAOs. Originating from the 0,0 coordinate, it expands in a never-ending spiral, growing one parcel per day, forever.</p>
@@ -49,7 +49,7 @@ export const HomePage = memo(() => {
           <p>The Decentraland's Web Editor is integrated into Exodus Town, allowing content to be created and published directly on parcels. The editor is open to everyone and doesn't require coding skills.</p>
 
           <h3>The Deployers</h3>
-          <p>The Deployers of Exodus Town have opted for a different compensation model, distinct from the common practice of taking a percentage of auction proceeds. For the first two years of the project, every 10th TOWN token (ID #0, ID #10, ID #20, etc.) will be sent to the Deployers' Multisig. These tokens are vested and will be shared among its members, without affecting the cadence of daily auctions.</p>
+          <p>The Deployers of Exodus Town have opted for a different compensation model, distinct from the common practice of taking a percentage of auction proceeds. For the first two years of the project, every 10th $TOWN token (ID #0, ID #10, ID #20, etc.) will be sent to the Deployers' Multisig. These tokens are vested and will be shared among its members, without affecting the cadence of daily auctions.</p>
         </div>
       </ Container>
     </div >
