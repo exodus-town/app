@@ -57,6 +57,7 @@
   height: 12px;
   margin-left: 6px;
 }
+
 @media (max-width: 768px) {
   .HomePage .Auction {
     position: absolute;
@@ -71,4 +72,7 @@
     .HomePage .content h1 {
       justify-content: space-between;
   }
+.HomePage .content .jump-in {
+  display: none;
+}
 }
