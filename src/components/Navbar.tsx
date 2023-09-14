@@ -5,10 +5,10 @@ import { Container, Mana, Menu, UserMenu } from "decentraland-ui";
 import { Network } from "@dcl/schemas";
 import { useAvatar } from "../modules/avatar";
 import { useLogin } from "../modules/login";
+import { useAuction } from "../modules/auction";
 import { MANA_TOKEN_CONTRACT_ADDRESS } from "../eth";
 import { config } from "../config";
 import './Navbar.css'
-import { useAuction } from "../modules/auction";
 
 export const Navbar = memo(() => {
   const { address, isConnected } = useAccount()
@@ -42,7 +42,7 @@ export const Navbar = memo(() => {
           </div>
           <Menu.Item href="https://play.decentraland.org?realm=exodus.town">Play</Menu.Item>
           <Menu.Item href={config.get('DAO_URL')}>DAO</Menu.Item>
-          <Menu.Item href={config.get('TREASURY_URL') + config.get('EXODUS_DAO_CONTRACT_ADDRESS')}>Treasury</Menu.Item>
+          <Menu.Item href={`${config.get('BLOCK_EXPLORER_URL')}/tokenholdings?a=${config.get('EXODUS_DAO_CONTRACT_ADDRESS')}`}>Treasury</Menu.Item>
         </Menu>
         <div className="dcl navbar-account">
             <Menu secondary className="dcl navbar-account-menu">

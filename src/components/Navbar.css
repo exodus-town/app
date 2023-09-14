@@ -37,6 +37,9 @@
 }
 
 @media (max-width: 768px) {
+  .Navbar.dcl.navbar .dcl.navbar-account .ui.header.dcl.mana.inline {
+      display: none;
+    }
   .Navbar.dcl.navbar .dcl.navbar-account .ui.menu.ui.menu.secondary.navbar-account-menu {
     margin: 0px;
   }

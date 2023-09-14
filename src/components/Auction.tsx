@@ -153,7 +153,7 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
 
   const isEdit = parcelOwner === address
 
-  return <div className="Auction">
+  return <div className={`Auction ${isLoading ? 'loading' : ''}`.trim()}>
     {isLoading
       ? <Loader active />
       : <>

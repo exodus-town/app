@@ -4,7 +4,10 @@
   border-radius: 12px;
   width: var(--auction-widget-width);
   justify-content: stretch;
-  min-height: 100px;
+}
+
+.Auction.loading {
+  min-height: 212px;
 }
 
 .Auction .header {
@@ -164,10 +167,4 @@
 .Auction .error {
   margin-top: 16px;
   color: var(--error);
-}
-
-@media (max-width: 768px) {
-  .Auction {
-    width: calc(100% - 60px);
-  }
 }

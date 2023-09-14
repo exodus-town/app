@@ -5,5 +5,5 @@
   "AUCTION_HOUSE_CONTRACT_ADDRESS": "0x4d79Ead5046F5aF938F1b335b84168cb3872dD84",
   "EXODUS_DAO_CONTRACT_ADDRESS": "0xe6625504abd43360eA7A1DDe511DdA80757FC071",
   "DAO_URL": "https://www.tally.xyz/gov/testing-polygon-blocknumber-based",
-  "TREASURY_URL": "https://mumbai.polygonscan.com/tokenholdings?a="
+  "BLOCK_EXPLORER_URL": "https://mumbai.polygonscan.com"
 }

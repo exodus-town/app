@@ -27,3 +27,7 @@ export function getChain(): Chain {
     }
   }
 }
+
+export function getContractUrl(contractAddress: string) {
+  return `${config.get("BLOCK_EXPLORER_URL")}/address/${contractAddress}`;
+}
