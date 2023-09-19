@@ -3,6 +3,7 @@ import { config } from "./config";
 import { polygonMumbai } from "viem/chains";
 import { polygon } from "wagmi/chains";
 
+export const ZERO_ADDRRESS = "0x0000000000000000000000000000000000000000";
 export const MANA_TOKEN_CONTRACT_ADDRESS = config.get(
   "MANA_TOKEN_CONTRACT_ADDRESS"
 )! as `0x${string}`;

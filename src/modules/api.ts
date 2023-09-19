@@ -11,4 +11,4 @@ export const api = createApi({
   }),
 });
 
-export const { useGetAuctionQuery: useGetAuctionQuery } = api;
+export const { useGetAuctionQuery } = api;
