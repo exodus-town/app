@@ -13,27 +13,25 @@ type Props = {
 
 export const Tiles = memo<Props>(({ tokenId, setTokenId }) => {
 
-  const { auction } = useAuction()
+  const { maxTokenId } = useAuction()
   const { ownedCoords } = useTown()
   const isMobile = useIsMobile()
 
   const tiles = useMemo(() => {
     const tiles: Record<string, AtlasTile & { tokenId: string }> = {}
-    if (auction) {
-      const lastId = Number(auction.tokenId)
-      for (let id = 0; id <= lastId; id++) {
-        const [x, y] = toCoords(id)
-        tiles[`${x},${y}`] = {
-          x,
-          y,
-          type: 7,
-          owner: '0x',
-          tokenId: id.toString()
-        }
+    const lastId = Number(maxTokenId)
+    for (let id = 0; id <= lastId; id++) {
+      const [x, y] = toCoords(id)
+      tiles[`${x},${y}`] = {
+        x,
+        y,
+        type: 7,
+        owner: '0x',
+        tokenId: id.toString()
       }
     }
     return tiles
-  }, [auction])
+  }, [maxTokenId])
 
   const isSelected = useCallback((x: number, y: number) => {
     if (tokenId) {

@@ -25,10 +25,10 @@ export const HomePage = memo(() => {
         <Auction tokenId={tokenId} setTokenId={setTokenId} />
         <div className="content">
           <h1>Welcome to Exodus Town <Button primary className="jump-in" href="https://play.decentraland.org?realm=exodus.town"><span className="text">Jump In</span> <i className="jump-in-icon" /></Button></h1>
-
-          <h3>The World</h3>
           <p>Exodus Town is an experiment on Decentraland Worlds, continuous issuance, and DAOs. Originating from the 0,0 coordinate, it expands in a never-ending spiral, growing one parcel per day, forever.</p>
+          <p>Every 24 hours, a TOWN token is auctioned off in exchange for MANA, granting the holder the ability to publish content to Exodus Town. Importantly, all auction proceeds flow directly into the on-chain governed Exodus DAO, steered exclusively by TOWN token holders.</p>
 
+          <h1>Learn More</h1>
           <h3>The Token</h3>
           <p>The TOWN token is a distinctive NFT for a couple of reasons. First, it allows its holder to publish content on Exodus Town parcels, akin to Decentraland's LAND token. Second, France. Third, the proceeds from TOWN auctions don't go to a developer team, instead they directly enter the Exodus DAO treasury, ensuring it stays in the hands of the token holders.</p>
 
@@ -52,7 +52,7 @@ export const HomePage = memo(() => {
             <br />Everything, including this interface, is public and <a href="https://github.com/exodus-town">open source</a>.
             <br />There is <b className="warning"><IoMdWarning />NO AUDIT</b>.</p>
 
-          <h3>The Disclaimer</h3>
+          <h1>Disclaimer</h1>
           <p>Please note that none of the information provided here constitutes financial advice. Exercise your own judgment and consult professionals before making any investment decisions. Exodus Town is a product of what might be described as a self-hatred fueled, narcotics-induced coding extravaganza. To put it bluntly, this is a high-risk experiment in the Metaverse; it's uncharted waters with unpredictable tides. By interacting with Exodus Town through this interface, you implicitly agree to not expect any guaranteed outcome, benefit, or return on investment. You acknowledge that you're essentially venturing into a digital Wild West where anything can happen—and probably will. Proceed with caution, intrepid explorer.</p>          
         </div>
       </ Container>

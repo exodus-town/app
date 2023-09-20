@@ -24,7 +24,7 @@ type Props = {
 
 export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
 
-  const { auction, isLoading, refetch, isWinner, isSettled, maxTokenId } = useAuction()
+  const { auction, isLoading, refetch, isWinner, isSettled, hasBidder, maxTokenId } = useAuction()
   const { address, isConnected } = useAccount()
   const [bidAmount, setBidAmount] = useState('')
   const [shouldApprove, setShouldApprove] = useState(false)
@@ -74,12 +74,17 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
     functionName: 'settleCurrentAndCreateNewAuction'
   })
 
+  const ownerOf = Number(tokenId) <= Number(auction?.tokenId) ? parseUnits(tokenId || '0', 0) : undefined
+  console.log('ownerOf', ownerOf)
   const { data: owner } = useContractRead({
     address: TOWN_TOKEN_CONTRACT_ADDRESS,
     abi: erc721ABI,
     functionName: 'ownerOf',
-    args: [parseUnits(tokenId || '0', 0)]
+    args: [ownerOf!]
   })
+
+  console.log('maxTokenId', maxTokenId)
+  console.log('tokenId', tokenId)
 
   const { error: settleTxError, status: settleTxStatus } = useWaitForTransaction(settleData)
 
@@ -142,11 +147,11 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
 
   let showParcelOwner = false
   let parcelOwner
-  if (Number(tokenId) < Number(auction?.tokenId)) {
+  if (Number(tokenId) < maxTokenId) {
     showParcelOwner = true
     parcelOwner = owner
   }
-  if (tokenId === auction?.tokenId && isSettled && !isWinner) {
+  if (tokenId === auction?.tokenId && isSettled && hasBidder && !isWinner) {
     showParcelOwner = true
     parcelOwner = auction!.bidder
   }

@@ -17,7 +17,7 @@ export const useAuction = () => {
     if (!auction) {
       return false;
     }
-    return auction.bidder === ZERO_ADDRRESS;
+    return auction.bidder !== ZERO_ADDRRESS;
   }, [auction]);
 
   const isWinner = isSettled && auction?.bidder === address;
@@ -26,6 +26,7 @@ export const useAuction = () => {
       ? Number(auction.tokenId) + 1
       : Number(auction.tokenId)
     : 0;
+  console.log(auction, maxTokenId, isSettled, hasBidder, isWinner);
   return {
     ...other,
     auction,
