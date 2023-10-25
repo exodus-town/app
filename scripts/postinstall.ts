@@ -12,6 +12,7 @@ const publicPath = path.resolve("./public");
 console.log("Public folder:", publicPath);
 for (const file of files) {
   const source = path.resolve(inspectorAssetsPath, file);
+  if (file.endsWith(".map")) continue;
   const filename = file === "index.html" ? "inspector.html" : file;
   const target = path.resolve(publicPath, filename);
   console.log(`> Copying ${file} as ${filename}...`);
