@@ -216,7 +216,7 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
                       </div>
               }
             </div>
-            {error && !error.message.toLowerCase().includes('user denied')
+            {error && !error.message.toLowerCase().includes('denied') && !error.message.toLowerCase().includes('rejected')
               ? <div className="error">
                 {error.message}
               </div>
