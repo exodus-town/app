@@ -75,16 +75,12 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
   })
 
   const ownerOf = Number(tokenId) <= Number(auction?.tokenId) ? parseUnits(tokenId || '0', 0) : undefined
-  console.log('ownerOf', ownerOf)
   const { data: owner } = useContractRead({
     address: TOWN_TOKEN_CONTRACT_ADDRESS,
     abi: erc721ABI,
     functionName: 'ownerOf',
     args: [ownerOf!]
   })
-
-  console.log('maxTokenId', maxTokenId)
-  console.log('tokenId', tokenId)
 
   const { error: settleTxError, status: settleTxStatus } = useWaitForTransaction(settleData)
 

@@ -25,3 +25,7 @@ dist-ssr
 
 .wrangler
 .dev.vars
+
+public/bin
+public/bundle*
+public/inspector.html

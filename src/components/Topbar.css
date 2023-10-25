@@ -1,0 +1,31 @@
+.Topbar {
+  width: 100%;
+  height: var(--topbar-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.Topbar .title a {
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  cursor: pointer;
+}
+
+.Topbar .title .back {
+  margin-right: 4px;
+}
+
+.Topbar .actions {
+  padding: 8px 8px;
+}
+
+.Topbar .actions .ui.button:hover {
+  transform: none;
+}
+
+.Topbar .actions .ui.button+.ui.button {
+  margin-left: 8px;
+}
