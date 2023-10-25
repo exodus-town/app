@@ -9,7 +9,7 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "dev": "wrangler pages dev --compatibility-date=2023-08-07 --proxy 3000 --r2=storage -- npm run start",
-    "postinstall": "ts-node --esm ./scripts/postinstall"
+    "postinstall": "ts-node --esm ./scripts/postinstall.ts"
   },
   "dependencies": {
     "@dcl/hashing": "^3.0.4",
