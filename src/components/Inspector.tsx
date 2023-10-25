@@ -46,6 +46,6 @@ export const Inspector = memo(() => {
     'is-ready': isReady
   })}>
     {isLoading && <Loader active />}
-    <iframe src={`${window.location.origin}/inspector.html?dataLayerRpcParentUrl=${window.location.origin}&contentUrl=https://builder-items.decentraland.zone`} ref={iframeRef} />
+    <iframe src={`${window.location.origin}/inspector.html?dataLayerRpcParentUrl=${window.location.origin}&binIndexJsUrl=${window.location.origin}/bin/index.js`} ref={iframeRef} />
   </div>
 })
