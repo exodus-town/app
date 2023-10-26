@@ -1,12 +1,32 @@
 import { MessageTransport } from "@dcl/mini-rpc";
 import { hashV1 } from "@dcl/hashing";
 import { UiClient, IframeStorage } from "@dcl/inspector";
-import { toCoords } from "../lib/coords";
+import { toLayout } from "../lib/layout";
 
 type Options = {
   tokenId: string;
   isOwner: boolean;
 };
+
+type ComponentData = {
+  name: string;
+  data: Record<string, unknown>;
+};
+
+enum Path {
+  FLOOR_MODEL = "assets/scene/ground/FloorBaseGrass_01.glb",
+  FLOOR_TEXTURE = "assets/scene/ground/Floor_Grass01.png.png",
+  PREFERENCES = "inspector-preferences.json",
+  COMPOSITE = "assets/scene/main.composite",
+  CRDT = "main.crdt",
+  SCENE = "scene.json",
+  JS = "bin/index.js",
+}
+
+enum Hash {
+  FLOOR_MODEL = "bafkreibytthve4zjlvbcnadjec2wjex2etqxuqtluriefzwwl4qe2qynne",
+  FLOOR_TEXTURE = "bafkreid2fuffvxm6w2uimphn4tyxyox3eewt3r67zbrewbdonkjb7bqzx4",
+}
 
 export async function init(
   iframe: HTMLIFrameElement,
@@ -16,7 +36,7 @@ export async function init(
   const ui = new UiClient(transport);
   const storage = new IframeStorage.Server(transport);
 
-  wire(storage, { tokenId, isOwner });
+  await wire(storage, { tokenId, isOwner });
 
   // setup ui
   const promises: Promise<unknown>[] = [];
@@ -38,14 +58,28 @@ function json(value: unknown) {
   return Buffer.from(JSON.stringify(value), "utf8");
 }
 
-function wire(storage: IframeStorage.Server, { tokenId, isOwner }: Options) {
+async function getContent(hash: string) {
+  const resp = await fetch(
+    `https://builder-items.decentraland.org/contents/${hash}`
+  );
+  const arrayBuffer = await resp.arrayBuffer();
+  return Buffer.from(arrayBuffer);
+}
+
+async function wire(
+  storage: IframeStorage.Server,
+  { tokenId, isOwner }: Options
+) {
   const mappings = new Map<string, string>();
   const contents = new Map<string, Buffer>();
+
+  mappings.set(Path.FLOOR_MODEL, Hash.FLOOR_MODEL);
+  mappings.set(Path.FLOOR_TEXTURE, Hash.FLOOR_TEXTURE);
 
   // read file
   storage.handle("read_file", async ({ path }) => {
     switch (path) {
-      case "inspector-preferences.json": {
+      case Path.PREFERENCES: {
         return json({
           version: 1,
           data: {
@@ -54,18 +88,43 @@ function wire(storage: IframeStorage.Server, { tokenId, isOwner }: Options) {
           },
         });
       }
-      case "scene.json": {
-        const [x, y] = toCoords(tokenId);
-        const base = `${x},${y}`;
+      case Path.SCENE: {
+        const { base, parcels } = toLayout(tokenId);
         return json({
           scene: {
-            parcels: [base],
-            base,
+            parcels: parcels.map(({ x, y }) => `${x},${y}`),
+            base: `${base.x},${base.y}`,
           },
         });
       }
-      case "assets/scene/main.composite": {
-        const [x, y] = toCoords(tokenId);
+      case Path.COMPOSITE: {
+        const { base, parcels } = toLayout(tokenId);
+        const gltf: ComponentData = {
+          name: "core::GltfContainer",
+          data: {},
+        };
+        const transform: ComponentData = {
+          name: "core::Transform",
+          data: {},
+        };
+        for (let i = 0; i < parcels.length; i++) {
+          const entity = 512 + i;
+          gltf.data[entity] = {
+            json: {
+              src: Path.FLOOR_MODEL,
+            },
+          };
+          const { x, y } = parcels[i];
+          transform.data[entity] = {
+            json: {
+              position: {
+                x: 16 * x + 8 - base.x * 16,
+                y: 0,
+                z: 16 * y + 8 - base.y * 16,
+              },
+            },
+          };
+        }
         return json({
           components: [
             {
@@ -74,27 +133,25 @@ function wire(storage: IframeStorage.Server, { tokenId, isOwner }: Options) {
                 "0": {
                   json: {
                     layout: {
-                      base: {
-                        x,
-                        y,
-                      },
-                      parcels: [
-                        {
-                          x,
-                          y,
-                        },
-                      ],
+                      base,
+                      parcels,
                     },
                   },
                 },
               },
             },
+            gltf,
+            transform,
           ],
         });
       }
       default: {
         if (mappings.has(path)) {
           const hash = mappings.get(path)!;
+          if (!contents.has(hash)) {
+            const content = await getContent(hash);
+            contents.set(hash, content);
+          }
           return contents.get(hash)!;
         }
         throw new Error(`Could not find content for path="${path}"`);
@@ -106,28 +163,27 @@ function wire(storage: IframeStorage.Server, { tokenId, isOwner }: Options) {
   storage.handle("write_file", async ({ path, content }) => {
     if (!isOwner) return;
 
-    const isIgnored = ["scene.json", "inspector-preferences.json"];
+    const ignored: string[] = [Path.SCENE, Path.PREFERENCES];
 
-    if (isIgnored.includes(path)) return;
+    if (ignored.includes(path)) return;
 
-    const isMutable = ["assets/scene/main.composite", "main.crdt"].includes(
-      path
-    );
+    const mutable: string[] = [Path.COMPOSITE, Path.CRDT];
 
-    if (isMutable) {
+    if (mutable.includes(path)) {
       // upload mutable
     } else {
       const hash = await hashV1(content);
       mappings.set(path, hash);
+      console.log("hash", hash);
       contents.set(hash, content);
     }
   });
 
   storage.handle("exists", async ({ path }) => {
     switch (path) {
-      case "scene.json":
-      case "assets/scene/main.composite":
-      case "inspector-preferences.json": {
+      case Path.SCENE:
+      case Path.COMPOSITE:
+      case Path.PREFERENCES: {
         return true;
       }
       default: {
@@ -137,7 +193,7 @@ function wire(storage: IframeStorage.Server, { tokenId, isOwner }: Options) {
   });
 
   storage.handle("list", async ({ path }) => {
-    const paths = [...mappings.keys(), "assets/scene/main.composite"];
+    const paths = [...mappings.keys(), Path.COMPOSITE];
     const files: { name: string; isDirectory: boolean }[] = [];
 
     for (const _path of paths) {
