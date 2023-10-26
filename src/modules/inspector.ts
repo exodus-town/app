@@ -2,31 +2,13 @@ import { MessageTransport } from "@dcl/mini-rpc";
 import { hashV1 } from "@dcl/hashing";
 import { UiClient, IframeStorage } from "@dcl/inspector";
 import { toLayout } from "../lib/layout";
+import { Hash, Path } from "../lib/constants";
+import { createComposite } from "../lib/inspector";
 
 type Options = {
   tokenId: string;
   isOwner: boolean;
 };
-
-type ComponentData = {
-  name: string;
-  data: Record<string, unknown>;
-};
-
-enum Path {
-  FLOOR_MODEL = "assets/scene/ground/FloorBaseGrass_01.glb",
-  FLOOR_TEXTURE = "assets/scene/ground/Floor_Grass01.png.png",
-  PREFERENCES = "inspector-preferences.json",
-  COMPOSITE = "assets/scene/main.composite",
-  CRDT = "main.crdt",
-  SCENE = "scene.json",
-  JS = "bin/index.js",
-}
-
-enum Hash {
-  FLOOR_MODEL = "bafkreibytthve4zjlvbcnadjec2wjex2etqxuqtluriefzwwl4qe2qynne",
-  FLOOR_TEXTURE = "bafkreid2fuffvxm6w2uimphn4tyxyox3eewt3r67zbrewbdonkjb7bqzx4",
-}
 
 export async function init(
   iframe: HTMLIFrameElement,
@@ -98,88 +80,8 @@ async function wire(
         });
       }
       case Path.COMPOSITE: {
-        const { base, parcels } = toLayout(tokenId);
-        const gltf: ComponentData = {
-          name: "core::GltfContainer",
-          data: {},
-        };
-        const transform: ComponentData = {
-          name: "core::Transform",
-          data: {},
-        };
-        const name: ComponentData = {
-          name: "core-schema::Name",
-          data: {
-            512: { json: { value: "Ground" } },
-          },
-        };
-        const children: number[] = [];
-        const nodes: ComponentData = {
-          name: "inspector::Nodes",
-          data: {
-            "0": {
-              json: {
-                value: [
-                  {
-                    entity: 0,
-                    open: true,
-                    children: [512],
-                  },
-                  {
-                    entity: 512,
-                    open: false,
-                    children,
-                  },
-                ],
-              },
-            },
-          },
-        };
-        for (let i = 0; i < parcels.length; i++) {
-          const entity = 513 + i;
-          gltf.data[entity] = {
-            json: {
-              src: Path.FLOOR_MODEL,
-            },
-          };
-          const { x, y } = parcels[i];
-          transform.data[entity] = {
-            json: {
-              position: {
-                x: 16 * x + 8 - base.x * 16,
-                y: 0,
-                z: 16 * y + 8 - base.y * 16,
-              },
-            },
-          };
-          name.data[entity] = {
-            json: {
-              value: `Ground ${i + 1}`,
-            },
-          };
-          children.push(entity);
-        }
-        return json({
-          components: [
-            {
-              name: "inspector::Scene",
-              data: {
-                "0": {
-                  json: {
-                    layout: {
-                      base,
-                      parcels,
-                    },
-                  },
-                },
-              },
-            },
-            gltf,
-            transform,
-            name,
-            nodes,
-          ],
-        });
+        const composite = createComposite(tokenId);
+        return json(composite);
       }
       default: {
         if (mappings.has(path)) {

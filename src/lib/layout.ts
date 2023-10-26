@@ -1,6 +1,7 @@
+import { SCENE_SIZE } from "./constants";
 import { toCoords } from "./coords";
 
-export function toLayout(tokenId: number | string, size = 3) {
+export function toLayout(tokenId: number | string, size = SCENE_SIZE) {
   const [x, y] = toCoords(tokenId);
   const base = { x: x * size, y: y * size };
   const parcels: { x: number; y: number }[] = [];
