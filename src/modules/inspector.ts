@@ -107,8 +107,36 @@ async function wire(
           name: "core::Transform",
           data: {},
         };
+        const name: ComponentData = {
+          name: "core-schema::Name",
+          data: {
+            512: { json: { value: "Ground" } },
+          },
+        };
+        const children: number[] = [];
+        const nodes: ComponentData = {
+          name: "inspector::Nodes",
+          data: {
+            "0": {
+              json: {
+                value: [
+                  {
+                    entity: 0,
+                    open: true,
+                    children: [512],
+                  },
+                  {
+                    entity: 512,
+                    open: false,
+                    children,
+                  },
+                ],
+              },
+            },
+          },
+        };
         for (let i = 0; i < parcels.length; i++) {
-          const entity = 512 + i;
+          const entity = 513 + i;
           gltf.data[entity] = {
             json: {
               src: Path.FLOOR_MODEL,
@@ -124,6 +152,12 @@ async function wire(
               },
             },
           };
+          name.data[entity] = {
+            json: {
+              value: `Ground ${i + 1}`,
+            },
+          };
+          children.push(entity);
         }
         return json({
           components: [
@@ -142,6 +176,8 @@ async function wire(
             },
             gltf,
             transform,
+            name,
+            nodes,
           ],
         });
       }
