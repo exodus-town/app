@@ -1,7 +1,7 @@
 import { MessageTransport } from "@dcl/mini-rpc";
 import { hashV1 } from "@dcl/hashing";
 import { UiClient, IframeStorage } from "@dcl/inspector";
-import { Hash, Path, isIgnored, isMutable } from "../lib/content";
+import { Hash, Path, isMutable } from "../lib/mappings";
 import { createComposite } from "../lib/composite";
 import { createScene } from "../lib/scene";
 import { createPreferences } from "../lib/preferences";
@@ -96,7 +96,7 @@ async function wire(
 
   // write file
   storage.handle("write_file", async ({ path, content }) => {
-    if (!isOwner || isIgnored(path)) return;
+    if (!isOwner) return;
     const hash = isMutable(path)
       ? await getMutableHash(path, tokenId)
       : await hashV1(content);

@@ -14,14 +14,13 @@ export enum Hash {
   FLOOR_TEXTURE = "bafkreid2fuffvxm6w2uimphn4tyxyox3eewt3r67zbrewbdonkjb7bqzx4",
 }
 
-export const SCENE_SIZE = 3;
-
-export const IGNORED_PATHS: string[] = [Path.PREFERENCES];
-export const MUTABLE_PATHS: string[] = [Path.SCENE, Path.COMPOSITE, Path.CRDT];
-
-export function isIgnored(path: string) {
-  return IGNORED_PATHS.includes(path);
-}
+export const MUTABLE_PATHS: string[] = [
+  Path.PREFERENCES,
+  Path.SCENE,
+  Path.COMPOSITE,
+  Path.CRDT,
+  Path.NAVMAP_THUMBNAIL,
+];
 
 export function isMutable(path: string) {
   return MUTABLE_PATHS.includes(path);

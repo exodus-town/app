@@ -1,5 +1,6 @@
-import { SCENE_SIZE } from "./content";
 import { toCoords } from "./coords";
+
+export const SCENE_SIZE = 3;
 
 export function toLayout(tokenId: number | string, size = SCENE_SIZE) {
   const [x, y] = toCoords(tokenId);

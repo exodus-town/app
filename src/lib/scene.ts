@@ -1,4 +1,4 @@
-import { Path } from "./content";
+import { Path } from "./mappings";
 import { toCoords } from "./coords";
 import { toLayout } from "./layout";
 
@@ -17,5 +17,6 @@ export function createScene(tokenId: string) {
       parcels: parcels.map(({ x, y }) => `${x},${y}`),
       base: `${base.x},${base.y}`,
     },
+    main: "bin/index.js",
   };
 }

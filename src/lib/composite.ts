@@ -1,4 +1,4 @@
-import { Path } from "./content";
+import { Path } from "./mappings";
 import { toLayout } from "./layout";
 
 type ComponentData = {
