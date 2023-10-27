@@ -1,4 +1,4 @@
-import { Path } from "./constants";
+import { Path } from "./content";
 import { toLayout } from "./layout";
 
 type ComponentData = {
@@ -8,6 +8,19 @@ type ComponentData = {
 
 export function createComposite(tokenId: string) {
   const { base, parcels } = toLayout(tokenId);
+  const scene: ComponentData = {
+    name: "inspector::Scene",
+    data: {
+      "0": {
+        json: {
+          layout: {
+            base,
+            parcels,
+          },
+        },
+      },
+    },
+  };
   const gltf: ComponentData = {
     name: "core::GltfContainer",
     data: {},
@@ -69,24 +82,6 @@ export function createComposite(tokenId: string) {
     children.push(entity);
   }
   return {
-    components: [
-      {
-        name: "inspector::Scene",
-        data: {
-          "0": {
-            json: {
-              layout: {
-                base,
-                parcels,
-              },
-            },
-          },
-        },
-      },
-      gltf,
-      transform,
-      name,
-      nodes,
-    ],
+    components: [scene, gltf, transform, name, nodes],
   };
 }

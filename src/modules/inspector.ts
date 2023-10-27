@@ -2,13 +2,19 @@ import { MessageTransport } from "@dcl/mini-rpc";
 import { hashV1 } from "@dcl/hashing";
 import { UiClient, IframeStorage } from "@dcl/inspector";
 import { toLayout } from "../lib/layout";
-import { Hash, Path } from "../lib/constants";
-import { createComposite } from "../lib/inspector";
+import { Hash, Path, isIgnored, isMutable } from "../lib/content";
+import { createComposite } from "../lib/composite";
 
 type Options = {
   tokenId: string;
   isOwner: boolean;
 };
+
+async function getMutableHash(tokenId: string, path: string) {
+  const input = `tokens/${tokenId}/${path}`;
+  const hash = await hashV1(Buffer.from(input));
+  return hash;
+}
 
 export async function init(
   iframe: HTMLIFrameElement,
@@ -99,22 +105,12 @@ async function wire(
 
   // write file
   storage.handle("write_file", async ({ path, content }) => {
-    if (!isOwner) return;
-
-    const ignored: string[] = [Path.SCENE, Path.PREFERENCES];
-
-    if (ignored.includes(path)) return;
-
-    const mutable: string[] = [Path.COMPOSITE, Path.CRDT];
-
-    if (mutable.includes(path)) {
-      // upload mutable
-    } else {
-      const hash = await hashV1(content);
-      mappings.set(path, hash);
-      console.log("hash", hash);
-      contents.set(hash, content);
-    }
+    if (!isOwner || isIgnored(path)) return;
+    const hash = isMutable(path)
+      ? await getMutableHash(path, tokenId)
+      : await hashV1(content);
+    mappings.set(path, hash);
+    contents.set(hash, content);
   });
 
   storage.handle("exists", async ({ path }) => {

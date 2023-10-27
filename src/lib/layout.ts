@@ -1,4 +1,4 @@
-import { SCENE_SIZE } from "./constants";
+import { SCENE_SIZE } from "./content";
 import { toCoords } from "./coords";
 
 export function toLayout(tokenId: number | string, size = SCENE_SIZE) {

@@ -14,3 +14,14 @@ export enum Hash {
 }
 
 export const SCENE_SIZE = 3;
+
+export const IGNORED_PATHS: string[] = [Path.SCENE, Path.PREFERENCES];
+export const MUTABLE_PATHS: string[] = [Path.COMPOSITE, Path.CRDT];
+
+export function isIgnored(path: string) {
+  return IGNORED_PATHS.includes(path);
+}
+
+export function isMutable(path: string) {
+  return MUTABLE_PATHS.includes(path);
+}
