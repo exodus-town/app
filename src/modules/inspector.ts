@@ -1,9 +1,10 @@
 import { MessageTransport } from "@dcl/mini-rpc";
 import { hashV1 } from "@dcl/hashing";
 import { UiClient, IframeStorage } from "@dcl/inspector";
-import { toLayout } from "../lib/layout";
 import { Hash, Path, isIgnored, isMutable } from "../lib/content";
 import { createComposite } from "../lib/composite";
+import { createScene } from "../lib/scene";
+import { createPreferences } from "../lib/preferences";
 
 type Options = {
   tokenId: string;
@@ -68,22 +69,12 @@ async function wire(
   storage.handle("read_file", async ({ path }) => {
     switch (path) {
       case Path.PREFERENCES: {
-        return json({
-          version: 1,
-          data: {
-            freeCameraInvertRotation: false,
-            autosaveEnabled: true,
-          },
-        });
+        const preferences = createPreferences();
+        return json(preferences);
       }
       case Path.SCENE: {
-        const { base, parcels } = toLayout(tokenId);
-        return json({
-          scene: {
-            parcels: parcels.map(({ x, y }) => `${x},${y}`),
-            base: `${base.x},${base.y}`,
-          },
-        });
+        const scene = createScene(tokenId);
+        return json(scene);
       }
       case Path.COMPOSITE: {
         const composite = createComposite(tokenId);

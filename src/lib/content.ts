@@ -6,6 +6,7 @@ export enum Path {
   CRDT = "main.crdt",
   SCENE = "scene.json",
   JS = "bin/index.js",
+  NAVMAP_THUMBNAIL = "navmapThumbnail.png",
 }
 
 export enum Hash {
@@ -15,8 +16,8 @@ export enum Hash {
 
 export const SCENE_SIZE = 3;
 
-export const IGNORED_PATHS: string[] = [Path.SCENE, Path.PREFERENCES];
-export const MUTABLE_PATHS: string[] = [Path.COMPOSITE, Path.CRDT];
+export const IGNORED_PATHS: string[] = [Path.PREFERENCES];
+export const MUTABLE_PATHS: string[] = [Path.SCENE, Path.COMPOSITE, Path.CRDT];
 
 export function isIgnored(path: string) {
   return IGNORED_PATHS.includes(path);
