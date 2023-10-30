@@ -36,8 +36,7 @@ export const onRequestGet: PagesFunction<Env, "id"> = async (context) => {
     comms: {
       healthy: true,
       protocol: "v3",
-      fixedAdapter:
-        "signed-login:https://worlds-content-server.decentraland.org/get-comms-adapter/world-prd-monotributista.dcl.eth",
+      fixedAdapter: "offline:offline",
     },
   });
 };
