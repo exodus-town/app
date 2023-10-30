@@ -1,3 +1,4 @@
+import { Buffer } from "node:buffer";
 import { hashV1 } from "./hash";
 
 export enum Path {
@@ -13,8 +14,8 @@ export enum Path {
 }
 
 export enum Hash {
-  FLOOR_MODEL = "bafybeice7mn3itu6pnabl6jqal5kf6h33mumuqgjsmvf7ka2jo6c3d7im4",
-  FLOOR_TEXTURE = "bafybeicfmngqvgt2nt35r6lmlolqmx6zo5zh6rzfg7yr4aekftfigqh6yi",
+  FLOOR_MODEL = "bafkreibytthve4zjlvbcnadjec2wjex2etqxuqtluriefzwwl4qe2qynne",
+  FLOOR_TEXTURE = "bafkreid2fuffvxm6w2uimphn4tyxyox3eewt3r67zbrewbdonkjb7bqzx4",
 }
 
 export const MUTABLE_PATHS: string[] = [
@@ -45,5 +46,5 @@ export async function getHash(path: string, content: Buffer, tokenId: string) {
 }
 
 export function getContentPath(hash: string) {
-  return `/api/contents/${hash}`;
+  return `contents/${hash}`;
 }

@@ -1,21 +1,22 @@
 import { MessageTransport } from "@dcl/mini-rpc";
-import { hashV1 } from "@dcl/hashing";
 import { UiClient, IframeStorage } from "@dcl/inspector";
-import { Hash, Path, isMutable } from "../lib/mappings";
-import { createComposite } from "../lib/composite";
+import {
+  Hash,
+  Path,
+  getContentPath,
+  getHash,
+  getMutableHash,
+} from "../lib/mappings";
+import { getComposite } from "../lib/composite";
 import { createScene } from "../lib/scene";
 import { createPreferences } from "../lib/preferences";
+import { save } from "../lib/storage";
+import { Entity } from "./entity";
 
 type Options = {
   tokenId: string;
   isOwner: boolean;
 };
-
-async function getMutableHash(tokenId: string, path: string) {
-  const input = `tokens/${tokenId}/${path}`;
-  const hash = await hashV1(Buffer.from(input));
-  return hash;
-}
 
 export async function init(
   iframe: HTMLIFrameElement,
@@ -48,9 +49,7 @@ function json(value: unknown) {
 }
 
 async function getContent(hash: string) {
-  const resp = await fetch(
-    `https://builder-items.decentraland.org/contents/${hash}`
-  );
+  const resp = await fetch(getContentPath(hash));
   const arrayBuffer = await resp.arrayBuffer();
   return Buffer.from(arrayBuffer);
 }
@@ -65,6 +64,25 @@ async function wire(
   mappings.set(Path.FLOOR_MODEL, Hash.FLOOR_MODEL);
   mappings.set(Path.FLOOR_TEXTURE, Hash.FLOOR_TEXTURE);
 
+  const entityHash = await getMutableHash(tokenId, Path.ENTITY);
+  const entityPath = getContentPath(entityHash);
+  console.log(entityPath);
+  fetch(entityPath)
+    .then((resp) => {
+      if (resp.ok) {
+        return resp.json();
+      }
+      return null;
+    })
+    .then((entity: Entity | null) => {
+      if (entity) {
+        for (const { file, hash } of entity.content) {
+          mappings.set(file, hash);
+        }
+        console.log("new mappings", mappings);
+      }
+    });
+
   // read file
   storage.handle("read_file", async ({ path }) => {
     switch (path) {
@@ -77,7 +95,7 @@ async function wire(
         return json(scene);
       }
       case Path.COMPOSITE: {
-        const composite = createComposite(tokenId);
+        const composite = await getComposite(tokenId);
         return json(composite);
       }
       default: {
@@ -97,11 +115,13 @@ async function wire(
   // write file
   storage.handle("write_file", async ({ path, content }) => {
     if (!isOwner) return;
-    const hash = isMutable(path)
-      ? await getMutableHash(path, tokenId)
-      : await hashV1(content);
+    const hash = await getHash(path, content, tokenId);
     mappings.set(path, hash);
     contents.set(hash, content);
+
+    console.log("write_file", path, hash);
+
+    save(tokenId, path, content);
   });
 
   storage.handle("exists", async ({ path }) => {
@@ -118,7 +138,10 @@ async function wire(
   });
 
   storage.handle("list", async ({ path }) => {
-    const paths = [...mappings.keys(), Path.COMPOSITE];
+    const paths = [...mappings.keys()];
+    if (!path.includes(Path.COMPOSITE)) {
+      paths.push(Path.COMPOSITE);
+    }
     const files: { name: string; isDirectory: boolean }[] = [];
 
     for (const _path of paths) {

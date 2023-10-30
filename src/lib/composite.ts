@@ -1,4 +1,4 @@
-import { Path } from "./mappings";
+import { Path, getContentPath, getMutableHash } from "./mappings";
 import { toLayout } from "./layout";
 
 type ComponentData = {
@@ -84,4 +84,16 @@ export function createComposite(tokenId: string) {
   return {
     components: [scene, gltf, transform, name, nodes],
   };
+}
+
+export async function getComposite(tokenId: string) {
+  const hash = await getMutableHash(tokenId, Path.COMPOSITE);
+  const path = getContentPath(hash);
+  const resp = await fetch(path);
+  if (resp.ok) {
+    const composite = await resp.json();
+    return composite;
+  }
+  console.log("NOT FOUND", path, hash);
+  return createComposite(tokenId);
 }

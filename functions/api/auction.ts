@@ -2,7 +2,7 @@ import { formatEther } from "viem";
 import { Auction } from "../../src/types";
 import { Env } from "../lib/env";
 import { getAuctionHouse } from "../lib/contracts";
-import { json } from "../lib/json";
+import { json } from "../lib/response";
 
 export const onRequest: PagesFunction<Env> = async (context) => {
   const auctionHouse = getAuctionHouse(context.env);

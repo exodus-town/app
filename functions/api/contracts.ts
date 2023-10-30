@@ -1,5 +1,5 @@
 import { Env } from "../lib/env";
-import { json } from "../lib/json";
+import { json } from "../lib/response";
 
 export const onRequest: PagesFunction<Env> = async (context) => {
   const {
