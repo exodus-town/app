@@ -22,7 +22,7 @@ export function save(tokenId: string, path: string, content: Buffer) {
     });
     if (resp.ok) {
       const data = await resp.json();
-      console.log("response", data, resp.status);
+      console.log("Response", data, resp.status);
     } else {
       console.log("Error", resp.status);
     }

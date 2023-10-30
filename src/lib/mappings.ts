@@ -33,7 +33,6 @@ export function isMutable(path: string) {
 export async function getMutableHash(tokenId: string, path: string) {
   const input = `tokens/${tokenId}/${path}`;
   const hash = await hashV1(Buffer.from(input));
-  console.log("getMutableHash", input, hash);
   return hash;
 }
 

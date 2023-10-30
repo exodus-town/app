@@ -25,7 +25,6 @@ export const onRequestGet: PagesFunction<Env, "id"> = async (context) => {
 
 export const onRequestPost: PagesFunction<Env, "id"> = async (context) => {
   const tokenId = context.params.id as string;
-  console.log("tokenId", tokenId);
   const data = await context.request.formData();
 
   // save file

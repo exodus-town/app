@@ -14,8 +14,8 @@ export enum Path {
 }
 
 export enum Hash {
-  FLOOR_MODEL = "bafkreibytthve4zjlvbcnadjec2wjex2etqxuqtluriefzwwl4qe2qynne",
-  FLOOR_TEXTURE = "bafkreid2fuffvxm6w2uimphn4tyxyox3eewt3r67zbrewbdonkjb7bqzx4",
+  FLOOR_MODEL = "bafybeice7mn3itu6pnabl6jqal5kf6h33mumuqgjsmvf7ka2jo6c3d7im4",
+  FLOOR_TEXTURE = "bafybeicfmngqvgt2nt35r6lmlolqmx6zo5zh6rzfg7yr4aekftfigqh6yi",
 }
 
 export const MUTABLE_PATHS: string[] = [
@@ -34,7 +34,6 @@ export function isMutable(path: string) {
 export async function getMutableHash(tokenId: string, path: string) {
   const input = `tokens/${tokenId}/${path}`;
   const hash = await hashV1(Buffer.from(input));
-  console.log("getMutableHash", input, hash);
   return hash;
 }
 

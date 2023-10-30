@@ -1,4 +1,4 @@
-import { Path, getContentPath, getMutableHash } from "./mappings";
+import { Hash, Path, getContentPath, getMutableHash } from "./mappings";
 import { createScene } from "./scene";
 
 export type Entity = {
@@ -18,7 +18,16 @@ export async function createEntity(tokenId: string): Promise<Entity> {
     type: "scene",
     pointers: scene.scene.parcels,
     timestamp: Date.now(),
-    content: [],
+    content: [
+      {
+        file: Path.FLOOR_MODEL,
+        hash: Hash.FLOOR_MODEL,
+      },
+      {
+        file: Path.FLOOR_TEXTURE,
+        hash: Hash.FLOOR_TEXTURE,
+      },
+    ],
     metadata: scene,
   };
 }
@@ -47,6 +56,25 @@ export async function addContent(
         },
       ];
     }
+
+    // TODO: delete this
+    entity.content = [
+      ...entity.content.filter((content) => content.file !== Path.FLOOR_MODEL),
+      {
+        file: Path.FLOOR_MODEL,
+        hash: Hash.FLOOR_MODEL,
+      },
+    ];
+    entity.content = [
+      ...entity.content.filter(
+        (content) => content.file !== Path.FLOOR_TEXTURE
+      ),
+      {
+        file: Path.FLOOR_TEXTURE,
+        hash: Hash.FLOOR_TEXTURE,
+      },
+    ];
+
     await storage.put(
       getContentPath(entity.id),
       JSON.stringify(entity, null, 2)

@@ -1,32 +1,27 @@
 import { MessageTransport } from "@dcl/mini-rpc";
 import { UiClient, IframeStorage } from "@dcl/inspector";
-import {
-  Hash,
-  Path,
-  getContentPath,
-  getHash,
-  getMutableHash,
-} from "../lib/mappings";
+import { Path, getContentPath, getHash } from "../lib/mappings";
 import { getComposite } from "../lib/composite";
 import { createScene } from "../lib/scene";
 import { createPreferences } from "../lib/preferences";
 import { save } from "../lib/storage";
-import { Entity } from "./entity";
+import { Entity, getEntity } from "./entity";
 
-type Options = {
+type InitOptions = {
   tokenId: string;
   isOwner: boolean;
 };
 
 export async function init(
   iframe: HTMLIFrameElement,
-  { tokenId, isOwner }: Options
+  { tokenId, isOwner }: InitOptions
 ) {
+  const entity = await getEntity(tokenId);
   const transport = new MessageTransport(window, iframe.contentWindow!, "*");
   const ui = new UiClient(transport);
   const storage = new IframeStorage.Server(transport);
 
-  await wire(storage, { tokenId, isOwner });
+  await wire(storage, { tokenId, isOwner, entity });
 
   // setup ui
   const promises: Promise<unknown>[] = [];
@@ -48,40 +43,19 @@ function json(value: unknown) {
   return Buffer.from(JSON.stringify(value), "utf8");
 }
 
-async function getContent(hash: string) {
-  const resp = await fetch(getContentPath(hash));
-  const arrayBuffer = await resp.arrayBuffer();
-  return Buffer.from(arrayBuffer);
-}
-
+type WireOptions = InitOptions & {
+  entity: Entity;
+};
 async function wire(
   storage: IframeStorage.Server,
-  { tokenId, isOwner }: Options
+  { tokenId, isOwner, entity }: WireOptions
 ) {
   const mappings = new Map<string, string>();
   const contents = new Map<string, Buffer>();
 
-  mappings.set(Path.FLOOR_MODEL, Hash.FLOOR_MODEL);
-  mappings.set(Path.FLOOR_TEXTURE, Hash.FLOOR_TEXTURE);
-
-  const entityHash = await getMutableHash(tokenId, Path.ENTITY);
-  const entityPath = getContentPath(entityHash);
-  console.log(entityPath);
-  fetch(entityPath)
-    .then((resp) => {
-      if (resp.ok) {
-        return resp.json();
-      }
-      return null;
-    })
-    .then((entity: Entity | null) => {
-      if (entity) {
-        for (const { file, hash } of entity.content) {
-          mappings.set(file, hash);
-        }
-        console.log("new mappings", mappings);
-      }
-    });
+  for (const { file, hash } of entity.content) {
+    mappings.set(file, hash);
+  }
 
   // read file
   storage.handle("read_file", async ({ path }) => {
@@ -102,7 +76,9 @@ async function wire(
         if (mappings.has(path)) {
           const hash = mappings.get(path)!;
           if (!contents.has(hash)) {
-            const content = await getContent(hash);
+            const resp = await fetch(getContentPath(hash));
+            const arrayBuffer = await resp.arrayBuffer();
+            const content = Buffer.from(arrayBuffer);
             contents.set(hash, content);
           }
           return contents.get(hash)!;
@@ -118,9 +94,6 @@ async function wire(
     const hash = await getHash(path, content, tokenId);
     mappings.set(path, hash);
     contents.set(hash, content);
-
-    console.log("write_file", path, hash);
-
     save(tokenId, path, content);
   });
 

@@ -26,7 +26,7 @@ export const useAuction = () => {
       ? Number(auction.tokenId) + 1
       : Number(auction.tokenId)
     : 0;
-  console.log(auction, maxTokenId, isSettled, hasBidder, isWinner);
+
   return {
     ...other,
     auction,

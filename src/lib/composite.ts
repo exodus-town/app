@@ -94,6 +94,5 @@ export async function getComposite(tokenId: string) {
     const composite = await resp.json();
     return composite;
   }
-  console.log("NOT FOUND", path, hash);
   return createComposite(tokenId);
 }
