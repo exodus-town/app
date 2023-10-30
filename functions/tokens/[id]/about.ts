@@ -27,7 +27,7 @@ export const onRequestGet: PagesFunction<Env, "id"> = async (context) => {
     },
     content: {
       healthy: true,
-      publicUrl: "https://exodus.town/api/contents",
+      publicUrl: "https://peer.decentraland.org/content",
     },
     lambdas: {
       healthy: true,
