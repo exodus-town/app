@@ -15,7 +15,7 @@ export const onRequestGet: PagesFunction<Env, "id"> = async (context) => {
       networkId: 1,
       globalScenesUrn: [],
       scenesUrn: [
-        `urn:decentraland:entity:${entity.id}?=&baseUrl=https://exodus.town/api/contents`,
+        `urn:decentraland:entity:${entity.id}?=&baseUrl=https://exodus.town/api/contents/`,
       ],
       minimap: {
         enabled: false,
