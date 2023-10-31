@@ -1,5 +1,7 @@
+import future from "fp-future";
 const batch = new Map<string, Blob>();
 let timeout: NodeJS.Timeout | null = null;
+let promise = future();
 
 export function save(tokenId: string, path: string, content: Buffer) {
   const blob = new Blob([content]);
@@ -22,9 +24,12 @@ export function save(tokenId: string, path: string, content: Buffer) {
     });
     if (resp.ok) {
       const data = await resp.json();
-      console.log("Response", data, resp.status);
+      promise.resolve(data);
     } else {
-      console.log("Error", resp.status);
+      promise.reject(new Error(`Error: HTTP Status ${resp.status}`));
     }
+    promise = future();
   }, 500);
+
+  return promise;
 }

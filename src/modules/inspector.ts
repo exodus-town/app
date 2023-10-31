@@ -1,6 +1,6 @@
 import { MessageTransport } from "@dcl/mini-rpc";
 import { UiClient, IframeStorage } from "@dcl/inspector";
-import { Path, getContentPath, getHash } from "../lib/mappings";
+import { Path, getContentPath } from "../lib/path";
 import { createPreferences } from "../lib/preferences";
 import { save } from "../lib/storage";
 import { Entity } from "../lib/entity";
@@ -59,8 +59,6 @@ async function wire(
   { tokenId, isOwner, entity }: WireOptions
 ) {
   const mappings = new Map<string, string>();
-  const contents = new Map<string, Buffer>();
-
   for (const { file, hash } of entity.content) {
     mappings.set(file, hash);
   }
@@ -73,17 +71,11 @@ async function wire(
         return json(preferences);
       }
       default: {
-        if (mappings.has(path)) {
-          const hash = mappings.get(path)!;
-          if (!contents.has(hash)) {
-            const resp = await fetch(getContentPath(hash));
-            const arrayBuffer = await resp.arrayBuffer();
-            const content = Buffer.from(arrayBuffer);
-            contents.set(hash, content);
-          }
-          return contents.get(hash)!;
-        }
-        throw new Error(`Could not find content for path="${path}"`);
+        const hash = mappings.get(path)!;
+        const resp = await fetch(getContentPath(hash));
+        const arrayBuffer = await resp.arrayBuffer();
+        const content = Buffer.from(arrayBuffer);
+        return content;
       }
     }
   });
@@ -91,10 +83,10 @@ async function wire(
   // write file
   storage.handle("write_file", async ({ path, content }) => {
     if (!isOwner) return;
-    const hash = await getHash(path, content, tokenId);
-    mappings.set(path, hash);
-    contents.set(hash, content);
-    save(tokenId, path, content);
+    const entity = await save(tokenId, path, content);
+    for (const { file, hash } of entity.content) {
+      mappings.set(file, hash);
+    }
   });
 
   storage.handle("exists", async ({ path }) => {
@@ -112,9 +104,6 @@ async function wire(
 
   storage.handle("list", async ({ path }) => {
     const paths = [...mappings.keys()];
-    if (!path.includes(Path.COMPOSITE)) {
-      paths.push(Path.COMPOSITE);
-    }
     const files: { name: string; isDirectory: boolean }[] = [];
 
     for (const _path of paths) {
