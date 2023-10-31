@@ -6,9 +6,14 @@ import { init, unlock } from "../modules/inspector";
 import { useToken } from "../modules/token";
 import './Inspector.css'
 
-export const Inspector = memo(() => {
+type Props = {
+  signedMessage: string | null
+}
+
+export const Inspector = memo<Props>(({ signedMessage }) => {
 
   const iframeRef = useRef<HTMLIFrameElement | null>(null)
+  const disposeRef = useRef<(() => void) | null>(null)
 
   const { tokenId } = useParams()
   const { isOwner } = useToken(tokenId)
@@ -28,18 +33,30 @@ export const Inspector = memo(() => {
       const iframe = iframeRef.current
       if (!iframe) return
 
-      setIsLocked(!isOwner)
-      init(iframe, { tokenId, isOwner }).then(() => setIsReady(true))
+      setIsLocked(!signedMessage)
+      init(iframe, { tokenId, isOwner, signedMessage }).then((dispose) => {
+        setIsReady(true)
+        disposeRef.current = dispose
+      })
     }
-  }, [isLoading, isReady, tokenId, isOwner])
+  }, [isLoading, isReady, tokenId, isOwner, signedMessage])
 
   useEffect(() => {
-    if (isOwner && isLocked && isReady) {
+    if (isOwner && isLocked && isReady && signedMessage) {
       const iframe = iframeRef.current
       if (!iframe) return
-      unlock(iframe)
+      unlock(iframe, signedMessage)
     }
-  }, [isOwner, isLocked, isReady])
+  }, [isOwner, isLocked, isReady, signedMessage])
+
+  useEffect(() => {
+    return () => {
+      if (disposeRef.current) {
+        console.log('DISPOSING!!')
+        disposeRef.current()
+      }
+    }
+  }, [])
 
   return <div className={cx('Inspector', {
     'is-loading': isLoading,

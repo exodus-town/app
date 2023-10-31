@@ -2,19 +2,25 @@ import { MessageTransport } from "@dcl/mini-rpc";
 import { UiClient, IframeStorage } from "@dcl/inspector";
 import { Path, getContentPath } from "../lib/path";
 import { createPreferences } from "../lib/preferences";
-import { save } from "../lib/storage";
+import { hasSigned, save, setSignedMessage } from "../lib/storage";
 import { Entity } from "../lib/entity";
 import { About } from "../lib/about";
 
 type InitOptions = {
   tokenId: string;
+  signedMessage: string | null;
   isOwner: boolean;
 };
 
 export async function init(
   iframe: HTMLIFrameElement,
-  { tokenId, isOwner }: InitOptions
+  { tokenId, isOwner, signedMessage }: InitOptions
 ) {
+  // set signed message
+  if (signedMessage) {
+    setSignedMessage(signedMessage);
+  }
+
   // fetch entity
   const aboutResponse = await fetch(`/${tokenId}/about`);
   const about: About = await aboutResponse.json();
@@ -35,7 +41,7 @@ export async function init(
   const promises: Promise<unknown>[] = [];
   promises.push(ui.selectAssetsTab("AssetsPack"));
   promises.push(ui.toggleComponent("inspector::Scene", false));
-  if (!isOwner) {
+  if (!hasSigned() || !isOwner) {
     promises.push(ui.toggleGizmos(false));
     promises.push(ui.togglePanel("assets", false));
     promises.push(ui.togglePanel("components", false));
@@ -43,6 +49,8 @@ export async function init(
     promises.push(ui.togglePanel("toolbar", false));
   }
   await Promise.all(promises);
+
+  return () => storage.dispose();
 }
 
 // storage
@@ -51,7 +59,7 @@ function json(value: unknown) {
   return Buffer.from(JSON.stringify(value), "utf8");
 }
 
-type WireOptions = InitOptions & {
+type WireOptions = Omit<InitOptions, "signedMessage"> & {
   entity: Entity;
 };
 async function wire(
@@ -82,7 +90,7 @@ async function wire(
 
   // write file
   storage.handle("write_file", async ({ path, content }) => {
-    if (!isOwner) return;
+    if (!hasSigned() || !isOwner) return;
     const entity = await save(tokenId, path, content);
     for (const { file, hash } of entity.content) {
       mappings.set(file, hash);
@@ -124,13 +132,15 @@ async function wire(
     return files;
   });
 
-  storage.handle("delete", async ({ path }) => {
-    mappings.delete(path);
+  storage.handle("delete", async () => {
+    // nada
   });
 }
 
 // unlock
-export async function unlock(iframe: HTMLIFrameElement) {
+export async function unlock(iframe: HTMLIFrameElement, signedMessage: string) {
+  setSignedMessage(signedMessage);
+
   const transport = new MessageTransport(window, iframe.contentWindow!, "*");
   const ui = new UiClient(transport);
 
