@@ -1,21 +1,17 @@
 import { getAuctionHouse } from "./lib/contracts";
+import { Entity, getEntity } from "./lib/entity";
 import { Env } from "./lib/env";
-import { Path, getContentPath, getMutableHash } from "./lib/mappings";
 import { json } from "./lib/response";
 
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   const auctionHouse = getAuctionHouse(context.env);
   const [tokenId] = await auctionHouse.read.auction();
-  const entities: string[] = [];
+  const entities: Entity[] = [];
   const promises: Promise<void>[] = [];
   for (let id = 0; id < tokenId; id++) {
     const promise = (async () => {
-      const hash = await getMutableHash(id.toString(), Path.ENTITY);
-      const path = getContentPath(hash);
-      const exists = await context.env.storage.head(path);
-      if (exists) {
-        entities.push(hash);
-      }
+      const entity = await getEntity(context.env.storage, id.toString());
+      entities.push(entity);
     })();
     promises.push(promise);
   }
@@ -27,8 +23,8 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       networkId: 1,
       globalScenesUrn: [],
       scenesUrn: entities.map(
-        (id) =>
-          `urn:decentraland:entity:${id}?=&baseUrl=https://exodus.town/api/contents/`
+        (entity) =>
+          `urn:decentraland:entity:${entity.id}?=&baseUrl=https://exodus.town/api/contents/`
       ),
       minimap: {
         enabled: false,

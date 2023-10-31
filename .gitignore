@@ -29,3 +29,4 @@ dist-ssr
 public/bin
 public/bundle*
 public/inspector.html
+static

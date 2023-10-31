@@ -13,11 +13,6 @@ export enum Path {
   ENTITY = "entity.json",
 }
 
-export enum Hash {
-  FLOOR_MODEL = "bafybeice7mn3itu6pnabl6jqal5kf6h33mumuqgjsmvf7ka2jo6c3d7im4",
-  FLOOR_TEXTURE = "bafybeicfmngqvgt2nt35r6lmlolqmx6zo5zh6rzfg7yr4aekftfigqh6yi",
-}
-
 export const MUTABLE_PATHS: string[] = [
   Path.PREFERENCES,
   Path.SCENE,

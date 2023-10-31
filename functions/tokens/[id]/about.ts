@@ -1,22 +1,33 @@
-import { getEntity } from "../../lib/entity";
+import { Entity, getEntity } from "../../lib/entity";
 import { Env } from "../../lib/env";
 import { error, json } from "../../lib/response";
 
 export const onRequestGet: PagesFunction<Env, "id"> = async (context) => {
   const tokenId = context.params.id;
-  if (!tokenId || Array.isArray(tokenId)) {
+  if (!tokenId || Array.isArray(tokenId) || isNaN(Number(tokenId))) {
     return error(`Invalid tokenId=${tokenId}`, 400);
   }
   const entity = await getEntity(context.env.storage, tokenId);
+  const entities: Entity[] = [entity];
+  const promises: Promise<void>[] = [];
+  for (let id = 0; id < Number(tokenId); id++) {
+    const promise = (async () => {
+      const entity = await getEntity(context.env.storage, id.toString());
+      entities.push(entity);
+    })();
+    promises.push(promise);
+  }
+  await Promise.all(promises);
   return json({
     healthy: true,
     acceptingUsers: true,
     configurations: {
       networkId: 1,
       globalScenesUrn: [],
-      scenesUrn: [
-        `urn:decentraland:entity:${entity.id}?=&baseUrl=https://exodus.town/api/contents/`,
-      ],
+      scenesUrn: entities.map(
+        (entity) =>
+          `urn:decentraland:entity:${entity.id}?=&baseUrl=https://exodus.town/api/contents/`
+      ),
       minimap: {
         enabled: false,
       },

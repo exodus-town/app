@@ -1,11 +1,10 @@
 import { MessageTransport } from "@dcl/mini-rpc";
 import { UiClient, IframeStorage } from "@dcl/inspector";
 import { Path, getContentPath, getHash } from "../lib/mappings";
-import { getComposite } from "../lib/composite";
-import { createScene } from "../lib/scene";
 import { createPreferences } from "../lib/preferences";
 import { save } from "../lib/storage";
-import { Entity, getEntity } from "./entity";
+import { Entity } from "../lib/entity";
+import { About } from "../lib/about";
 
 type InitOptions = {
   tokenId: string;
@@ -16,11 +15,20 @@ export async function init(
   iframe: HTMLIFrameElement,
   { tokenId, isOwner }: InitOptions
 ) {
-  const entity = await getEntity(tokenId);
+  // fetch entity
+  const aboutResponse = await fetch(`/tokens/${tokenId}/about`);
+  const about: About = await aboutResponse.json();
+  const urn = about.configurations.scenesUrn[0];
+  const entityId = urn.split("?")[0].split(":").pop()!;
+  const entityResponse = await fetch(getContentPath(entityId));
+  const entity: Entity = await entityResponse.json();
+
+  // transports and rpcs
   const transport = new MessageTransport(window, iframe.contentWindow!, "*");
   const ui = new UiClient(transport);
   const storage = new IframeStorage.Server(transport);
 
+  // wire handlers
   await wire(storage, { tokenId, isOwner, entity });
 
   // setup ui
@@ -63,14 +71,6 @@ async function wire(
       case Path.PREFERENCES: {
         const preferences = createPreferences();
         return json(preferences);
-      }
-      case Path.SCENE: {
-        const scene = createScene(tokenId);
-        return json(scene);
-      }
-      case Path.COMPOSITE: {
-        const composite = await getComposite(tokenId);
-        return json(composite);
       }
       default: {
         if (mappings.has(path)) {

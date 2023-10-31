@@ -1,4 +1,8 @@
-import { Hash, Path, getContentPath, getMutableHash } from "./mappings";
+import { Buffer } from "node:buffer";
+import { createComposite } from "./composite";
+import { CRDT, FLOOR_MODEL, FLOOR_TEXTURE } from "./files";
+import { hashV1 } from "./hash";
+import { Path, getContentPath, getMutableHash } from "./mappings";
 import { createScene } from "./scene";
 
 export type Entity = {
@@ -10,24 +14,41 @@ export type Entity = {
   metadata?: unknown;
 };
 
-export async function createEntity(tokenId: string): Promise<Entity> {
+async function upload(storage: R2Bucket, file: string, buffer: Buffer) {
+  const hash = await hashV1(buffer);
+  const path = getContentPath(hash);
+  const exists = await storage.head(path);
+  if (!exists) {
+    await storage.put(path, buffer);
+  }
+  return { file, hash };
+}
+
+async function uploadJSON(storage: R2Bucket, file: string, content: unknown) {
+  const json = JSON.stringify(content, null, 2);
+  const buffer = Buffer.from(json, "utf-8");
+  return upload(storage, file, buffer);
+}
+
+export async function createEntity(
+  storage: R2Bucket,
+  tokenId: string
+): Promise<Entity> {
   const entityHash = await getMutableHash(tokenId, Path.ENTITY);
   const scene = createScene(tokenId);
+  const composite = createComposite(tokenId);
   return {
     id: entityHash,
     type: "scene",
     pointers: scene.scene.parcels,
     timestamp: Date.now(),
-    content: [
-      {
-        file: Path.FLOOR_MODEL,
-        hash: Hash.FLOOR_MODEL,
-      },
-      {
-        file: Path.FLOOR_TEXTURE,
-        hash: Hash.FLOOR_TEXTURE,
-      },
-    ],
+    content: await Promise.all([
+      upload(storage, Path.FLOOR_MODEL, FLOOR_MODEL),
+      upload(storage, Path.FLOOR_TEXTURE, FLOOR_TEXTURE),
+      uploadJSON(storage, Path.SCENE, scene),
+      uploadJSON(storage, Path.COMPOSITE, composite),
+      upload(storage, Path.CRDT, CRDT),
+    ]),
     metadata: scene,
   };
 }
@@ -35,9 +56,13 @@ export async function createEntity(tokenId: string): Promise<Entity> {
 export async function getEntity(storage: R2Bucket, tokenId: string) {
   const hash = await getMutableHash(tokenId, Path.ENTITY);
   const path = getContentPath(hash);
+  const exists = await storage.head(path);
+  if (!exists) {
+    const entity = await createEntity(storage, tokenId);
+    await storage.put(path, JSON.stringify(entity, null, 2));
+  }
   const obj = await storage.get(path);
-  const entity = obj ? await obj.json<Entity>() : await createEntity(tokenId);
-  return entity;
+  return obj.json<Entity>();
 }
 
 export async function addContent(
@@ -56,24 +81,6 @@ export async function addContent(
         },
       ];
     }
-
-    // TODO: delete this
-    entity.content = [
-      ...entity.content.filter((content) => content.file !== Path.FLOOR_MODEL),
-      {
-        file: Path.FLOOR_MODEL,
-        hash: Hash.FLOOR_MODEL,
-      },
-    ];
-    entity.content = [
-      ...entity.content.filter(
-        (content) => content.file !== Path.FLOOR_TEXTURE
-      ),
-      {
-        file: Path.FLOOR_TEXTURE,
-        hash: Hash.FLOOR_TEXTURE,
-      },
-    ];
 
     await storage.put(
       getContentPath(entity.id),
