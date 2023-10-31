@@ -1,3 +1,4 @@
+import { getAuctionHouse } from "../../lib/contracts";
 import { Entity, getEntity } from "../../lib/entity";
 import { Env } from "../../lib/env";
 import { error, json } from "../../lib/response";
@@ -7,10 +8,13 @@ export const onRequestGet: PagesFunction<Env, "id"> = async (context) => {
   if (!tokenId || Array.isArray(tokenId) || isNaN(Number(tokenId))) {
     return error(`Invalid tokenId=${tokenId}`, 400);
   }
+  const auctionHouse = getAuctionHouse(context.env);
+  const [maxTokenId] = await auctionHouse.read.auction();
   const entity = await getEntity(context.env.storage, tokenId);
   const entities: Entity[] = [entity];
   const promises: Promise<void>[] = [];
-  for (let id = 0; id < Number(tokenId); id++) {
+  for (let id = 0; id < maxTokenId; id++) {
+    if (id === Number(tokenId)) continue;
     const promise = (async () => {
       const entity = await getEntity(context.env.storage, id.toString());
       entities.push(entity);
