@@ -2,7 +2,7 @@ import { Buffer } from "node:buffer";
 import { toCoords } from "../../lib/coords";
 import { Env } from "../../lib/env";
 import { json } from "../../lib/response";
-import { getContentPath, getHash } from "../../lib/mappings";
+import { getContentPath, getHash, isMutable } from "../../lib/mappings";
 import { addContent } from "../../lib/entity";
 
 export const onRequestGet: PagesFunction<Env, "id"> = async (context) => {
@@ -34,6 +34,12 @@ export const onRequestPost: PagesFunction<Env, "id"> = async (context) => {
     const buffer = Buffer.from(await file.arrayBuffer());
     const hash = await getHash(path, buffer, tokenId);
     mappings.set(path, hash);
+    if (!isMutable(path)) {
+      const exists = await context.env.storage.head(getContentPath(hash));
+      if (exists) {
+        continue;
+      }
+    }
     await context.env.storage.put(getContentPath(hash), buffer);
   }
 

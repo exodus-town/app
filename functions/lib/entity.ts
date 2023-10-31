@@ -71,21 +71,32 @@ export async function addContent(
   mappings: Map<string, string>
 ): Promise<Entity> {
   const entity = await getEntity(storage, tokenId);
+  let hasChanges = false;
   if (mappings.size > 0) {
     for (const [path, hash] of mappings) {
-      entity.content = [
-        ...entity.content.filter((content) => content.file !== path),
-        {
-          file: path,
-          hash,
-        },
-      ];
+      if (
+        !entity.content.some((content) => content.file === path) ||
+        entity.content.some(
+          (content) => content.file === path && content.hash !== hash
+        )
+      ) {
+        hasChanges = true;
+        entity.content = [
+          ...entity.content.filter((content) => content.file !== path),
+          {
+            file: path,
+            hash,
+          },
+        ];
+      }
     }
 
-    await storage.put(
-      getContentPath(entity.id),
-      JSON.stringify(entity, null, 2)
-    );
+    if (hasChanges) {
+      await storage.put(
+        getContentPath(entity.id),
+        JSON.stringify(entity, null, 2)
+      );
+    }
   }
   return entity;
 }
