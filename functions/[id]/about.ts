@@ -1,7 +1,7 @@
-import { getAuctionHouse } from "../../lib/contracts";
-import { Entity, getEntity } from "../../lib/entity";
-import { Env } from "../../lib/env";
-import { error, json } from "../../lib/response";
+import { getAuctionHouse } from "../lib/contracts";
+import { Entity, getEntity } from "../lib/entity";
+import { Env } from "../lib/env";
+import { error, json } from "../lib/response";
 
 export const onRequestGet: PagesFunction<Env, "id"> = async (context) => {
   const tokenId = context.params.id;

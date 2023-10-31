@@ -16,7 +16,7 @@ export async function init(
   { tokenId, isOwner }: InitOptions
 ) {
   // fetch entity
-  const aboutResponse = await fetch(`/tokens/${tokenId}/about`);
+  const aboutResponse = await fetch(`/${tokenId}/about`);
   const about: About = await aboutResponse.json();
   const urn = about.configurations.scenesUrn[0];
   const entityId = urn.split("?")[0].split(":").pop()!;
