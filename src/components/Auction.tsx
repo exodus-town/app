@@ -8,7 +8,6 @@ import { auctionHouseABI } from "@exodus.town/contracts";
 import { Network } from "@dcl/schemas";
 import { FaUnlock } from 'react-icons/fa'
 import { BiSolidPencil } from 'react-icons/bi'
-import { HiEye } from 'react-icons/hi'
 import { PiCaretCircleLeft, PiCaretCircleRight } from 'react-icons/pi'
 import { AUCTION_HOUSE_CONTRACT_ADDRESS, MANA_TOKEN_CONTRACT_ADDRESS, TOWN_TOKEN_CONTRACT_ADDRESS, getChain } from "../eth";
 import { toCoords } from "../lib/coords";
@@ -16,6 +15,9 @@ import { useLogin } from "../modules/login";
 import { useAuction } from "../modules/auction";
 import { User } from "./User";
 import './Auction.css'
+import { Inspector } from "./Inspector";
+import { MessageTransport } from "@dcl/mini-rpc";
+import { CameraClient } from "@dcl/inspector";
 
 type Props = {
   tokenId?: string
@@ -27,6 +29,7 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
   const { auction, isLoading, refetch, isWinner, isSettled, hasBidder, maxTokenId } = useAuction()
   const { address, isConnected } = useAccount()
   const [bidAmount, setBidAmount] = useState('')
+  const [screenshot, setScreenshot] = useState<string | null>(null)
   const [shouldApprove, setShouldApprove] = useState(false)
   const [bidError, setBidError] = useState<Error>()
   const { login, isLoggingIn } = useLogin()
@@ -154,6 +157,18 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
 
   const isEdit = parcelOwner === address
 
+  async function takeScreenshot(iframe: HTMLIFrameElement) {
+    const transport = new MessageTransport(window, iframe.contentWindow!, "*");
+    const camera = new CameraClient(transport)
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    setScreenshot(await camera.takeScreenshot(1024, 812))
+    camera.dispose()
+  }
+
+  useEffect(() => {
+    setScreenshot(null)
+  }, [tokenId])
+
   return <div className={`Auction ${isLoading ? 'loading' : ''}`.trim()}>
     {isLoading
       ? <Loader active />
@@ -168,14 +183,24 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
           </div>
         </div>
 
-        {showParcelOwner
-          ? <div className="row info owner-info">
-            <div className="column owner">
-              <div className="label">Owner</div>
-              <div className="value">{<User address={parcelOwner} />}</div>
+
+
+
+        {showParcelOwner ?
+          <>
+            <div className="preview" style={screenshot ? { backgroundImage: `url(${screenshot})` } : {}}>{!screenshot && <Loader active size="small" />}</div>
+            {!screenshot && <div className="generate-preview"><Inspector tokenId={tokenId} key={tokenId} onLoad={takeScreenshot} /></div>}
+            <div className="row info owner-info">
+              <div className="column owner">
+                <div className="label">Owner</div>
+                <div className="value">{<User address={parcelOwner} />}</div>
+              </div>
+              {isEdit
+                ? <Button as={Link} primary className="action-button" to={`/tokens/${tokenId}`}>Edit <BiSolidPencil /></Button>
+                : <Button primary className="action-button" href={`https://play.decentraland.org?realm=exodus.town/${tokenId}`}>Jump In <i className="jump-in-icon" /></Button>
+              }
             </div>
-            <Button as={Link} primary className="action-button" to={`/tokens/${tokenId}`}>{isEdit ? 'Edit' : 'View'} {isEdit ? <BiSolidPencil /> : <HiEye />}</Button>
-          </div>
+          </>
           : null
         }
 

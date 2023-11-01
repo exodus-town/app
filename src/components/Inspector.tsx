@@ -1,22 +1,20 @@
 import { memo, useEffect, useRef, useState } from "react";
-import { useParams } from "react-router";
 import cx from 'classnames'
 import { Loader } from "decentraland-ui";
 import { init, unlock } from "../modules/inspector";
-import { useToken } from "../modules/token";
 import './Inspector.css'
 
 type Props = {
-  signedMessage: string | null
+  tokenId?: string
+  isOwner?: boolean
+  signedMessage?: string | null
+  onLoad?: (iframe: HTMLIFrameElement) => void
 }
 
-export const Inspector = memo<Props>(({ signedMessage }) => {
+export const Inspector = memo<Props>(({ tokenId, isOwner, signedMessage, onLoad }) => {
 
   const iframeRef = useRef<HTMLIFrameElement | null>(null)
-  const disposeRef = useRef<(() => void) | null>(null)
-
-  const { tokenId } = useParams()
-  const { isOwner } = useToken(tokenId)
+  const disposeRef = useRef<(() => void) | null>(null) 
 
   const [isLoading, setIsLoading] = useState(true)
   const [isReady, setIsReady] = useState(false)
@@ -34,12 +32,12 @@ export const Inspector = memo<Props>(({ signedMessage }) => {
       if (!iframe) return
 
       setIsLocked(!signedMessage)
-      init(iframe, { tokenId, isOwner, signedMessage }).then((dispose) => {
+      init(iframe, { tokenId, isOwner, signedMessage, onLoad: onLoad && (() => onLoad(iframe)) }).then((dispose) => {
         setIsReady(true)
         disposeRef.current = dispose
       })
     }
-  }, [isLoading, isReady, tokenId, isOwner, signedMessage])
+  }, [isLoading, isReady, tokenId, isOwner, signedMessage, onLoad])
 
   useEffect(() => {
     if (isOwner && isLocked && isReady && signedMessage) {
@@ -52,7 +50,6 @@ export const Inspector = memo<Props>(({ signedMessage }) => {
   useEffect(() => {
     return () => {
       if (disposeRef.current) {
-        console.log('DISPOSING!!')
         disposeRef.current()
       }
     }

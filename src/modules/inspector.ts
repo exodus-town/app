@@ -8,13 +8,14 @@ import { About } from "../lib/about";
 
 type InitOptions = {
   tokenId: string;
-  signedMessage: string | null;
-  isOwner: boolean;
+  signedMessage?: string | null;
+  isOwner?: boolean;
+  onLoad?: () => void;
 };
 
 export async function init(
   iframe: HTMLIFrameElement,
-  { tokenId, isOwner, signedMessage }: InitOptions
+  { tokenId, isOwner, signedMessage, onLoad }: InitOptions
 ) {
   // set signed message
   if (signedMessage) {
@@ -35,7 +36,7 @@ export async function init(
   const storage = new IframeStorage.Server(transport);
 
   // wire handlers
-  await wire(storage, { tokenId, isOwner, entity });
+  await wire(storage, { tokenId, isOwner, entity, onLoad });
 
   // setup ui
   const promises: Promise<unknown>[] = [];
@@ -64,7 +65,7 @@ type WireOptions = Omit<InitOptions, "signedMessage"> & {
 };
 async function wire(
   storage: IframeStorage.Server,
-  { tokenId, isOwner, entity }: WireOptions
+  { tokenId, isOwner, entity, onLoad }: WireOptions
 ) {
   const mappings = new Map<string, string>();
   for (const { file, hash } of entity.content) {
@@ -72,7 +73,18 @@ async function wire(
   }
 
   // read file
+  let timeout: NodeJS.Timeout | null = null;
+  let loaded = false;
   storage.handle("read_file", async ({ path }) => {
+    if (onLoad && !loaded) {
+      if (timeout) {
+        clearTimeout(timeout);
+      }
+      timeout = setTimeout(() => {
+        loaded = true;
+        onLoad();
+      }, 1000);
+    }
     switch (path) {
       case Path.PREFERENCES: {
         const preferences = createPreferences();
