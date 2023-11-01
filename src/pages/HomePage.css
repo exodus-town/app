@@ -5,7 +5,7 @@
 .HomePage .Auction {
   position: absolute;
   right: 0px;
-  top: -120px;
+  top: -265px;
   z-index: 1;
 }
 
@@ -30,7 +30,7 @@
 }
 
 .HomePage .content .jump-in {
-  margin-left: 16px
+  margin-left: 16px;
 }
 
 .HomePage .content .ui.button.jump-in {
@@ -76,29 +76,26 @@
 @media (max-width: 991px) {
   .HomePage .Auction {
     position: relative;
-      margin-top: 96px;
-      left: 30px;
-      width: calc(100% - 60px);
-    }
-    
-    .HomePage .content {
-    padding-top: 0px;
-      margin-top: -48px;
-    }
-    
-    .HomePage .content h1 {
-      justify-content: flex-start;
-        font-size: 24px;
+    margin-top: 450px;
+    left: 30px;
+    width: calc(100% - 60px);
   }
-}
 
-@media (max-width: 444px) {
+  .HomePage .content {
+    padding-top: 0px;
+    margin-top: -225px;
+  }
 
+  .HomePage .content h1 {
+    justify-content: flex-start;
+    font-size: 24px;
+  }
 
   .HomePage .content .ui.button.jump-in .text {
     display: none;
-}
-.HomePage .content .jump-in .jump-in-icon {
-  margin-left: 0px;
-}
+  }
+
+  .HomePage .content .jump-in .jump-in-icon {
+    margin-left: 0px;
+  }
 }

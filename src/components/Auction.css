@@ -17,6 +17,7 @@
   align-items: center;
   margin-bottom: 16px;
 }
+
 .Auction .parcel {
   display: flex;
   align-items: center;
@@ -87,7 +88,7 @@
   display: flex;
 }
 
-.Auction .action .approve-amount .ui.button+.ui.button {
+.Auction .action .approve-amount .ui.button + .ui.button {
   margin-left: 10px;
 }
 
@@ -129,7 +130,7 @@
   user-select: none;
 }
 
-.Auction .controls svg+svg {
+.Auction .controls svg + svg {
   margin-left: 2px;
 }
 
@@ -146,6 +147,7 @@
 .Auction .owner-info .User {
   margin-top: 8px;
 }
+
 .Auction .ui.button.action-button {
   display: flex;
   align-items: center;
@@ -158,7 +160,7 @@
 }
 
 .Auction .ui.button.action-button svg {
-  margin-left: 4px
+  margin-left: 4px;
 }
 
 .Auction .ui.button.action-button:hover {

@@ -26,15 +26,15 @@
   transform: none;
 }
 
-.Topbar .actions .ui.button+.ui.button {
+.Topbar .actions .ui.button + .ui.button {
   margin-left: 8px;
 }
+
 .Topbar .actions .ui.button.jump-in {
   display: flex;
   align-items: center;
   min-width: 100px;
 }
-
 
 .Topbar .actions .ui.button.jump-in .jump-in-icon {
   display: inline-block;

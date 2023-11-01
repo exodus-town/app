@@ -1,7 +1,7 @@
 .Tiles {
   height: 320px;
   border-bottom: 1px solid var(--secondary);
-    overflow: hidden;
+  overflow: hidden;
 }
 .Tiles .react-tile-map-canvas.clickable {
   cursor: default;
