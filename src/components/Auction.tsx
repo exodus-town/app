@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { formatUnits, parseUnits } from "viem";
 import { erc20ABI, erc721ABI, useAccount, useContractRead, useContractWrite, useNetwork, useSwitchNetwork, useWaitForTransaction } from "wagmi";
 import { formatDistanceToNow } from 'date-fns'
@@ -29,7 +29,7 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
   const { auction, isLoading, refetch, isWinner, isSettled, hasBidder, maxTokenId } = useAuction()
   const { address, isConnected } = useAccount()
   const [bidAmount, setBidAmount] = useState('')
-  const [screenshot, setScreenshot] = useState<string | null>(null)
+  const [screenshots, setScreenshots] = useState<Record<string, string>>({})
   const [shouldApprove, setShouldApprove] = useState(false)
   const [bidError, setBidError] = useState<Error>()
   const { login, isLoggingIn } = useLogin()
@@ -157,17 +157,19 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
 
   const isEdit = parcelOwner === address
 
-  async function takeScreenshot(iframe: HTMLIFrameElement) {
+  const takeScreenshot = useCallback(async (iframe: HTMLIFrameElement) => {
     const transport = new MessageTransport(window, iframe.contentWindow!, "*");
     const camera = new CameraClient(transport)
     await new Promise(resolve => setTimeout(resolve, 1000))
-    setScreenshot(await camera.takeScreenshot(1024, 812))
+    const screenshot = await camera.takeScreenshot(1024, 812)
+    setScreenshots({
+      ...screenshots,
+      [tokenId!]: screenshot
+    })
     camera.dispose()
-  }
+  }, [tokenId, screenshots, setScreenshots])
 
-  useEffect(() => {
-    setScreenshot(null)
-  }, [tokenId])
+  const screenshot = useMemo(() => tokenId && screenshots[tokenId] || null, [tokenId, screenshots])
 
   return <div className={`Auction ${isLoading ? 'loading' : ''}`.trim()}>
     {isLoading
