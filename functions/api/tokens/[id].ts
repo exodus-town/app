@@ -34,13 +34,19 @@ export const onRequestPost: PagesFunction<Env, "id"> = async (context) => {
     const buffer = Buffer.from(await file.arrayBuffer());
     const hash = await getHash(path, buffer, tokenId);
     mappings.set(path, hash);
+    let httpMetadata: Headers | undefined;
     if (!isMutable(path)) {
+      httpMetadata = new Headers({
+        "Cache-Control": "max-age=31536000, s-maxage=31536000, immutable",
+      });
       const exists = await context.env.storage.head(getContentPath(hash));
       if (exists) {
         continue;
       }
     }
-    await context.env.storage.put(getContentPath(hash), buffer);
+    await context.env.storage.put(getContentPath(hash), buffer, {
+      httpMetadata,
+    });
   }
 
   // add to entity

@@ -10,7 +10,11 @@ export const onRequestGet: PagesFunction<Env, "hash"> = async (context) => {
   const path = getContentPath(hash);
   const obj = await context.env.storage.get(path);
   if (obj) {
-    return new Response(obj.body);
+    const headers =
+      obj.httpMetadata && obj.httpMetadata.cacheControl
+        ? { "Cache-Control": obj.httpMetadata.cacheControl }
+        : {};
+    return new Response(obj.body, { headers });
   } else {
     return error("Not found", 404);
   }

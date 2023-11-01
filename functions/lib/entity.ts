@@ -19,7 +19,11 @@ async function upload(storage: R2Bucket, file: string, buffer: Buffer) {
   const path = getContentPath(hash);
   const exists = await storage.head(path);
   if (!exists) {
-    await storage.put(path, buffer);
+    await storage.put(path, buffer, {
+      httpMetadata: new Headers({
+        "Cache-Control": "max-age=31536000, s-maxage=31536000, immutable",
+      }),
+    });
   }
   return { file, hash };
 }
