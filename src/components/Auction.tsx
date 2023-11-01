@@ -14,6 +14,7 @@ import { PiCaretCircleLeft, PiCaretCircleRight } from 'react-icons/pi'
 import { AUCTION_HOUSE_CONTRACT_ADDRESS, MANA_TOKEN_CONTRACT_ADDRESS, TOWN_TOKEN_CONTRACT_ADDRESS, getChain } from "../eth";
 import { toCoords } from "../lib/coords";
 import { useLogin } from "../modules/login";
+import { useTown } from "../modules/town";
 import { useAuction } from "../modules/auction";
 import { Inspector } from "./Inspector";
 import { ClaimModal } from "./ClaimModal";
@@ -37,6 +38,7 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
   const { chain } = useNetwork()
   const { switchNetwork, isLoading: isSwitchingNetwork, error: switchNetworkError } = useSwitchNetwork({ chainId: getChain().id })
   const [won, setWon] = useState<string | null>(null)
+  const { reload } = useTown()
 
   const { data: mana } = useContractRead({
     address: MANA_TOKEN_CONTRACT_ADDRESS,
@@ -131,8 +133,9 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
         setWon(auction.tokenId)
       }
       refetch()
+      reload()
     }
-  }, [settleTxStatus, refetch, isWinner, setWon, auction])
+  }, [settleTxStatus, refetch, isWinner, setWon, auction, reload])
 
   const isNextEnabled = Number(tokenId) < maxTokenId
   const isPrevEnabled = Number(tokenId) > 0

@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { formatUnits, parseUnits } from "viem";
 import { useAccount, useContractRead, useContractReads } from "wagmi";
 import { townTokenABI } from "@exodus.town/contracts";
@@ -8,7 +8,7 @@ import { toCoords } from "../lib/coords";
 export const useTown = () => {
   const { address } = useAccount();
 
-  const { data: balance } = useContractRead({
+  const { data: balance, refetch: refetchBalance } = useContractRead({
     abi: townTokenABI,
     address: TOWN_TOKEN_CONTRACT_ADDRESS,
     functionName: "balanceOf",
@@ -28,7 +28,7 @@ export const useTown = () => {
     return indexes;
   }, [balance]);
 
-  const { data: tokens } = useContractReads({
+  const { data: tokens, refetch: refetchTokens } = useContractReads({
     contracts: indexes.map((index) => ({
       abi: townTokenABI,
       address: TOWN_TOKEN_CONTRACT_ADDRESS,
@@ -53,5 +53,10 @@ export const useTown = () => {
     );
   }, [tokenIds]);
 
-  return { balance, tokenIds, ownedCoords };
+  const reload = useCallback(() => {
+    refetchBalance();
+    refetchTokens();
+  }, [refetchBalance, refetchTokens]);
+
+  return { balance, tokenIds, ownedCoords, reload };
 };
