@@ -6,6 +6,8 @@ import { Button, Loader, Mana } from "decentraland-ui";
 import { Link } from "react-router-dom";
 import { auctionHouseABI } from "@exodus.town/contracts";
 import { Network } from "@dcl/schemas";
+import { MessageTransport } from "@dcl/mini-rpc";
+import { CameraClient } from "@dcl/inspector";
 import { FaUnlock } from 'react-icons/fa'
 import { BiSolidPencil } from 'react-icons/bi'
 import { PiCaretCircleLeft, PiCaretCircleRight } from 'react-icons/pi'
@@ -13,11 +15,10 @@ import { AUCTION_HOUSE_CONTRACT_ADDRESS, MANA_TOKEN_CONTRACT_ADDRESS, TOWN_TOKEN
 import { toCoords } from "../lib/coords";
 import { useLogin } from "../modules/login";
 import { useAuction } from "../modules/auction";
+import { Inspector } from "./Inspector";
+import { ClaimModal } from "./ClaimModal";
 import { User } from "./User";
 import './Auction.css'
-import { Inspector } from "./Inspector";
-import { MessageTransport } from "@dcl/mini-rpc";
-import { CameraClient } from "@dcl/inspector";
 
 type Props = {
   tokenId?: string
@@ -35,6 +36,7 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
   const { login, isLoggingIn } = useLogin()
   const { chain } = useNetwork()
   const { switchNetwork, isLoading: isSwitchingNetwork, error: switchNetworkError } = useSwitchNetwork({ chainId: getChain().id })
+  const [won, setWon] = useState<string | null>(null)
 
   const { data: mana } = useContractRead({
     address: MANA_TOKEN_CONTRACT_ADDRESS,
@@ -125,9 +127,12 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
 
   useEffect(() => {
     if (settleTxStatus === 'success') {
+      if (isWinner && auction) {
+        setWon(auction.tokenId)
+      }
       refetch()
     }
-  }, [settleTxStatus, refetch])
+  }, [settleTxStatus, refetch, isWinner, setWon, auction])
 
   const isNextEnabled = Number(tokenId) < maxTokenId
   const isPrevEnabled = Number(tokenId) > 0
@@ -185,8 +190,7 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
           </div>
         </div>
 
-
-
+        <ClaimModal tokenId={won} onClose={() => setWon(null)} />
 
         {showParcelOwner ?
           <>

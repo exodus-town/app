@@ -1,0 +1,36 @@
+.ClaimModal .description {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ClaimModal .content {
+  text-align: center;
+}
+
+.ClaimModal .StarWalletIcon {
+  margin-top: 32px;
+}
+
+.ClaimModal .coords {
+  background-color: var(--secondary-on-modal);
+  padding: 4px 8px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  font-size: smaller;
+  margin-left: 8px;
+  padding-right: 12px;
+  margin: 2px;
+  transform: translateY(4px);
+}
+
+.ClaimModal .coords .pin {
+  background-image: url(/src/images/pin.svg);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+}
