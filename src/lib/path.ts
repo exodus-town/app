@@ -6,7 +6,6 @@ export enum Path {
   CRDT = "main.crdt",
   SCENE = "scene.json",
   JS = "bin/index.js",
-  NAVMAP_THUMBNAIL = "navmapThumbnail.png",
   ENTITY = "entity.json",
 }
 

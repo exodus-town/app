@@ -9,7 +9,6 @@ export enum Path {
   CRDT = "main.crdt",
   SCENE = "scene.json",
   JS = "bin/index.js",
-  NAVMAP_THUMBNAIL = "navmapThumbnail.png",
   ENTITY = "entity.json",
 }
 
@@ -18,7 +17,6 @@ export const MUTABLE_PATHS: string[] = [
   Path.SCENE,
   Path.COMPOSITE,
   Path.CRDT,
-  Path.NAVMAP_THUMBNAIL,
   Path.ENTITY,
 ];
 

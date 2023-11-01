@@ -1,4 +1,3 @@
-import { Path } from "./mappings";
 import { toCoords } from "./coords";
 import { toLayout } from "./layout";
 
@@ -11,7 +10,6 @@ export function createScene(tokenId: string) {
     display: {
       title: `Parcel ${x},${y}`,
       description: `Parcel ${x},${y} on Exodus Town`,
-      navmapThumbnail: Path.NAVMAP_THUMBNAIL,
     },
     scene: {
       parcels: parcels.map(({ x, y }) => `${x},${y}`),
