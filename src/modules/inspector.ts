@@ -73,18 +73,8 @@ async function wire(
   }
 
   // read file
-  let timeout: NodeJS.Timeout | null = null;
-  let loaded = false;
   storage.handle("read_file", async ({ path }) => {
-    if (onLoad && !loaded) {
-      if (timeout) {
-        clearTimeout(timeout);
-      }
-      timeout = setTimeout(() => {
-        loaded = true;
-        onLoad();
-      }, 1000);
-    }
+    checkIdle();
     switch (path) {
       case Path.PREFERENCES: {
         const preferences = createPreferences();
@@ -147,6 +137,21 @@ async function wire(
   storage.handle("delete", async () => {
     // nada
   });
+
+  // idle
+  let timeout: NodeJS.Timeout | null = null;
+  let loaded = false;
+  function checkIdle() {
+    if (onLoad && !loaded) {
+      if (timeout) {
+        clearTimeout(timeout);
+      }
+      timeout = setTimeout(() => {
+        loaded = true;
+        onLoad();
+      }, 3000);
+    }
+  }
 }
 
 // unlock

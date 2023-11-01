@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import { formatUnits, parseUnits } from "viem";
 import { erc20ABI, erc721ABI, useAccount, useContractRead, useContractWrite, useNetwork, useSwitchNetwork, useWaitForTransaction } from "wagmi";
 import { formatDistanceToNow } from 'date-fns'
@@ -6,8 +6,6 @@ import { Button, Loader, Mana } from "decentraland-ui";
 import { Link } from "react-router-dom";
 import { auctionHouseABI } from "@exodus.town/contracts";
 import { Network } from "@dcl/schemas";
-import { MessageTransport } from "@dcl/mini-rpc";
-import { CameraClient } from "@dcl/inspector";
 import { FaUnlock } from 'react-icons/fa'
 import { BiSolidPencil } from 'react-icons/bi'
 import { PiCaretCircleLeft, PiCaretCircleRight } from 'react-icons/pi'
@@ -16,8 +14,8 @@ import { toCoords } from "../lib/coords";
 import { useLogin } from "../modules/login";
 import { useTown } from "../modules/town";
 import { useAuction } from "../modules/auction";
-import { Inspector } from "./Inspector";
 import { ClaimModal } from "./ClaimModal";
+import { Preview } from "./Preview";
 import { User } from "./User";
 import './Auction.css'
 
@@ -31,7 +29,6 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
   const { auction, isLoading, refetch, isWinner, isSettled, hasBidder, maxTokenId } = useAuction()
   const { address, isConnected } = useAccount()
   const [bidAmount, setBidAmount] = useState('')
-  const [screenshots, setScreenshots] = useState<Record<string, string>>({})
   const [shouldApprove, setShouldApprove] = useState(false)
   const [bidError, setBidError] = useState<Error>()
   const { login, isLoggingIn } = useLogin()
@@ -165,20 +162,6 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
 
   const isEdit = parcelOwner === address
 
-  const takeScreenshot = useCallback(async (iframe: HTMLIFrameElement) => {
-    const transport = new MessageTransport(window, iframe.contentWindow!, "*");
-    const camera = new CameraClient(transport)
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    const screenshot = await camera.takeScreenshot(1024, 812)
-    setScreenshots({
-      ...screenshots,
-      [tokenId!]: screenshot
-    })
-    camera.dispose()
-  }, [tokenId, screenshots, setScreenshots])
-
-  const screenshot = useMemo(() => tokenId && screenshots[tokenId] || null, [tokenId, screenshots])
-
   return <div className={`Auction ${isLoading ? 'loading' : ''}`.trim()}>
     {isLoading
       ? <Loader active />
@@ -197,8 +180,7 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
 
         {showParcelOwner ?
           <>
-            <div className="preview" style={screenshot ? { backgroundImage: `url(${screenshot})` } : {}}>{!screenshot && <Loader active size="small" />}</div>
-            {!screenshot && <div className="generate-preview"><Inspector tokenId={tokenId} key={tokenId} onLoad={takeScreenshot} /></div>}
+            <Preview tokenId={tokenId} />
             <div className="row info owner-info">
               <div className="column owner">
                 <div className="label">Owner</div>

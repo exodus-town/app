@@ -169,32 +169,6 @@
   margin-top: 16px;
   color: var(--error);
 }
-.Auction .preview {
-  position: relative;
-  overflow: hidden;
-  border-radius: 8px;
-  border: 1px solid var(--secondary-on-modal);
-  background-color: var(--secondary);
-  height: 170px;
-  margin-bottom: 12px;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-}
-
-.Auction .preview img {
-  width: 100%;
-}
-
-.Auction .generate-preview {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  width: 1024px;
-  height: 812px;
-  opacity: 0;
-  pointer-events: none;
-}
 
 .Auction .jump-in-icon {
   display: inline-block;

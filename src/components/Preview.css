@@ -1,0 +1,30 @@
+.Preview {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  border: 1px solid var(--secondary-on-modal);
+  background-color: var(--secondary);
+  height: 170px;
+  margin-bottom: 12px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.Preview img {
+  width: 100%;
+}
+
+.Preview .generate-preview {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 1024px;
+  height: 812px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.Preview .ui.loader:before {
+  border-color: var(--secondary-on-modal) !important;
+}
