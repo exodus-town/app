@@ -107,14 +107,14 @@
 @media (max-width: 991px) {
   .HomePage .Auction {
     position: relative;
-    margin-top: 450px;
+    margin-top: 400px;
     left: 20px;
     width: calc(100% - 40px);
   }
 
   .HomePage .content {
     padding-top: 0px;
-    margin-top: -225px;
+    margin-top: -200px;
   }
 
   .HomePage .welcome p {
