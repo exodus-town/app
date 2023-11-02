@@ -32,9 +32,11 @@ export const Preview = memo<Props>(({ tokenId }) => {
   }, [tokenId])
 
   return (
-    <div className="Preview" style={screenshot ? { backgroundImage: `url(${screenshot})` } : {}}>
-      {(!screenshot) && <Loader active size="small" />}
+    <>
+      <div className="Preview" style={screenshot ? { backgroundImage: `url(${screenshot})` } : {}}>
+        {(!screenshot) && <Loader active size="small" />}
+      </div>
       {shouldGenerate && <div className="generate-preview"><Inspector tokenId={tokenId} key={tokenId} onLoad={takeScreenshot} /></div>}
-    </div>
+    </>
   )
 })

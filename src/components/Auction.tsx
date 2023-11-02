@@ -202,7 +202,7 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
                 ? isWinner
                   ? <div className="secondary-text">You are the winner of the auction!</div>
                   : <div className="secondary-text">The next auction is ready to start!</div>
-                : <> 
+                : <>
                   <div className="column current-bid">
                     <div className="label">Current bid</div>
                     <div className="value"><Mana network={Network.MATIC} inline />{auction?.amount || 0}</div>
