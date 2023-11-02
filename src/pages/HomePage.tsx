@@ -35,19 +35,22 @@ export const HomePage = memo(() => {
             <h2>Learn More</h2>
 
             <Accordion title="The Token">
-              <p>The TOWN token is a distinctive NFT for a couple of reasons. First, it allows its holder to publish content on Exodus Town parcels, akin to Decentraland's LAND token. Second, France. Third, the proceeds from TOWN auctions don't go to a developer team, instead they directly enter the Exodus DAO treasury, ensuring it stays in the hands of the token holders.</p>
+              <p>The TOWN token allows its holder to publish content on Exodus Town parcels, akin to Decentraland's LAND token.</p>
             </Accordion>
             <Accordion title="The Auction">
-              <p>Exodus Town features daily auctions in which one TOWN token is made available for purchase using MANA every 24 hours. This activity is not only about buying digital real estate but also about contributing to a community treasury. 100% of the proceeds from the auction go directly into the Exodus DAO.</p>
+              <p>Exodus Town features daily auctions in which one TOWN token is made available for purchase using MANA every 24 hours, and 100% of the proceeds from the auction go directly into the Exodus DAO.</p>
             </Accordion>
             <Accordion title="The DAO">
               <p>The Exodus Town governance is fully on-chain, based on <a href="https://docs.openzeppelin.com/contracts/4.x/api/governance#governor" target="_blank">OpenZeppelin's Governor</a>. This stands in contrast to snapshot-based DAOs. Here, each TOWN token is equivalent to one vote, and these votes directly control the treasury and any proposals, without requiring off-chain actions or human intervention.</p>
+            </Accordion>
+            <Accordion title="The Parcels">
+              <p>Parcels in Exodus Town are equivalent in size to a 3x3 Estate in Decentraland, so they are 9 times larger.</p>
             </Accordion>
             <Accordion title="The Editor">
               <p>The Decentraland's Web Editor is integrated into Exodus Town, allowing content to be created and published directly onto parcels. The editor is open to everyone and doesn't require coding skills.</p>
             </Accordion>
             {maxTokenId < 100 && <Accordion title="The Awakening">
-              <p>During its initial phase, the Exodus DAO enters a "sleeping period" to guard against potential 51% attacks, because of a low supply of TOWN tokens. While the DAO is designed to empower TOWN token holders, governance proposals are on hold until the token supply reaches the pivotal count of 100. Expected to unfold over approximately three months due to daily auctions, this milestone will trigger the "awakening" of the Exodus DAO, activating its full governance capabilities and allowing token holders to begin submitting proposals.</p>
+              <p>During its initial phase, the Exodus DAO will be in "sleeping mode" on which proposals will be disabled. This is to guard against potential 51% attacks while the TOWN token supply is too low. Once the supply reaches the pivotal count of 100, the Exodus DAO will automatically enter in "awake mode" and TOWN holders will be able to start submitting proposals and make use of the treasury.</p>
             </Accordion>}
             <Accordion title="The Deployer">
               <p>The Deployer of Exodus Town have opted for a different compensation model, distinct from the common practice of taking a percentage of auction proceeds. For the first two years of the project, every 10th TOWN token (ID #0, ID #10, ID #20, etc.) will be sent to the Deployer's Multisig, to be shared among its members. This will not affect the cadence of daily auctions.</p>
