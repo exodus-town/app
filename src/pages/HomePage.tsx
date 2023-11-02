@@ -50,15 +50,17 @@ export const HomePage = memo(() => {
               <p>The Decentraland's Web Editor is integrated into Exodus Town, allowing content to be created and published directly onto parcels. The editor is open to everyone and doesn't require coding skills.</p>
             </Accordion>
             {maxTokenId < 100 && <Accordion title="The Awakening">
-              <p>During its initial phase, the Exodus DAO will be in "sleeping mode" on which proposals will be disabled. This is to guard against potential 51% attacks while the TOWN token supply is too low. Once the supply reaches the pivotal count of 100, the Exodus DAO will automatically enter in "awake mode" and TOWN holders will be able to start submitting proposals and make use of the treasury.</p>
+              <p>During its initial phase, the Exodus DAO will be in "sleep mode" on which proposals will be disabled. This is to guard against potential 51% attacks while the TOWN token supply is too low. Once the supply reaches the pivotal count of 100, the Exodus DAO will automatically enter in "awake mode" and TOWN holders will be able to start submitting proposals and make use of the treasury.</p>
             </Accordion>}
             <Accordion title="The Deployer">
               <p>The Deployer of Exodus Town have opted for a different compensation model, distinct from the common practice of taking a percentage of auction proceeds. For the first two years of the project, every 10th TOWN token (ID #0, ID #10, ID #20, etc.) will be sent to the Deployer's Multisig, to be shared among its members. This will not affect the cadence of daily auctions.</p>
             </Accordion>
-            <Accordion title="The Contracts">
-              <p>The <a href={getContractUrl(TOWN_TOKEN_CONTRACT_ADDRESS)}>TownToken.sol</a>, and <a href={getContractUrl(EXODUS_DAO_CONTRACT_ADDRESS)}>ExodusDAO.sol</a> were created using the <a href="https://wizard.openzeppelin.com/">OpenZeppelin Wizard</a>, and the <a href={getContractUrl(AUCTION_HOUSE_CONTRACT_ADDRESS)}>AuctionHouse.sol</a> is a fork of <a href="https://nouns.wtf">NounsDAO</a>'s <a href="https://github.com/nounsDAO/nouns-monorepo/blob/master/packages/nouns-contracts/contracts/NounsAuctionHouse.sol">NounsAuctionHouse</a>.<br />All the contracts are deployed on the Polygon network and verified on PolygonScan.
-                <br />Everything, including this interface, is public and <a href="https://github.com/exodus-town">open source</a>.
-                <br />There is <b className="warning"><IoMdWarning />NO AUDIT</b>.</p>
+            <Accordion title="The Source">
+              <p>The <a href={getContractUrl(TOWN_TOKEN_CONTRACT_ADDRESS)}>TownToken.sol</a>, and <a href={getContractUrl(EXODUS_DAO_CONTRACT_ADDRESS)}>ExodusDAO.sol</a> were created using the <a href="https://wizard.openzeppelin.com/">OpenZeppelin Wizard</a>, and the <a href={getContractUrl(AUCTION_HOUSE_CONTRACT_ADDRESS)}>AuctionHouse.sol</a> is a fork of <a href="https://nouns.wtf">NounsDAO</a>'s <a href="https://github.com/nounsDAO/nouns-monorepo/blob/master/packages/nouns-contracts/contracts/NounsAuctionHouse.sol">NounsAuctionHouse</a>.</p>
+              <p>All the contracts are deployed on the Polygon network and verified on PolygonScan.</p>
+              <p>Exodus Town uses a custom realm and content server to integrate the TOWN token and allow for larger parcels.</p>
+              <p>Everything, including this interface, is public and <a href="https://github.com/exodus-town">open source</a>.</p>
+              <p>There is <b className="warning"><IoMdWarning />NO AUDIT</b>.</p>
             </Accordion>
           </div>
 

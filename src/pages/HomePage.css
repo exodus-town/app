@@ -84,12 +84,16 @@
 }
 
 .HomePage .learn-more {
-  margin: 56px 0px;
+  margin: 96px 0px;
 }
 
 .HomePage .learn-more h2 {
   font-size: 32px;
   margin-bottom: 24px;
+}
+
+.HomePage .disclaimer {
+  margin-top: 96px;
 }
 
 .HomePage .disclaimer p {
@@ -104,8 +108,8 @@
   .HomePage .Auction {
     position: relative;
     margin-top: 450px;
-    left: 30px;
-    width: calc(100% - 60px);
+    left: 20px;
+    width: calc(100% - 40px);
   }
 
   .HomePage .content {
