@@ -6,6 +6,7 @@
   cursor: pointer;
   display: flex;
   align-items: center;
+  font-size: 24px;
 }
 
 .Accordion .title svg {
@@ -16,9 +17,21 @@
   height: 0;
   transition: height 0.3s ease-in;
   overflow: hidden;
+  font-size: 18px;
 }
 
 .Accordion.is-open .children {
   height: auto;
   margin-bottom: 24px;
+  margin-left: 32px;
+}
+
+@media (max-width: 991px) {
+  .Accordion .title {
+    font-size: 20px;
+  }
+
+  .Accordion .children {
+    font-size: 16px;
+  }
 }

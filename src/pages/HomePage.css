@@ -30,16 +30,16 @@
 }
 
 .HomePage .content .jump-in {
-  margin-left: 16px;
+  margin-left: 24px;
 }
 
 .HomePage .content .ui.button.jump-in {
   display: flex;
   align-items: center;
-  font-size: 13px;
-  height: 32px;
-  line-height: 18px;
-  padding: 7px 12px;
+  font-size: 14px;
+  height: 36px;
+  line-height: 22px;
+  padding: 12px 16px;
   width: auto;
   min-width: auto;
 }
@@ -73,12 +73,23 @@
   position: relative;
 }
 
+.HomePage .welcome p {
+  font-size: 20px;
+  line-height: 28px;
+}
+
 .HomePage .welcome .title {
   margin-bottom: 24px;
+  font-size: 40px;
 }
 
 .HomePage .learn-more {
   margin: 56px 0px;
+}
+
+.HomePage .learn-more h2 {
+  font-size: 32px;
+  margin-bottom: 24px;
 }
 
 .HomePage .disclaimer p {
@@ -102,9 +113,23 @@
     margin-top: -225px;
   }
 
+  .HomePage .welcome p {
+    font-size: 16px;
+    line-height: 28px;
+  }
+
+  .HomePage .welcome .title {
+    margin-bottom: 24px;
+    font-size: 32px;
+  }
+
   .HomePage .content h1 {
     justify-content: flex-start;
     font-size: 24px;
+  }
+
+  .HomePage .content .jump-in {
+    margin-left: 18px;
   }
 
   .HomePage .content .ui.button.jump-in .text {
@@ -113,5 +138,25 @@
 
   .HomePage .content .jump-in .jump-in-icon {
     margin-left: 0px;
+  }
+}
+
+@media (max-width: 440px) {
+  .HomePage .welcome .title {
+    margin-bottom: 24px;
+    font-size: 28px;
+  }
+
+  .HomePage .content h1 {
+    justify-content: flex-start;
+    font-size: 24px;
+  }
+
+  .HomePage .content .jump-in {
+    margin-left: 18px;
+  }
+
+  .HomePage .content .ui.button.jump-in {
+    display: none;
   }
 }

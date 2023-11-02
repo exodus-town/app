@@ -1,10 +1,20 @@
 .User {
   display: flex;
   align-items: center;
-  height: 24px;
+  height: auto;
 }
 
 .User .name,
 .User .loading {
   margin-left: 8px;
+}
+
+.User .dcl.avatar-face {
+  flex: none;
+}
+
+.User .name {
+  flex: 1 1 auto;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }

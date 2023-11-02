@@ -26,8 +26,8 @@ export const HomePage = memo(() => {
         <Auction tokenId={tokenId} setTokenId={setTokenId} />
         <div className="content">
           <div className="welcome">
-            <h1 className="title">Welcome to Exodus Town <Button primary className="jump-in" href="https://play.decentraland.org?realm=exodus.town"><span className="text">Jump In</span> <i className="jump-in-icon" /></Button></h1>
-            <p>Exodus Town is an experiment on Decentraland Worlds, continuous issuance, and DAOs. Originating from the 0,0 coordinate, it expands in a never-ending spiral, growing one parcel per day, forever.</p>
+            <h1 className="title">Welcome to Exodus Town <Button size="large" primary className="jump-in" href="https://play.decentraland.org?realm=exodus.town"><span className="text">Jump In</span> <i className="jump-in-icon" /></Button></h1>
+            <p>Exodus Town is an experiment on Decentraland Worlds, continuous issuance, and DAOs. Originating from the 0,0 coordinate, it expands in a never-ending spiral, growing <b>one parcel per day, forever</b>.</p>
             <p>Every 24 hours, a TOWN token is auctioned off in exchange for MANA, granting the holder the ability to publish content to Exodus Town. Importantly, all auction proceeds flow directly into the on-chain governed Exodus DAO, steered exclusively by TOWN token holders.</p>
           </div>
 
@@ -46,9 +46,9 @@ export const HomePage = memo(() => {
             <Accordion title="The Editor">
               <p>The Decentraland's Web Editor is integrated into Exodus Town, allowing content to be created and published directly onto parcels. The editor is open to everyone and doesn't require coding skills.</p>
             </Accordion>
-            <Accordion title="The Awakening">
+            {maxTokenId < 100 && <Accordion title="The Awakening">
               <p>During its initial phase, the Exodus DAO enters a "sleeping period" to guard against potential 51% attacks, because of a low supply of TOWN tokens. While the DAO is designed to empower TOWN token holders, governance proposals are on hold until the token supply reaches the pivotal count of 100. Expected to unfold over approximately three months due to daily auctions, this milestone will trigger the "awakening" of the Exodus DAO, activating its full governance capabilities and allowing token holders to begin submitting proposals.</p>
-            </Accordion>
+            </Accordion>}
             <Accordion title="The Deployer">
               <p>The Deployer of Exodus Town have opted for a different compensation model, distinct from the common practice of taking a percentage of auction proceeds. For the first two years of the project, every 10th TOWN token (ID #0, ID #10, ID #20, etc.) will be sent to the Deployer's Multisig, to be shared among its members. This will not affect the cadence of daily auctions.</p>
             </Accordion>

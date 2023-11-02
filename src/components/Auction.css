@@ -63,6 +63,12 @@
   flex-direction: column;
 }
 
+.Auction .column.owner {
+  flex: 1 1 auto;
+  overflow: hidden;
+  margin-right: 8px;
+}
+
 .Auction .info {
   justify-content: space-between;
   margin-bottom: 16px;
@@ -110,6 +116,7 @@
   color: var(--text);
   padding-left: 16px;
   background-color: var(--secondary-on-modal);
+  overflow: hidden;
 }
 
 .Auction .action .ui.button.bid {
@@ -157,6 +164,7 @@
   padding: 7px 12px;
   width: auto;
   min-width: auto;
+  flex: none;
 }
 
 .Auction .ui.button.action-button svg {
