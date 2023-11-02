@@ -23,7 +23,6 @@ export const Preview = memo<Props>(({ tokenId }) => {
     })
     setShouldGenerate(false)
     camera.dispose()
-    console.log('image generated!')
   }, [tokenId, screenshots, setScreenshots])
 
   const screenshot = useMemo(() => tokenId && screenshots[tokenId] || null, [tokenId, screenshots])
@@ -34,7 +33,7 @@ export const Preview = memo<Props>(({ tokenId }) => {
 
   return (
     <div className="Preview" style={screenshot ? { backgroundImage: `url(${screenshot})` } : {}}>
-      {!screenshot && <Loader active size="small" />}
+      {(!screenshot || shouldGenerate) && <Loader active size="small" />}
       {shouldGenerate && <div className="generate-preview"><Inspector tokenId={tokenId} key={tokenId} onLoad={takeScreenshot} /></div>}
     </div>
   )
