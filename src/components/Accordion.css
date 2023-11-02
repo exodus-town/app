@@ -1,0 +1,24 @@
+.Accordion {
+  position: relative;
+}
+
+.Accordion .title {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.Accordion .title svg {
+  margin-right: 8px;
+}
+
+.Accordion .children {
+  height: 0;
+  transition: height 0.3s ease-in;
+  overflow: hidden;
+}
+
+.Accordion.is-open .children {
+  height: auto;
+  margin-bottom: 24px;
+}

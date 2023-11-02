@@ -73,6 +73,22 @@
   position: relative;
 }
 
+.HomePage .welcome .title {
+  margin-bottom: 24px;
+}
+
+.HomePage .learn-more {
+  margin: 56px 0px;
+}
+
+.HomePage .disclaimer p {
+  color: var(--secondary-text);
+}
+
+.HomePage .disclaimer b {
+  color: var(--text);
+}
+
 @media (max-width: 991px) {
   .HomePage .Auction {
     position: relative;
