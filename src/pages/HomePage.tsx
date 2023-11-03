@@ -58,7 +58,7 @@ export const HomePage = memo(() => {
             <Accordion title="The Source">
               <p>The <a href={getContractUrl(TOWN_TOKEN_CONTRACT_ADDRESS)}>TownToken.sol</a>, and <a href={getContractUrl(EXODUS_DAO_CONTRACT_ADDRESS)}>ExodusDAO.sol</a> were created using the <a href="https://wizard.openzeppelin.com/">OpenZeppelin Wizard</a>, and the <a href={getContractUrl(AUCTION_HOUSE_CONTRACT_ADDRESS)}>AuctionHouse.sol</a> is a fork of <a href="https://nouns.wtf">NounsDAO</a>'s <a href="https://github.com/nounsDAO/nouns-monorepo/blob/master/packages/nouns-contracts/contracts/NounsAuctionHouse.sol">NounsAuctionHouse</a>.</p>
               <p>All the contracts are deployed on the Polygon network and verified on PolygonScan.</p>
-              <p>Exodus Town uses a custom realm and content server to integrate the TOWN token and allow for larger parcels.</p>
+              <p>Exodus Town uses a custom realm to integrate the TOWN token and serve the contents of the world.</p>
               <p>Everything, including this interface, is public and <a href="https://github.com/exodus-town">open source</a>.</p>
               <p>There is <b className="warning"><IoMdWarning />NO AUDIT</b>.</p>
             </Accordion>
