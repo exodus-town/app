@@ -13,7 +13,7 @@ type Props = {
 
 export const Tiles = memo<Props>(({ tokenId, setTokenId }) => {
 
-  const { maxTokenId } = useAuction()
+  const { auction, maxTokenId } = useAuction()
   const { ownedCoords } = useTown()
   const isMobile = useIsMobile()
 
@@ -78,17 +78,28 @@ export const Tiles = memo<Props>(({ tokenId, setTokenId }) => {
 
   const ownerLayer: Layer = useCallback((x, y) => {
     const id = `${x},${y}`
-    return ownedCoords.has(id) ? { color: '#e153f0', scale: 1 } : null
+    return ownedCoords.has(id) ? { color: '#fc9dfe', scale: 1 } : null
   }, [ownedCoords])
+
+  const onSaleLayer: Layer = useCallback((x, y) => {
+    if (auction) {
+      const [_x, _y] = toCoords(auction.tokenId)
+      if (x === _x && y === _y) {
+        return { color: '#e153f0', scale: 1 }
+      }
+    }
+    return null
+  }, [auction])
 
   const layers = useMemo(() => {
     return [
+      onSaleLayer,
       ownerLayer,
       hoverLayer,
       selectedStrokeLayer,
       selectedFillLayer
     ]
-  }, [ownerLayer, hoverLayer, selectedStrokeLayer, selectedFillLayer])
+  }, [onSaleLayer, ownerLayer, hoverLayer, selectedStrokeLayer, selectedFillLayer])
 
   const handleClick = useCallback((x: number, y: number) => {
     const id = `${x},${y}`
