@@ -26,7 +26,7 @@ type Props = {
 
 export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
 
-  const { auction, isLoading, refetch, isWinner, isSettled, hasBidder, maxTokenId } = useAuction()
+  const { auction, isLoading, refetch: refetchAuction, isWinner, isSettled, hasBidder, maxTokenId } = useAuction()
   const { address, isConnected } = useAccount()
   const [bidAmount, setBidAmount] = useState('')
   const [shouldApprove, setShouldApprove] = useState(false)
@@ -35,7 +35,7 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
   const { chain } = useNetwork()
   const { switchNetwork, isLoading: isSwitchingNetwork, error: switchNetworkError } = useSwitchNetwork({ chainId: getChain().id })
   const [won, setWon] = useState<string | null>(null)
-  const { reload } = useTown()
+  const { reload: reloadTown } = useTown()
 
   const { data: mana } = useContractRead({
     address: MANA_TOKEN_CONTRACT_ADDRESS,
@@ -44,7 +44,7 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
     args: [address!]
   })
 
-  const { data: allowance, isLoading: isLoadingAllowance } = useContractRead({
+  const { data: allowance, isLoading: isLoadingAllowance, refetch: refechAllowance } = useContractRead({
     address: MANA_TOKEN_CONTRACT_ADDRESS,
     abi: erc20ABI,
     functionName: 'allowance',
@@ -120,19 +120,25 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
 
   useEffect(() => {
     if (createBidTxStatus === 'success') {
-      refetch()
+      refetchAuction()
     }
-  }, [createBidTxStatus, refetch])
+  }, [createBidTxStatus, refetchAuction])
+
+  useEffect(() => {
+    if (approveTxStatus === 'success') {
+      refechAllowance()
+    }
+  }, [approveTxStatus, refechAllowance])
 
   useEffect(() => {
     if (settleTxStatus === 'success') {
       if (isWinner && auction) {
         setWon(auction.tokenId)
       }
-      refetch()
-      reload()
+      refetchAuction()
+      reloadTown()
     }
-  }, [settleTxStatus, refetch, isWinner, setWon, auction, reload])
+  }, [settleTxStatus, refetchAuction, isWinner, setWon, auction, reloadTown])
 
   const isNextEnabled = Number(tokenId) < maxTokenId
   const isPrevEnabled = Number(tokenId) > 0
