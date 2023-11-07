@@ -17,8 +17,8 @@ Within these digital halls lies the machinery of interaction for the settlers of
 To wield the power of this interface:
 
 - Clone the essence of this repository to your sanctum.
-- Invoke `npm install`` to align the stars and gather the necessary elements.
-- Chant `npm run dev`` to awaken the spirits within and step through the portal to your local realm.
+- Invoke `npm install` to align the stars and gather the necessary elements.
+- Chant `npm run dev` to awaken the spirits within and step through the portal to your local realm.
 
 ### Scroll of Collaboration
 
@@ -30,6 +30,6 @@ Should you encounter beasts or bewilderments, inscribe your trials in an issue w
 
 ### Tome of the Law
 
-The Exodus Town interface is bound by the MIT License, a lexicon of freedom and sharing in the realm of code.
+The Exodus Town interface is bound by the [MIT License](/LICENSE), a lexicon of freedom and sharing in the realm of code.
 
 This is no mere interface; it is a beacon for those who dare to dream, a tool for the brave, the bold, and the builders. Here, we dance with destiny. Your saga begins with a single command.
