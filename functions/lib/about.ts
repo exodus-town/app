@@ -65,7 +65,7 @@ export async function getAbout(
       healthy: true,
       protocol: "v3",
       fixedAdapter:
-        "signed-login:https://worlds-content-server.decentraland.org/get-comms-adapter/world-prd-monotributista.dcl.eth",
+        "signed-login:https://worlds-content-server.decentraland.org/get-comms-adapter/world-prd-exodustown.dcl.eth",
     },
   };
 }
