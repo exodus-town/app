@@ -35,7 +35,7 @@ export async function getAbout(): Promise<About> {
     configurations: {
       networkId: 1,
       globalScenesUrn: [],
-      cityLoaderContentServer: "https://exodus.town",
+      cityLoaderContentServer: "https://exodus.town/api",
       minimap: {
         enabled: false,
       },
