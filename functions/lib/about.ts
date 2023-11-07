@@ -40,8 +40,14 @@ export async function getAbout(
 ): Promise<About> {
   const auctionHouse = getAuctionHouse(env);
   const [maxTokenId] = await auctionHouse.read.auction();
+  if (isNaN(+tokenId)) {
+    throw new Error(`Invalid tokenId=${tokenId} must be a number`);
+  }
   if (+tokenId > maxTokenId) {
     throw new Error(`Invalid tokenId=${tokenId} and maxTokenId=${maxTokenId}`);
+  }
+  if (+tokenId < 0) {
+    throw new Error(`Invalid tokenId=${tokenId} can't be less than 0`);
   }
   return {
     healthy: true,
