@@ -7,6 +7,6 @@ export const onRequestGet: PagesFunction<Env, "id"> = async (context) => {
   if (!tokenId || Array.isArray(tokenId) || isNaN(Number(tokenId))) {
     return error(`Invalid tokenId=${tokenId}`, 400);
   }
-  const about = await getAbout(context.env, tokenId);
+  const about = await getAbout();
   return json(about);
 };
