@@ -41,7 +41,7 @@ export const HomePage = memo(() => {
               <p>Exodus Town features daily auctions in which one TOWN token is made available for purchase using MANA every 24 hours, and 100% of the proceeds from the auction go directly into the Exodus DAO.</p>
             </Accordion>
             <Accordion title="The DAO">
-              <p>The Exodus Town governance is fully on-chain, based on <a href="https://docs.openzeppelin.com/contracts/4.x/api/governance#governor" target="_blank">OpenZeppelin's Governor</a>. This stands in contrast to snapshot-based DAOs. Here, each TOWN token is equivalent to one vote, and these votes directly control the treasury and any proposals, without requiring off-chain actions or human intervention.</p>
+              <p>The Exodus DAO governance is fully on-chain, based on <a href="https://docs.openzeppelin.com/contracts/4.x/api/governance#governor" target="_blank">OpenZeppelin's Governor</a>. This stands in contrast to snapshot-based DAOs. Here, each TOWN token is equivalent to one vote, and these votes directly control the treasury and any proposals, without requiring off-chain actions or human intervention.</p>
             </Accordion>
             <Accordion title="The Parcels">
               <p>Parcels in Exodus Town are equivalent in size to a 3x3 Estate in Decentraland, so they are 9 times larger.</p>
