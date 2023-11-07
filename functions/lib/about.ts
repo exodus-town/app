@@ -38,13 +38,18 @@ export async function getAbout(
   env: Env,
   tokenId: string = "0"
 ): Promise<About> {
+  const auctionHouse = getAuctionHouse(env);
+  const [maxTokenId] = await auctionHouse.read.auction();
+  if (+tokenId > maxTokenId) {
+    throw new Error(`Invalid tokenId=${tokenId} and maxTokenId=${maxTokenId}`);
+  }
   return {
     healthy: true,
     acceptingUsers: true,
     configurations: {
       networkId: 1,
       globalScenesUrn: [],
-      scenesUrn: await getUrns(env, tokenId),
+      scenesUrn: await getUrns(env, Number(maxTokenId), tokenId),
       minimap: {
         enabled: false,
       },
@@ -70,9 +75,7 @@ export async function getAbout(
   };
 }
 
-async function getUrns(env: Env, tokenId: string = "0") {
-  const auctionHouse = getAuctionHouse(env);
-  const [maxTokenId] = await auctionHouse.read.auction();
+async function getUrns(env: Env, maxTokenId: number, tokenId: string = "0") {
   const promises: { tokenId: string; entity: Promise<Entity> }[] = [
     { tokenId, entity: getEntity(env.storage, tokenId) },
   ];
