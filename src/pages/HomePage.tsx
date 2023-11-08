@@ -4,10 +4,11 @@ import { IoMdWarning } from 'react-icons/io'
 import { Navbar } from "../components/Navbar";
 import { Auction } from "../components/Auction";
 import { Tiles } from "../components/Tiles";
+import { Accordion } from "../components/Accordion";
 import { useAuction } from "../modules/auction";
+import { config } from "../config";
 import { AUCTION_HOUSE_CONTRACT_ADDRESS, EXODUS_DAO_CONTRACT_ADDRESS, TOWN_TOKEN_CONTRACT_ADDRESS, getContractUrl } from "../eth";
 import './HomePage.css'
-import { Accordion } from "../components/Accordion";
 
 export const HomePage = memo(() => {
 
@@ -28,8 +29,10 @@ export const HomePage = memo(() => {
           <div className="welcome">
             <h1 className="title">Welcome to Exodus Town <Button size="large" primary className="jump-in" href="https://play.decentraland.org?realm=exodus.town"><span className="text">Jump In</span> <i className="jump-in-icon" /></Button></h1>
             <p>Exodus Town is an experiment on Decentraland Worlds, continuous issuance, and DAOs. Originating from the 0,0 coordinate, it expands in a never-ending spiral, growing <b>one parcel per day, forever</b>.</p>
-            <p>Every 24 hours, a TOWN token is auctioned off in exchange for MANA, granting the holder the ability to publish content to Exodus Town. Importantly, all auction proceeds flow directly into the on-chain governed Exodus DAO, steered exclusively by TOWN token holders.</p>
+            <p>Every 24 hours, a TOWN token is auctioned off in exchange for MANA, granting the holder the ability to publish content to Exodus Town. Importantly, all auction proceeds flow directly into the on-chain governed <a href={config.get('DAO_URL')} target="_blank">Exodus DAO</a>, steered exclusively by TOWN token holders.</p>
           </div>
+
+          <Button size="large" primary className="jump-in-mobile" href="https://play.decentraland.org?realm=exodus.town"><span className="text">Jump In</span> <i className="jump-in-icon" /></Button>
 
           <div className="learn-more">
             <h2>Learn More</h2>

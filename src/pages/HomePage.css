@@ -104,6 +104,12 @@
   color: var(--text);
 }
 
+.HomePage .jump-in-mobile.ui.button {
+  width: 100%;
+  margin-top: 56px;
+  display: none;
+}
+
 @media (max-width: 991px) {
   .HomePage .Auction {
     position: relative;
@@ -132,16 +138,12 @@
     font-size: 24px;
   }
 
-  .HomePage .content .jump-in {
-    margin-left: 18px;
-  }
-
-  .HomePage .content .ui.button.jump-in .text {
+  .HomePage .content .ui.button.jump-in {
     display: none;
   }
 
-  .HomePage .content .jump-in .jump-in-icon {
-    margin-left: 0px;
+  .HomePage .content .ui.button.jump-in-mobile {
+    display: block;
   }
 }
 
@@ -154,10 +156,6 @@
   .HomePage .content h1 {
     justify-content: flex-start;
     font-size: 24px;
-  }
-
-  .HomePage .content .jump-in {
-    margin-left: 18px;
   }
 
   .HomePage .content .ui.button.jump-in {
