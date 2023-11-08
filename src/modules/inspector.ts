@@ -31,12 +31,13 @@ export async function init(
   const storage = new IframeStorage.Server(transport);
 
   async function handleLoad() {
-    const screenshot = await camera.takeScreenshot(1024, 1024);
-    const buffer = Buffer.from(
-      screenshot.slice("data:image/png;base64,".length),
-      "base64"
-    );
     if (hasSigned() || isOwner) {
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+      const screenshot = await camera.takeScreenshot(1024, 1024);
+      const buffer = Buffer.from(
+        screenshot.slice("data:image/png;base64,".length),
+        "base64"
+      );
       await save(tokenId, Path.THUMBNAIL, buffer);
       await ui.toggleGizmos(true);
     }
