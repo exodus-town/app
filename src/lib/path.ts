@@ -7,6 +7,7 @@ export enum Path {
   SCENE = "scene.json",
   JS = "bin/index.js",
   ENTITY = "entity.json",
+  THUMBNAIL = "thumbnail.png",
 }
 
 export function getContentPath(hash: string) {

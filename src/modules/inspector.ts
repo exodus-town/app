@@ -1,10 +1,9 @@
 import { MessageTransport } from "@dcl/mini-rpc";
-import { UiClient, IframeStorage } from "@dcl/inspector";
+import { UiClient, IframeStorage, CameraClient } from "@dcl/inspector";
 import { Path, getContentPath } from "../lib/path";
 import { createPreferences } from "../lib/preferences";
 import { hasSigned, save, setSignedMessage } from "../lib/storage";
-import { Entity } from "../lib/entity";
-import { About } from "../lib/about";
+import { Entity, getEntity } from "../lib/entity";
 
 type InitOptions = {
   tokenId: string;
@@ -23,27 +22,37 @@ export async function init(
   }
 
   // fetch entity
-  const aboutResponse = await fetch(`/${tokenId}/about`);
-  const about: About = await aboutResponse.json();
-  const urn = about.configurations.scenesUrn[0];
-  const entityId = urn.split("?")[0].split(":").pop()!;
-  const entityResponse = await fetch(getContentPath(entityId));
-  const entity: Entity = await entityResponse.json();
+  const entity = await getEntity(tokenId);
 
   // transports and rpcs
   const transport = new MessageTransport(window, iframe.contentWindow!, "*");
   const ui = new UiClient(transport);
+  const camera = new CameraClient(transport);
   const storage = new IframeStorage.Server(transport);
 
+  async function handleLoad() {
+    const screenshot = await camera.takeScreenshot(1024, 1024);
+    const buffer = Buffer.from(
+      screenshot.slice("data:image/png;base64,".length),
+      "base64"
+    );
+    if (hasSigned() || isOwner) {
+      await save(tokenId, Path.THUMBNAIL, buffer);
+      await ui.toggleGizmos(true);
+    }
+    // callback
+    onLoad && onLoad();
+  }
+
   // wire handlers
-  await wire(storage, { tokenId, isOwner, entity, onLoad });
+  await wire(storage, { tokenId, isOwner, entity, onLoad: handleLoad });
 
   // setup ui
   const promises: Promise<unknown>[] = [];
   promises.push(ui.selectAssetsTab("AssetsPack"));
   promises.push(ui.toggleComponent("inspector::Scene", false));
+  promises.push(ui.toggleGizmos(false));
   if (!hasSigned() || !isOwner) {
-    promises.push(ui.toggleGizmos(false));
     promises.push(ui.togglePanel("assets", false));
     promises.push(ui.togglePanel("components", false));
     promises.push(ui.togglePanel("entities", false));

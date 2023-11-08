@@ -10,6 +10,7 @@ export enum Path {
   SCENE = "scene.json",
   JS = "bin/index.js",
   ENTITY = "entity.json",
+  THUMBNAIL = "thumbnail.png",
 }
 
 export const MUTABLE_PATHS: string[] = [
@@ -18,6 +19,7 @@ export const MUTABLE_PATHS: string[] = [
   Path.COMPOSITE,
   Path.CRDT,
   Path.ENTITY,
+  Path.THUMBNAIL,
 ];
 
 export function isMutable(path: string) {

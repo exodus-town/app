@@ -2,14 +2,17 @@ import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { MessageTransport } from "@dcl/mini-rpc";
 import { CameraClient } from "@dcl/inspector";
 import { Loader } from "decentraland-ui";
+import { getImage } from "../lib/image";
 import { Inspector } from "./Inspector";
 import './Preview.css'
 
 type Props = {
   tokenId?: string
 }
-export const Preview = memo<Props>(({ tokenId }) => {
 
+
+export const Preview = memo<Props>(({ tokenId }) => {
+  const [image, setImage] = useState<string>('')
   const [screenshots, setScreenshots] = useState<Record<string, string>>({})
   const [shouldGenerate, setShouldGenerate] = useState(true)
 
@@ -30,6 +33,25 @@ export const Preview = memo<Props>(({ tokenId }) => {
   useEffect(() => {
     setShouldGenerate(true)
   }, [tokenId])
+
+  useEffect(() => {
+    if (tokenId) {
+      getImage(tokenId).then(result => {
+        if (result) {
+          setImage(result)
+        }
+      })
+    }
+  }, [tokenId])
+
+  useEffect(() => {
+    if (tokenId && image && !(tokenId in screenshots)) {
+      setScreenshots({
+        ...screenshots,
+        [tokenId]: image
+      })
+    }
+  }, [image, screenshots, tokenId, setScreenshots])
 
   return (
     <>

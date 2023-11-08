@@ -10,6 +10,7 @@ export function createScene(tokenId: string) {
     display: {
       title: `Parcel ${x},${y}`,
       description: `Parcel ${x},${y} on Exodus Town`,
+      navmapThumbnail: "thumbnail.png",
     },
     scene: {
       parcels: parcels.map(({ x, y }) => `${x},${y}`),
