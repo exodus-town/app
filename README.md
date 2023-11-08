@@ -1,4 +1,4 @@
-# Exodus Town App
+# Exodus Town - App
 
 In the digital tapestry of the Metaverse, the Exodus Town interface stands as the portal to a new epoch. This repository is the forge where code alchemists shape the tools of interaction with Exodus Town.
 
