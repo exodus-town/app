@@ -28,3 +28,11 @@
 .Preview .ui.loader:before {
   border-color: var(--secondary-on-modal) !important;
 }
+
+.Preview .ui.loader.tiny {
+  position: absolute;
+  top: auto;
+  left: auto;
+  right: 8px;
+  bottom: 8px;
+}

@@ -1,4 +1,5 @@
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import cx from 'classnames'
 import { MessageTransport } from "@dcl/mini-rpc";
 import { CameraClient } from "@dcl/inspector";
 import { Loader } from "decentraland-ui";
@@ -55,8 +56,8 @@ export const Preview = memo<Props>(({ tokenId }) => {
 
   return (
     <>
-      <div className="Preview" style={screenshot ? { backgroundImage: `url(${screenshot})` } : {}}>
-        {(!screenshot) && <Loader active size="small" />}
+      <div className={cx("Preview", { 'is-rendering': shouldGenerate })} style={screenshot ? { backgroundImage: `url(${screenshot})` } : {}}>
+        {(!screenshot || shouldGenerate) && <Loader active size={!screenshot ? 'small' : 'tiny'} />}
       </div>
       {shouldGenerate && <div className="generate-preview"><Inspector tokenId={tokenId} key={tokenId} onLoad={takeScreenshot} /></div>}
     </>

@@ -32,7 +32,7 @@ export async function init(
 
   async function handleLoad() {
     if (hasSigned() || isOwner) {
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       const screenshot = await camera.takeScreenshot(1024, 1024);
       const buffer = Buffer.from(
         screenshot.slice("data:image/png;base64,".length),
