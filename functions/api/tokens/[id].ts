@@ -2,13 +2,7 @@ import { Buffer } from "node:buffer";
 import { toCoords } from "../../lib/coords";
 import { Env } from "../../lib/env";
 import { json } from "../../lib/response";
-import {
-  Path,
-  getContentPath,
-  getHash,
-  getMutableHash,
-  isMutable,
-} from "../../lib/mappings";
+import { getContentPath, getHash, isMutable } from "../../lib/mappings";
 import { addContent } from "../../lib/entity";
 
 export const onRequestGet: PagesFunction<Env, "id"> = async (context) => {
@@ -19,9 +13,7 @@ export const onRequestGet: PagesFunction<Env, "id"> = async (context) => {
     id: context.params.id,
     name,
     description: `Parcel ${name} at Exodus Town`,
-    image: `https://exodus.town/api/${getContentPath(
-      await getMutableHash(tokenId, Path.THUMBNAIL)
-    )}`,
+    image: `https://exodus.town/api/tokens/${tokenId}/image`,
     external_url: `https://play.decentraland.org?realm=exodus.town/${tokenId}`,
     attributes: [
       { trait_type: "X", value: x, display_type: "number" },

@@ -23,6 +23,7 @@
   height: 812px;
   opacity: 0;
   pointer-events: none;
+  transform: translateY(-100vh);
 }
 
 .Preview .ui.loader:before {
