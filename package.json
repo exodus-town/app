@@ -16,7 +16,7 @@
     "@dcl/mini-rpc": "^1.0.7",
     "@dcl/schemas": "^9.4.1",
     "@dcl/ui-env": "^1.4.0",
-    "@exodus.town/contracts": "^0.3.0",
+    "@exodus.town/contracts": "^1.0.0",
     "@reduxjs/toolkit": "^1.9.5",
     "@web3modal/ethereum": "^2.7.1",
     "@web3modal/react": "^2.7.1",
