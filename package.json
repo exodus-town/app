@@ -12,7 +12,7 @@
     "postinstall": "ts-node --esm ./scripts/postinstall.ts"
   },
   "dependencies": {
-    "@dcl/inspector": "^7.3.23",
+    "@dcl/inspector": "^7.3.28",
     "@dcl/mini-rpc": "^1.0.7",
     "@dcl/schemas": "^9.4.1",
     "@dcl/ui-env": "^1.4.0",
