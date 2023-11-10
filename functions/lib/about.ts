@@ -15,7 +15,7 @@ export type About = {
       enabled: boolean;
     };
     skybox: {
-      textures: string[];
+      fixedHour: number;
     };
     realmName: string;
   };
@@ -60,7 +60,7 @@ export async function getAbout(
         enabled: false,
       },
       skybox: {
-        textures: [],
+        fixedHour: 10,
       },
       realmName: "exouds.town",
     },

@@ -9,7 +9,7 @@ export type About = {
       enabled: boolean;
     };
     skybox: {
-      textures: string[];
+      fixedHour: number;
     };
     realmName: string;
   };
