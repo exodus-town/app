@@ -32,4 +32,4 @@ Should you encounter beasts or bewilderments, inscribe your trials in an issue w
 
 The Exodus Town interface is bound by the [MIT License](/LICENSE), a lexicon of freedom and sharing in the realm of code.
 
-This is no mere interface; it is a beacon for those who dare to dream, a tool for the brave, the bold, and the builders. Here, we dance with destiny. Your saga begins with a single command.
+This is no mere interface; it is a beacon for those who dare to dream, a tool for the brave, the bold, and the builders. Here, we dance with destiny. Your saga begins with a single command
