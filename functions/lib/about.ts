@@ -60,7 +60,7 @@ export async function getAbout(
         enabled: false,
       },
       skybox: {
-        fixedHour: 0.5,
+        fixedHour: 36000,
       },
       realmName: "exouds.town",
     },
