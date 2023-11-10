@@ -14,8 +14,8 @@ export const Accordion = memo<Props>(({ title, children }) => {
 
   const toggle = useCallback(() => setIsOpen(!isOpen), [isOpen, setIsOpen])
 
-  return <div className={cx('Accordion', { ['is-open']: isOpen })} onClick={toggle}>
-    <h3 className="title">{isOpen ? <Open /> : <Closed />} {title}</h3>
+  return <div className={cx('Accordion', { ['is-open']: isOpen })} >
+    <h3 className="title" onClick={toggle}>{isOpen ? <Open /> : <Closed />} {title}</h3>
     <div className="children">{children}</div>
   </div>
 })
