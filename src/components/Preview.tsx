@@ -3,7 +3,6 @@ import cx from 'classnames'
 import { MessageTransport } from "@dcl/mini-rpc";
 import { CameraClient } from "@dcl/inspector";
 import { Loader } from "decentraland-ui";
-import { getImage } from "../lib/image";
 import { Inspector } from "./Inspector";
 import './Preview.css'
 
@@ -13,9 +12,8 @@ type Props = {
 
 
 export const Preview = memo<Props>(({ tokenId }) => {
-  const [image, setImage] = useState<string>('')
   const [screenshots, setScreenshots] = useState<Record<string, string>>({})
-  const [shouldGenerate, setShouldGenerate] = useState(true)
+  const [isRendering, setIsRendering] = useState(true)
 
   const takeScreenshot = useCallback(async (iframe: HTMLIFrameElement) => {
     const transport = new MessageTransport(window, iframe.contentWindow!, "*");
@@ -25,41 +23,22 @@ export const Preview = memo<Props>(({ tokenId }) => {
       ...screenshots,
       [tokenId!]: screenshot
     })
-    setShouldGenerate(false)
+    setIsRendering(false)
     camera.dispose()
   }, [tokenId, screenshots, setScreenshots])
 
   const screenshot = useMemo(() => tokenId && screenshots[tokenId] || null, [tokenId, screenshots])
 
   useEffect(() => {
-    setShouldGenerate(true)
+    setIsRendering(true)
   }, [tokenId])
-
-  useEffect(() => {
-    if (tokenId) {
-      getImage(tokenId).then(result => {
-        if (result) {
-          setImage(result)
-        }
-      })
-    }
-  }, [tokenId])
-
-  useEffect(() => {
-    if (tokenId && image && !(tokenId in screenshots)) {
-      setScreenshots({
-        ...screenshots,
-        [tokenId]: image
-      })
-    }
-  }, [image, screenshots, tokenId, setScreenshots])
 
   return (
     <>
-      <div className={cx("Preview", { 'is-rendering': shouldGenerate })} style={screenshot ? { backgroundImage: `url(${screenshot})` } : {}}>
-        {(!screenshot || shouldGenerate) && <Loader active size={!screenshot ? 'small' : 'tiny'} />}
+      <div className={cx("Preview", { 'is-rendering': isRendering })} style={{ backgroundImage: screenshot ? `url(${screenshot})` : `url(/api/tokens/${tokenId}/image)` }}>
+        {!screenshot && <Loader active size="tiny" />}
       </div>
-      {shouldGenerate && <div className="generate-preview"><Inspector tokenId={tokenId} key={tokenId} onLoad={takeScreenshot} /></div>}
+      {isRendering && <div className="generate-preview"><Inspector tokenId={tokenId} key={tokenId} onLoad={takeScreenshot} /></div>}
     </>
   )
 })
