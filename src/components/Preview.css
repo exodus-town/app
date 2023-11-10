@@ -6,13 +6,15 @@
   background-color: var(--secondary);
   height: 170px;
   margin-bottom: 12px;
+}
+
+.Preview .image {
+  position: relative;
+  width: 100%;
+  height: 100%;
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
-}
-
-.Preview img {
-  width: 100%;
 }
 
 .generate-preview {
@@ -28,12 +30,4 @@
 
 .Preview .ui.loader:before {
   border-color: var(--secondary-on-modal) !important;
-}
-
-.Preview .ui.loader.tiny {
-  position: absolute;
-  top: auto;
-  left: auto;
-  right: 8px;
-  bottom: 8px;
 }

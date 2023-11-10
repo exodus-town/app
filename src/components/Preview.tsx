@@ -35,8 +35,9 @@ export const Preview = memo<Props>(({ tokenId }) => {
 
   return (
     <>
-      <div className={cx("Preview", { 'is-rendering': isRendering })} style={{ backgroundImage: screenshot ? `url(${screenshot})` : `url(/api/tokens/${tokenId}/image)` }}>
-        {!screenshot && <Loader active size="tiny" />}
+      <div className={cx("Preview", { 'is-rendering': isRendering })}>
+        <div className="image" style={{ filter: screenshot ? '' : 'blur(1px)', backgroundImage: screenshot ? `url(${screenshot})` : `url(/api/tokens/${tokenId}/image)` }}></div>
+        {!screenshot && <Loader active size="small" />}
       </div>
       {isRendering && <div className="generate-preview"><Inspector tokenId={tokenId} key={tokenId} onLoad={takeScreenshot} /></div>}
     </>
