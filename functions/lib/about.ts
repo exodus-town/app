@@ -62,7 +62,7 @@ export async function getAbout(
       skybox: {
         fixedHour: 36000,
       },
-      realmName: "exouds.town",
+      realmName: "exodus.town",
     },
     content: {
       healthy: true,
