@@ -102,6 +102,16 @@
   background-color: var(--secondary-on-modal);
 }
 
+.Auction .action .info {
+  margin-bottom: 0px;
+  margin-top: 16px;
+  color: var(--secondary-text);
+}
+
+.Auction .action .info a {
+  color: var(--text);
+}
+
 .Auction .action .place-bid {
   display: flex;
   position: relative;

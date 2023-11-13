@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { formatUnits, parseUnits } from "viem";
 import { erc20ABI, erc721ABI, useAccount, useContractRead, useContractWrite, useNetwork, useSwitchNetwork, useWaitForTransaction } from "wagmi";
 import { formatDistanceToNow } from 'date-fns'
@@ -6,10 +6,9 @@ import { Button, Loader, Mana } from "decentraland-ui";
 import { Link } from "react-router-dom";
 import { auctionHouseABI } from "@exodus.town/contracts";
 import { Network } from "@dcl/schemas";
-import { FaUnlock } from 'react-icons/fa'
 import { BiSolidPencil } from 'react-icons/bi'
 import { PiCaretCircleLeft, PiCaretCircleRight } from 'react-icons/pi'
-import { AUCTION_HOUSE_CONTRACT_ADDRESS, MANA_TOKEN_CONTRACT_ADDRESS, TOWN_TOKEN_CONTRACT_ADDRESS, getChain } from "../eth";
+import { AUCTION_HOUSE_CONTRACT_ADDRESS, MANA_TOKEN_CONTRACT_ADDRESS, TOWN_TOKEN_CONTRACT_ADDRESS, getChain, getContractUrl } from "../eth";
 import { toCoords } from "../lib/coords";
 import { useLogin } from "../modules/login";
 import { useTown } from "../modules/town";
@@ -51,14 +50,15 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
     args: [address!, AUCTION_HOUSE_CONTRACT_ADDRESS]
   })
 
-  const isApproved = !!allowance && parseInt(formatUnits(allowance, 18)) > 0
-
+  const parsedAllowance = useMemo(() => allowance ? parseInt(formatUnits(allowance, 18)) : 0, [allowance])
+  const parsedBidAmount = useMemo(() => Number(bidAmount), [bidAmount])
+  const isApproved = useMemo(() => parsedAllowance > 0 && parsedAllowance >= parsedBidAmount, [parsedAllowance, parsedBidAmount])
 
   const { write: approve, status: approveStatus, data: approveData, error: approveError } = useContractWrite({
     address: MANA_TOKEN_CONTRACT_ADDRESS,
     abi: erc20ABI,
     functionName: 'approve',
-    args: [AUCTION_HOUSE_CONTRACT_ADDRESS, parseUnits(bidAmount, 18)],
+    args: [AUCTION_HOUSE_CONTRACT_ADDRESS, (2n ** 256n - 1n)],
   })
 
   const { error: approveTxError, status: approveTxStatus } = useWaitForTransaction(approveData)
@@ -226,10 +226,11 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
                 : isWrongNetwork
                   ? <Button className="switch-network" primary onClick={() => switchNetwork ? switchNetwork() : void 0} disabled={isSwitchingNetwork}>Switch Network</Button>
                   : !isApproved && shouldApprove
-                    ? <div className="approve-amount">
+                    ? <><div className="approve-amount">
                       <Button className="cancel-approve" onClick={() => setShouldApprove(false)}>Back</Button>
-                      <Button primary loading={isLoadingAllowance || approveTxStatus === 'loading'} disabled={isLoadingAllowance || approveStatus === 'loading' || approveTxStatus === 'loading'} className="approve" onClick={() => approve()}><FaUnlock />&nbsp;Unlock</Button>
+                      <Button primary loading={isLoadingAllowance || approveTxStatus === 'loading'} disabled={isLoadingAllowance || approveStatus === 'loading' || approveTxStatus === 'loading'} className="approve" onClick={() => approve()}>Approve</Button>
                     </div>
+                      <div className="info">You need to approve the <a href={getContractUrl(AUCTION_HOUSE_CONTRACT_ADDRESS)} target="_blank">AuctionHouse</a> contract to operate MANA on your behalf.</div></>
                     : isSettled
                       ? <Button className="settle" primary loading={settleTxStatus === 'loading'} disabled={settleStatus === 'loading' || settleTxStatus === 'loading'} onClick={() => settle()}>{address === auction!.bidder ? 'Claim' : 'Start Auction'}</Button>
                       : <div className="place-bid">
