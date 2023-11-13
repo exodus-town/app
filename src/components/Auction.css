@@ -63,6 +63,11 @@
   flex-direction: column;
 }
 
+.Auction .column.right .dcl.avatar-face.small {
+  width: 24px;
+  height: 24px;
+}
+
 .Auction .column.owner {
   flex: 1 1 auto;
   overflow: hidden;
@@ -106,6 +111,10 @@
   margin-bottom: 0px;
   margin-top: 16px;
   color: var(--secondary-text);
+}
+
+.Auction .action .info b {
+  color: var(--text);
 }
 
 .Auction .action .info a {

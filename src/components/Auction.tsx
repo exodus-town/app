@@ -209,13 +209,13 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
                   ? <div className="secondary-text">You are the winner of the auction!</div>
                   : <div className="secondary-text">The next auction is ready to start!</div>
                 : <>
-                  <div className="column current-bid">
+                  <div className="column left">
                     <div className="label">Current bid</div>
                     <div className="value"><Mana network={Network.MATIC} inline />{auction?.amount || 0}</div>
                   </div>
-                  <div className="column ends-in">
-                    <div className="label">Ends in</div>
-                    <div className="value">{formatDistanceToNow(auction?.endTime || Date.now(), { addSuffix: false })}</div>
+                  <div className="column right">
+                    <div className="label">Placed by</div>
+                    <div className="value">{<User address={auction!.bidder} />}</div>
                   </div>
                 </>
               }
@@ -233,10 +233,12 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
                       <div className="info">You only need to approve once.</div></>
                     : isSettled
                       ? <Button className="settle" primary loading={settleTxStatus === 'loading'} disabled={settleStatus === 'loading' || settleTxStatus === 'loading'} onClick={() => settle()}>{address === auction!.bidder ? 'Claim' : 'Start Auction'}</Button>
-                      : <div className="place-bid">
+                      : <><div className="place-bid">
                         <input value={bidAmount} placeholder={`${auction!.min} MANA`} className="bid-amount" onChange={e => setBidAmount(e.target.value)}></input>
                         <Button className="bid" primary loading={createBidTxStatus === 'loading'} disabled={createBidStatus === 'loading' || createBidTxStatus === 'loading' || (bidAmount !== '' && isNaN(Number(bidAmount)))} onClick={handlePlaceBid}>Place Bid</Button>
                       </div>
+                        <div className="info">Auction ends in <b>{formatDistanceToNow(auction?.endTime || Date.now(), { addSuffix: false })}</b>.</div>
+                      </>
               }
             </div>
             {error && !error.message.toLowerCase().includes('denied') && !error.message.toLowerCase().includes('rejected')
