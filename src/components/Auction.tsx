@@ -8,7 +8,7 @@ import { auctionHouseABI } from "@exodus.town/contracts";
 import { Network } from "@dcl/schemas";
 import { BiSolidPencil } from 'react-icons/bi'
 import { PiCaretCircleLeft, PiCaretCircleRight } from 'react-icons/pi'
-import { AUCTION_HOUSE_CONTRACT_ADDRESS, MANA_TOKEN_CONTRACT_ADDRESS, TOWN_TOKEN_CONTRACT_ADDRESS, getChain, getContractUrl } from "../eth";
+import { AUCTION_HOUSE_CONTRACT_ADDRESS, MANA_TOKEN_CONTRACT_ADDRESS, TOWN_TOKEN_CONTRACT_ADDRESS, getChain } from "../eth";
 import { toCoords } from "../lib/coords";
 import { useLogin } from "../modules/login";
 import { useTown } from "../modules/town";
@@ -227,10 +227,10 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
                   ? <Button className="switch-network" primary onClick={() => switchNetwork ? switchNetwork() : void 0} disabled={isSwitchingNetwork}>Switch Network</Button>
                   : !isApproved && shouldApprove
                     ? <><div className="approve-amount">
-                      <Button className="cancel-approve" onClick={() => setShouldApprove(false)}>Back</Button>
+                      <Button className="cancel-approve" onClick={() => setShouldApprove(false)}>Cancel</Button>
                       <Button primary loading={isLoadingAllowance || approveTxStatus === 'loading'} disabled={isLoadingAllowance || approveStatus === 'loading' || approveTxStatus === 'loading'} className="approve" onClick={() => approve()}>Approve</Button>
                     </div>
-                      <div className="info">You need to approve the <a href={getContractUrl(AUCTION_HOUSE_CONTRACT_ADDRESS)} target="_blank">AuctionHouse</a> contract to operate MANA on your behalf.</div></>
+                      <div className="info">You only need to approve once.</div></>
                     : isSettled
                       ? <Button className="settle" primary loading={settleTxStatus === 'loading'} disabled={settleStatus === 'loading' || settleTxStatus === 'loading'} onClick={() => settle()}>{address === auction!.bidder ? 'Claim' : 'Start Auction'}</Button>
                       : <div className="place-bid">
