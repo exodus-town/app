@@ -10,5 +10,9 @@ type Props = {
 export const User = memo<Props>(({ address, size = 'small' }) => {
   const { avatar, isLoading } = useAvatar(address)
   const avatarName = avatar?.name
-  return <div className="User"><AvatarFace size={size} avatar={isLoading ? undefined : avatar} />{avatarName ? <div className="name">{avatarName}</div> : <div className="loading secondary-text">Loading...</div>}</div>
+  return <div className="User"><AvatarFace size={size} avatar={isLoading ? undefined : avatar} />{
+    isLoading
+      ? <div className="loading secondary-text">Loading...</div>
+      : <div className="name">{avatarName ? avatarName : address?.slice(0, 6)}</div>
+  }</div>
 }) 

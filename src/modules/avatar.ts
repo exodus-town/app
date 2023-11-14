@@ -15,7 +15,7 @@ export const useAvatar = (address?: string) => {
       })
         .then((resp) => resp.json())
         .then((results) => {
-          setAvatar(results[0].avatars[0]);
+          setAvatar(results[0]?.avatars[0]);
         })
         .catch((error) => {
           setError(error);
