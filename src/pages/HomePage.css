@@ -5,7 +5,7 @@
 .HomePage .Auction {
   position: absolute;
   right: 0px;
-  top: -265px;
+  top: -285px;
   z-index: 1;
 }
 
@@ -113,14 +113,14 @@
 @media (max-width: 991px) {
   .HomePage .Auction {
     position: relative;
-    margin-top: 400px;
+    margin-top: 420px;
     left: 20px;
     width: calc(100% - 40px);
   }
 
   .HomePage .content {
     padding-top: 0px;
-    margin-top: -200px;
+    margin-top: -220px;
   }
 
   .HomePage .welcome p {
