@@ -108,7 +108,7 @@
 }
 
 .Auction .action .info {
-  margin-bottom: 0px;
+  margin-bottom: 16px;
   margin-top: 16px;
   color: var(--secondary-text);
 }

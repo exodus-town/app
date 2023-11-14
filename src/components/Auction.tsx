@@ -226,18 +226,20 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
                 : isWrongNetwork
                   ? <Button className="switch-network" primary onClick={() => switchNetwork ? switchNetwork() : void 0} disabled={isSwitchingNetwork}>Switch Network</Button>
                   : !isApproved && shouldApprove
-                    ? <><div className="approve-amount">
-                      <Button className="cancel-approve" onClick={() => setShouldApprove(false)}>Cancel</Button>
-                      <Button primary loading={isLoadingAllowance || approveTxStatus === 'loading'} disabled={isLoadingAllowance || approveStatus === 'loading' || approveTxStatus === 'loading'} className="approve" onClick={() => approve()}>Approve</Button>
-                    </div>
-                      <div className="info">You only need to approve once.</div></>
+                    ? <>
+                      <div className="info">You only need to approve once.</div>
+                      <div className="approve-amount">
+                        <Button className="cancel-approve" onClick={() => setShouldApprove(false)}>Cancel</Button>
+                        <Button primary loading={isLoadingAllowance || approveTxStatus === 'loading'} disabled={isLoadingAllowance || approveStatus === 'loading' || approveTxStatus === 'loading'} className="approve" onClick={() => approve()}>Approve</Button>
+                      </div></>
                     : isSettled
                       ? <Button className="settle" primary loading={settleTxStatus === 'loading'} disabled={settleStatus === 'loading' || settleTxStatus === 'loading'} onClick={() => settle()}>{address === auction!.bidder ? 'Claim' : 'Start Auction'}</Button>
-                      : <><div className="place-bid">
-                        <input value={bidAmount} placeholder={`${auction!.min} MANA`} className="bid-amount" onChange={e => setBidAmount(e.target.value)}></input>
-                        <Button className="bid" primary loading={createBidTxStatus === 'loading'} disabled={createBidStatus === 'loading' || createBidTxStatus === 'loading' || (bidAmount !== '' && isNaN(Number(bidAmount)))} onClick={handlePlaceBid}>Place Bid</Button>
-                      </div>
+                      : <>
                         <div className="info">Auction ends in <b>{formatDistanceToNow(auction?.endTime || Date.now(), { addSuffix: false })}</b>.</div>
+                        <div className="place-bid">
+                          <input value={bidAmount} placeholder={`${auction!.min} MANA`} className="bid-amount" onChange={e => setBidAmount(e.target.value)}></input>
+                          <Button className="bid" primary loading={createBidTxStatus === 'loading'} disabled={createBidStatus === 'loading' || createBidTxStatus === 'loading' || (bidAmount !== '' && isNaN(Number(bidAmount)))} onClick={handlePlaceBid}>Place Bid</Button>
+                        </div>
                       </>
               }
             </div>
