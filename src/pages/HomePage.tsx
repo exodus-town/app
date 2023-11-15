@@ -1,11 +1,15 @@
 import { memo, useEffect, useState } from "react";
 import { Button, Container } from "decentraland-ui";
+import { SlMagnifier } from "react-icons/sl";
 import { IoMdWarning } from 'react-icons/io'
+import { FaDiscord } from "react-icons/fa";
 import { Navbar } from "../components/Navbar";
 import { Auction } from "../components/Auction";
 import { Tiles } from "../components/Tiles";
 import { Accordion } from "../components/Accordion";
 import { useAuction } from "../modules/auction";
+import { useTreasury } from "../modules/treasury";
+import { INVITE_LINK, useDiscord } from "../modules/discord";
 import { config } from "../config";
 import { AUCTION_HOUSE_CONTRACT_ADDRESS, EXODUS_DAO_CONTRACT_ADDRESS, TOWN_TOKEN_CONTRACT_ADDRESS, getContractUrl } from "../eth";
 import './HomePage.css'
@@ -14,6 +18,8 @@ export const HomePage = memo(() => {
 
   const { maxTokenId } = useAuction()
   const [tokenId, setTokenId] = useState<string>()
+  const { members, isLoading: isLoadingMembers } = useDiscord()
+  const { treasury, isLoading: isLoadingTreasury } = useTreasury()
 
   useEffect(() => {
     setTokenId(maxTokenId.toString())
@@ -33,6 +39,18 @@ export const HomePage = memo(() => {
           </div>
 
           <Button size="large" primary className="jump-in-mobile" href="https://play.decentraland.org?realm=exodus.town"><span className="text">Jump In</span> <i className="jump-in-icon" /></Button>
+
+          <div className="stats">
+            <div className="stat">
+              <h2>Treasury</h2>
+              <p className="value">{isLoadingTreasury ? 'Loading...' : `$${treasury?.toFixed(2)}`}<Button href={`${config.get('BLOCK_EXPLORER_URL')}/tokenholdings?a=${config.get('EXODUS_DAO_CONTRACT_ADDRESS')}`} target='_blank' primary size="small" inverted className="discord"><SlMagnifier className='magnifier-icon' /> View</Button></p>
+            </div>
+
+            <div className="stat">
+              <h2>Community</h2>
+              <p className="value">{isLoadingMembers ? 'Loading...' : `${members} Members`} <Button href={INVITE_LINK} target='_blank' primary size="small" inverted className="discord"><FaDiscord className='discord-icon' /> Join</Button></p>
+            </div>
+          </div>
 
           <div className="learn-more">
             <h2>Learn More</h2>

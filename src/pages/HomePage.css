@@ -83,6 +83,44 @@
   font-size: 40px;
 }
 
+.HomePage .stats {
+  margin: 96px 0px;
+  display: flex;
+  flex-direction: row;
+}
+
+.HomePage .stats .stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.HomePage .stats .stat + .stat {
+  margin-left: 80px;
+}
+
+.HomePage .stats .stat h2 {
+  font-size: 32px;
+  margin-bottom: 24px;
+}
+
+.HomePage .stats .stat .value {
+  font-size: 24px;
+}
+
+.HomePage .stats .ui.button.inverted.primary {
+  color: #fc9dfe;
+  border-color: #fc9dfe;
+  background-color: transparent !important;
+  margin-left: 20px;
+  min-width: 40px;
+}
+.HomePage .stats .magnifier-icon,
+.HomePage .stats .discord-icon {
+  position: relative;
+  top: 2px;
+  margin-right: 4px;
+}
+
 .HomePage .learn-more {
   margin: 96px 0px;
 }
@@ -144,6 +182,15 @@
 
   .HomePage .content .ui.button.jump-in-mobile {
     display: block;
+  }
+
+  .HomePage .stats {
+    flex-direction: column;
+  }
+
+  .HomePage .stats .stat + .stat {
+    margin-left: 0px;
+    margin-top: 48px;
   }
 }
 
