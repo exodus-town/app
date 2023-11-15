@@ -105,6 +105,7 @@
 
 .HomePage .stats .stat .value {
   font-size: 24px;
+  display: flex;
 }
 
 .HomePage .stats .ui.button.inverted.primary {
