@@ -28,7 +28,10 @@ export const onRequestPost: PagesFunction<Env, "id"> = async (context) => {
 
   const ids = new Set<string>();
   for (const pointer of pointers) {
-    ids.add(fromPointer(pointer));
+    const id = fromPointer(pointer);
+    if (id) {
+      ids.add(id);
+    }
   }
 
   const entities = await Promise.all(
