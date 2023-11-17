@@ -7,8 +7,14 @@ import { error, json } from "../../lib/response";
 
 export const onRequestPost: PagesFunction<Env, "id"> = async (context) => {
   const { pointers } = await context.request.json<{ pointers: string[] }>();
-  if (!pointers) {
-    return error("Invalid pointers", 400);
+  if (!Array.isArray(pointers)) {
+    return error(`Invalid pointers=${pointers}`, 400);
+  }
+  if (pointers.some((pointer) => !/(-?)\d+,(-?)\d+/.test(pointer))) {
+    const invalid = pointers.find(
+      (pointer) => !/(-?)\d+,(-?)\d+/.test(pointer)
+    );
+    return error(`Invalid pointer=${invalid}`, 400);
   }
   const town = getTownToken(context.env);
 
