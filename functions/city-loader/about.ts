@@ -5,7 +5,6 @@ import { json } from "../lib/response";
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   const about = await getAbout(context.env);
   delete about.configurations.scenesUrn;
-  about.configurations.cityLoaderContentServer =
-    "https://exodus.town/api/entities/active";
+  about.configurations.cityLoaderContentServer = "https://exodus.town/api";
   return json(about);
 };
