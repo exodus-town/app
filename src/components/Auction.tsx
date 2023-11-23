@@ -1,5 +1,5 @@
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
-import { formatUnits, parseUnits } from "viem";
+import { formatUnits, hexToNumber, parseUnits } from "viem";
 import {
   erc20ABI,
   erc721ABI,
@@ -331,12 +331,16 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
                         {auction?.amount || 0}
                       </div>
                     </div>
-                    <div className="column right">
-                      <div className="label">Placed by</div>
-                      <div className="value">
-                        {<User address={auction!.bidder} />}
+                    {auction &&
+                    hexToNumber(auction.bidder as unknown as `0x${string}`) !==
+                      0 ? (
+                      <div className="column right">
+                        <div className="label">Placed by</div>
+                        <div className="value">
+                          {<User address={auction!.bidder} />}
+                        </div>
                       </div>
-                    </div>
+                    ) : null}
                   </>
                 )}
               </div>
