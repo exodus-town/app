@@ -1,6 +1,7 @@
 import { Env } from "../../../lib/env";
 import { getMappings, toCoords, toId } from "../../../lib/coords";
 import { error } from "../../../lib/response";
+import { getAuctionHouse } from "../../../lib/contracts";
 
 enum Colors {
   EVEN = `#100e13`,
@@ -12,15 +13,29 @@ enum Colors {
 
 export const onRequestGet: PagesFunction<Env, "id"> = async (context) => {
   const tokenId = context.params.id as string;
-  if (isNaN(+tokenId) || +tokenId < 0)
-    return error(`Invalid tokenId=${tokenId}`, 400);
+
+  const auctionHouse = getAuctionHouse(context.env);
+  const [maxTokenId] = await auctionHouse.read.auction();
+
+  if (isNaN(+tokenId)) {
+    return error(`Invalid tokenId=${tokenId} must be a number`, 400);
+  }
+  if (+tokenId > maxTokenId) {
+    return error(
+      `Invalid tokenId=${tokenId} and maxTokenId=${maxTokenId}`,
+      400
+    );
+  }
+  if (+tokenId < 0) {
+    return error(`Invalid tokenId=${tokenId} can't be less than 0`, 400);
+  }
 
   const tiles: string[] = [];
 
   const width = 512;
   const height = 512;
-  const size = 15;
-  const padding = 2;
+  const size = 25;
+  const padding = 3;
 
   const horizontal = Math.ceil(width / size);
   const vertical = Math.ceil(height / size);
