@@ -47,6 +47,9 @@ export const Navbar = memo(() => {
           <Menu.Item href="https://play.decentraland.org?realm=exodus.town">
             Play
           </Menu.Item>
+          <Menu.Item href={"https://opensea.io/collection/exodus-town"}>
+            MARKET
+          </Menu.Item>
           <Menu.Item href={config.get("DAO_URL")}>DAO</Menu.Item>
           <Menu.Item href="https://x.com/ExodusTown">NEWS</Menu.Item>
         </Menu>
