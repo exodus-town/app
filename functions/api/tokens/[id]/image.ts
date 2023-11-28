@@ -82,5 +82,9 @@ export const onRequestGet: PagesFunction<Env, "id"> = async (context) => {
 
   const response = new Response(svg);
   response.headers.set("Content-Type", "image/svg+xml");
+  response.headers.set(
+    "Cache-Control",
+    "max-age=31536000, s-maxage=31536000, immutable"
+  );
   return response;
 };
