@@ -219,6 +219,10 @@ export const HomePage = memo(() => {
                   </b>
                   .
                 </p>
+                <p>
+                  This is an independent community project, is neither
+                  affiliated with, nor endorsed by the Decentraland Foundation.
+                </p>
               </Accordion>
             </div>
 
@@ -228,15 +232,18 @@ export const HomePage = memo(() => {
                 Please note that none of the information provided here
                 constitutes financial advice. Exercise your own judgment and
                 consult professionals before making any investment decisions.
-                Exodus Town is a product of what might be described as a
-                self-hatred fueled, narcotics-induced coding extravaganza. To
-                put it bluntly, this is a high-risk experiment in the Metaverse;
-                it's uncharted waters with unpredictable tides. By interacting
-                with Exodus Town through this interface, you implicitly agree to
-                not expect any guaranteed outcome, benefit, or return on
-                investment. You acknowledge that you're essentially venturing
-                into a digital Wild West where anything can happen—and probably
-                will. <b>Proceed with caution, intrepid explorer.</b>
+                It's important to understand that this is an independent
+                community project, and is neither affiliated with nor endorsed
+                by the Decentraland Foundation. Exodus Town is a product of what
+                might be described as a self-hatred fueled, narcotics-induced
+                coding extravaganza. To put it bluntly, this is a high-risk
+                experiment in the Metaverse; it's uncharted waters with
+                unpredictable tides. By interacting with Exodus Town through
+                this interface, you implicitly agree to not expect any
+                guaranteed outcome, benefit, or return on investment. You
+                acknowledge that you're essentially venturing into a digital
+                Wild West where anything can happen—and probably will.{" "}
+                <b>Proceed with caution, intrepid explorer.</b>
               </p>
             </div>
           </div>
