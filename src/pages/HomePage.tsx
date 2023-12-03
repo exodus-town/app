@@ -84,7 +84,7 @@ export const HomePage = memo(() => {
                 <p className="value">
                   {isLoadingTreasury
                     ? "Loading..."
-                    : `$${treasury?.toFixed(2)}`}
+                    : `$${(+(treasury?.toFixed(2) || "0")).toLocaleString()}`}
                   <Button
                     href={`${config.get(
                       "BLOCK_EXPLORER_URL"
