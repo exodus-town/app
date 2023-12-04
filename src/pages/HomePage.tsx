@@ -1,7 +1,7 @@
 import { memo, useEffect, useState } from "react";
 import { Button, Container } from "decentraland-ui";
 import { SlMagnifier } from "react-icons/sl";
-import { IoMdWarning } from "react-icons/io";
+import { IoMdWarning, IoMdLogIn } from "react-icons/io";
 import { FaDiscord } from "react-icons/fa";
 import { Navbar } from "../components/Navbar";
 import { Auction } from "../components/Auction";
@@ -18,12 +18,14 @@ import {
   getContractUrl,
 } from "../eth";
 import "./HomePage.css";
+import { useOnline } from "../modules/online";
 
 export const HomePage = memo(() => {
   const { maxTokenId } = useAuction();
   const [tokenId, setTokenId] = useState<string>();
   const { members, isLoading: isLoadingMembers } = useDiscord();
   const { treasury, isLoading: isLoadingTreasury } = useTreasury();
+  const { users, isLoading: isLoadingUsers } = useOnline();
 
   useEffect(() => {
     setTokenId(maxTokenId.toString());
@@ -118,6 +120,30 @@ export const HomePage = memo(() => {
                   </Button>
                 </p>
               </div>
+
+              {users > 0 ? (
+                <div className="stat">
+                  <h2>Online</h2>
+                  <p className="value">
+                    {isLoadingUsers
+                      ? "Loading..."
+                      : users === 1
+                      ? `1 User`
+                      : `${users} Users`}{" "}
+                    <Button
+                      href="https://play.decentraland.org?realm=exodus.town"
+                      target="_blank"
+                      primary
+                      size="small"
+                      inverted
+                      className="online"
+                    >
+                      <IoMdLogIn className="jump-in-icon" />
+                      Jump In
+                    </Button>
+                  </p>
+                </div>
+              ) : null}
             </div>
 
             <div className="learn-more">
