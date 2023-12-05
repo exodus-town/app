@@ -2,13 +2,10 @@ import { useMemo } from "react";
 import { useJSON } from "./json";
 
 export const useOnline = () => {
-  const { data, error, isLoading } = useJSON(
-    "https://places.decentraland.org/api/worlds?names=exodustown.dcl.eth&offset=0&limit=1"
-  );
+  const { data, error, isLoading } = useJSON("/api/online");
   const users = useMemo(() => {
     if (data) {
-      console.log(data);
-      return data.data[0]?.user_count || 0;
+      return data.users;
     }
     return 0;
   }, [data]);
