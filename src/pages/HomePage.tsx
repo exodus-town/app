@@ -245,10 +245,6 @@ export const HomePage = memo(() => {
                   </b>
                   .
                 </p>
-                <p>
-                  This is an independent community project, is neither
-                  affiliated with, nor endorsed by the Decentraland Foundation.
-                </p>
               </Accordion>
             </div>
 
