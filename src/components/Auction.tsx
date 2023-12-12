@@ -300,7 +300,7 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
                   <Button
                     primary
                     className="action-button"
-                    href={`https://play.decentraland.org?realm=exodus.town/${tokenId}`}
+                    href={`https://decentraland.org/play?realm=exodus.town/${tokenId}`}
                   >
                     Jump In <i className="jump-in-icon" />
                   </Button>

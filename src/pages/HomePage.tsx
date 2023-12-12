@@ -10,6 +10,7 @@ import { Accordion } from "../components/Accordion";
 import { useAuction } from "../modules/auction";
 import { useTreasury } from "../modules/treasury";
 import { INVITE_LINK, useDiscord } from "../modules/discord";
+import { useOnline } from "../modules/online";
 import { config } from "../config";
 import {
   AUCTION_HOUSE_CONTRACT_ADDRESS,
@@ -18,7 +19,6 @@ import {
   getContractUrl,
 } from "../eth";
 import "./HomePage.css";
-import { useOnline } from "../modules/online";
 
 export const HomePage = memo(() => {
   const { maxTokenId } = useAuction();
@@ -46,7 +46,7 @@ export const HomePage = memo(() => {
                   size="large"
                   primary
                   className="jump-in"
-                  href="https://play.decentraland.org?realm=exodus.town"
+                  href="https://decentraland.org/play?realm=exodus.town"
                 >
                   <span className="text">Jump In</span>{" "}
                   <i className="jump-in-icon" />
@@ -74,7 +74,7 @@ export const HomePage = memo(() => {
               size="large"
               primary
               className="jump-in-mobile"
-              href="https://play.decentraland.org?realm=exodus.town"
+              href="https://decentraland.org/play?realm=exodus.town"
             >
               <span className="text">Jump In</span>{" "}
               <i className="jump-in-icon" />
@@ -131,7 +131,7 @@ export const HomePage = memo(() => {
                       ? `1 User`
                       : `${users} Users`}{" "}
                     <Button
-                      href="https://play.decentraland.org?realm=exodus.town"
+                      href="https://decentraland.org/play?realm=exodus.town"
                       target="_blank"
                       primary
                       size="small"

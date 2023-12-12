@@ -44,7 +44,7 @@ export const Navbar = memo(() => {
           <div className="dcl navbar-logo">
             <div className="dcl logo"></div>
           </div>
-          <Menu.Item href="https://play.decentraland.org?realm=exodus.town">
+          <Menu.Item href="https://decentraland.org/play?realm=exodus.town">
             Play
           </Menu.Item>
           <Menu.Item href={"https://opensea.io/collection/exodus-town"}>

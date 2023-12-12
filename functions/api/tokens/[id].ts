@@ -14,7 +14,7 @@ export const onRequestGet: PagesFunction<Env, "id"> = async (context) => {
     name,
     description: `Parcel ${name} at Exodus Town`,
     image: `https://exodus.town/api/tokens/${tokenId}/image`,
-    external_url: `https://play.decentraland.org?realm=exodus.town/${tokenId}`,
+    external_url: `https://decentraland.org/play?realm=exodus.town/${tokenId}`,
     attributes: [
       { trait_type: "X", value: x, display_type: "number" },
       { trait_type: "Y", value: y, display_type: "number" },
