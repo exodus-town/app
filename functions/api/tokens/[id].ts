@@ -3,7 +3,7 @@ import { toCoords } from "../../lib/coords";
 import { Env } from "../../lib/env";
 import { json } from "../../lib/response";
 import { getContentPath, getHash, isMutable } from "../../lib/mappings";
-import { addContent } from "../../lib/entity";
+import { addContent, removeContent } from "../../lib/entity";
 
 export const onRequestGet: PagesFunction<Env, "id"> = async (context) => {
   const tokenId = context.params.id as string;
@@ -29,7 +29,7 @@ export const onRequestPost: PagesFunction<Env, "id"> = async (context) => {
   const data = await context.request.formData();
 
   // save file
-  const mappings = new Map();
+  const mappings = new Map<string, string>();
   for (const [path, content] of data) {
     const file = content as unknown as File;
     const buffer = Buffer.from(await file.arrayBuffer());
@@ -52,6 +52,25 @@ export const onRequestPost: PagesFunction<Env, "id"> = async (context) => {
 
   // add to entity
   const entity = await addContent(context.env.storage, tokenId, mappings);
+
+  return json(entity);
+};
+
+export const onRequestDelete: PagesFunction<Env, "id"> = async (context) => {
+  const tokenId = context.params.id as string;
+  const data = await context.request.formData();
+
+  // gather paths to remove
+  const paths = new Set<string>();
+  for (const [path] of data) {
+    if (isMutable(path)) {
+      continue;
+    }
+    paths.add(path);
+  }
+
+  // remove from entity
+  const entity = await removeContent(context.env.storage, tokenId, paths);
 
   return json(entity);
 };

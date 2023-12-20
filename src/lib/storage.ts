@@ -1,5 +1,6 @@
 import future from "fp-future";
 import { SIGNED_MESSAGE_HEADER } from "./auth";
+import { Entity } from "./entity";
 
 const batch = new Map<string, Blob>();
 let timeout: NodeJS.Timeout | null = null;
@@ -15,7 +16,11 @@ export function hasSigned() {
   return !!signedMessage;
 }
 
-export function save(tokenId: string, path: string, content: Buffer) {
+export function save(
+  tokenId: string,
+  path: string,
+  content: Buffer
+): Promise<Entity> {
   const blob = new Blob([content]);
 
   batch.set(path, blob);
@@ -38,8 +43,8 @@ export function save(tokenId: string, path: string, content: Buffer) {
       },
     });
     if (resp.ok) {
-      const data = await resp.json();
-      promise.resolve(data);
+      const entity: Entity = await resp.json();
+      promise.resolve(entity);
     } else {
       promise.reject(new Error(`Error: HTTP Status ${resp.status}`));
     }
@@ -47,4 +52,22 @@ export function save(tokenId: string, path: string, content: Buffer) {
   }, 500);
 
   return promise;
+}
+
+export async function remove(tokenId: string, path: string) {
+  const formData = new FormData();
+  formData.append(path, "");
+  const resp = await fetch(`/api/tokens/${tokenId}`, {
+    method: "delete",
+    body: formData,
+    headers: {
+      [SIGNED_MESSAGE_HEADER]: signedMessage!,
+    },
+  });
+  if (resp.ok) {
+    const entity: Entity = await resp.json();
+    return entity;
+  } else {
+    new Error(`Error: HTTP Status ${resp.status}`);
+  }
 }

@@ -104,3 +104,30 @@ export async function addContent(
   }
   return entity;
 }
+
+export async function removeContent(
+  storage: R2Bucket,
+  tokenId: string,
+  paths: Set<string>
+): Promise<Entity> {
+  const entity = await getEntity(storage, tokenId);
+  let hasChanges = false;
+  if (paths.size > 0) {
+    for (const path of paths) {
+      if (entity.content.some((content) => content.file === path)) {
+        hasChanges = true;
+        entity.content = entity.content.filter(
+          (content) => content.file !== path
+        );
+      }
+    }
+
+    if (hasChanges) {
+      await storage.put(
+        getContentPath(entity.id),
+        JSON.stringify(entity, null, 2)
+      );
+    }
+  }
+  return entity;
+}

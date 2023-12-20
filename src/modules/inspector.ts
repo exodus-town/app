@@ -2,7 +2,7 @@ import { MessageTransport } from "@dcl/mini-rpc";
 import { UiClient, IframeStorage, CameraClient } from "@dcl/inspector";
 import { Path, getContentPath } from "../lib/path";
 import { createPreferences } from "../lib/preferences";
-import { hasSigned, save, setSignedMessage } from "../lib/storage";
+import { hasSigned, remove, save, setSignedMessage } from "../lib/storage";
 import { Entity, getEntity } from "../lib/entity";
 
 type InitOptions = {
@@ -144,8 +144,9 @@ async function wire(
     return files;
   });
 
-  storage.handle("delete", async () => {
-    // nada
+  storage.handle("delete", async ({ path }) => {
+    await remove(tokenId, path);
+    mappings.delete(path);
   });
 
   // idle

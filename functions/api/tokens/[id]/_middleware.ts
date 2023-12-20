@@ -27,3 +27,5 @@ export const onRequestPost: PagesFunction<Env, "id"> = async (context) => {
 
   return context.next();
 };
+
+export const onRequestDelete = onRequestPost;
