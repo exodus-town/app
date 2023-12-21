@@ -39,7 +39,12 @@ export const useTown = () => {
 
   const tokenIds = useMemo(() => {
     if (tokens) {
-      return tokens.map(({ result }) => formatUnits(result as bigint, 0));
+      return tokens
+        .filter(
+          ({ status, result }) =>
+            status === "success" && typeof result !== "undefined"
+        )
+        .map(({ result }) => formatUnits(result as bigint, 0));
     }
     return [];
   }, [tokens]);
