@@ -11,7 +11,8 @@ export type Entity = {
   pointers: string[];
   timestamp: number;
   content: { hash: string; file: string }[];
-  metadata?: unknown;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  metadata?: any;
 };
 
 async function upload(storage: R2Bucket, file: string, buffer: Buffer) {

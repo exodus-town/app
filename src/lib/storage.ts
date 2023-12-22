@@ -71,3 +71,18 @@ export async function remove(tokenId: string, path: string) {
     new Error(`Error: HTTP Status ${resp.status}`);
   }
 }
+
+export async function reset(tokenId: string) {
+  const resp = await fetch(`/api/tokens/${tokenId}/reset`, {
+    method: "post",
+    headers: {
+      [SIGNED_MESSAGE_HEADER]: signedMessage!,
+    },
+  });
+  if (resp.ok) {
+    const entity: Entity = await resp.json();
+    return entity;
+  } else {
+    new Error(`Error: HTTP Status ${resp.status}`);
+  }
+}

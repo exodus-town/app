@@ -9,7 +9,7 @@ type InitOptions = {
   tokenId: string;
   signedMessage?: string | null;
   isOwner?: boolean;
-  onLoad?: () => void;
+  onLoad?: (data: { isCLI: boolean }) => void;
 };
 
 export async function init(
@@ -30,8 +30,13 @@ export async function init(
   const camera = new CameraClient(transport);
   const storage = new IframeStorage.Server(transport);
 
+  const isCLI = !!(entity.metadata as { cli?: boolean }).cli;
+  const canWrite = hasSigned() && !!isOwner && !isCLI;
+
+  console.log("inspector::isCLI", isCLI);
+
   async function handleLoad() {
-    if (hasSigned() || isOwner) {
+    if (canWrite) {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       const screenshot = await camera.takeScreenshot(1024, 1024);
       const buffer = Buffer.from(
@@ -42,18 +47,18 @@ export async function init(
       await ui.toggleGizmos(true);
     }
     // callback
-    onLoad && onLoad();
+    onLoad && onLoad({ isCLI });
   }
 
   // wire handlers
-  await wire(storage, { tokenId, isOwner, entity, onLoad: handleLoad });
+  await wire(storage, { tokenId, canWrite, entity, onLoad: handleLoad });
 
   // setup ui
   const promises: Promise<unknown>[] = [];
   promises.push(ui.selectAssetsTab("AssetsPack"));
   promises.push(ui.toggleComponent("inspector::Scene", false));
   promises.push(ui.toggleGizmos(false));
-  if (!hasSigned() || !isOwner) {
+  if (!canWrite) {
     promises.push(ui.togglePanel("assets", false));
     promises.push(ui.togglePanel("components", false));
     promises.push(ui.togglePanel("entities", false));
@@ -70,12 +75,14 @@ function json(value: unknown) {
   return Buffer.from(JSON.stringify(value), "utf8");
 }
 
-type WireOptions = Omit<InitOptions, "signedMessage"> & {
+type WireOptions = Omit<InitOptions, "signedMessage" | "isOwner" | "onLoad"> & {
   entity: Entity;
+  canWrite: boolean;
+  onLoad: () => void;
 };
 async function wire(
   storage: IframeStorage.Server,
-  { tokenId, isOwner, entity, onLoad }: WireOptions
+  { tokenId, canWrite, entity, onLoad }: WireOptions
 ) {
   const mappings = new Map<string, string>();
   for (const { file, hash } of entity.content) {
@@ -102,7 +109,7 @@ async function wire(
 
   // write file
   storage.handle("write_file", async ({ path, content }) => {
-    if (!hasSigned() || !isOwner) return;
+    if (!canWrite) return;
     const entity = await save(tokenId, path, content);
     for (const { file, hash } of entity.content) {
       mappings.set(file, hash);

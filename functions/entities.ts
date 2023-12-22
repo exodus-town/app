@@ -218,9 +218,14 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     }
   }
 
+  const currentEntity = await getEntity(env.storage, tokenId);
   const newEntity: Entity = {
-    ...(await getEntity(env.storage, tokenId)),
+    ...currentEntity,
     content: newContent,
+    metadata: {
+      ...currentEntity.metadata,
+      cli: true,
+    },
   };
 
   console.log("newEntity", newEntity);
