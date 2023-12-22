@@ -1,5 +1,9 @@
 import { Env } from "../../../lib/env";
-import { getMappings, toCoords, toId } from "../../../lib/coords";
+import {
+  getCoordsToTokenIdMappings,
+  toCoords,
+  toId,
+} from "../../../lib/coords";
 import { error } from "../../../lib/response";
 import { getAuctionHouse } from "../../../lib/contracts";
 
@@ -45,7 +49,7 @@ export const onRequestGet: PagesFunction<Env, "id"> = async (context) => {
   const startX = Math.ceil(centerX - horizontal / 2);
   const startY = Math.ceil(centerY - vertical / 2);
 
-  const mappings = getMappings(tokenId);
+  const mappings = getCoordsToTokenIdMappings(tokenId);
 
   for (let h = 0; h < horizontal; h++) {
     for (let v = 0; v < vertical; v++) {
