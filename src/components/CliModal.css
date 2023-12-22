@@ -1,0 +1,7 @@
+.CliModal .content {
+  text-align: center;
+}
+
+.CliModal code {
+  color: var(--secondary-text);
+}
