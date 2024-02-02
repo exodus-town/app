@@ -25,7 +25,6 @@ export const TokenPage = memo(() => {
         isOwner={isOwner}
         signedMessage={signedMessage}
         onLoad={(_iframe, data) => {
-          console.log("TokenPage::data", data);
           setShowResetModal(data.isCLI);
         }}
       />
