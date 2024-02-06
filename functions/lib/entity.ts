@@ -63,6 +63,7 @@ export async function getEntity(storage: R2Bucket, tokenId: string) {
   const path = getContentPath(hash);
   const exists = await storage.head(path);
   if (!exists) {
+    console.log(`Generating entity for tokenId=${tokenId}`);
     const entity = await createEntity(storage, tokenId);
     await storage.put(path, JSON.stringify(entity, null, 2));
   }

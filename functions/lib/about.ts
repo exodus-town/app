@@ -3,8 +3,6 @@ import { toCoords } from "./coords";
 import { Entity, getEntity } from "./entity";
 import { Env } from "./env";
 
-const MAX_SCENES = 30;
-
 export type About = {
   healthy: boolean;
   acceptingUsers: boolean;
@@ -83,12 +81,7 @@ export async function getAbout(
   };
 }
 
-async function getUrns(
-  env: Env,
-  maxTokenId: number,
-  tokenId: string = "0",
-  maxScenes: number = MAX_SCENES
-) {
+async function getUrns(env: Env, maxTokenId: number, tokenId: string = "0") {
   const promises: { tokenId: string; entity: Promise<Entity> }[] = [
     { tokenId, entity: getEntity(env.storage, tokenId) },
   ];
@@ -108,9 +101,7 @@ async function getUrns(
     const dist2 = Math.abs(x - x2) + Math.abs(y - y2);
     return dist1 > dist2 ? 1 : -1;
   });
-  const entities = await Promise.all(
-    promises.slice(0, maxScenes).map((promise) => promise.entity)
-  );
+  const entities = await Promise.all(promises.map((promise) => promise.entity));
   return entities.map(
     (entity) =>
       `urn:decentraland:entity:${entity.id}?=&baseUrl=https://exodus.town/api/contents/`
