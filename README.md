@@ -17,6 +17,8 @@ Within these digital halls lies the machinery of interaction for the settlers of
 To wield the power of this interface:
 
 - Clone the essence of this repository to your sanctum.
+- Transcribe the ancient script `.dev.vars.example` into `.dev.vars`, infusing it with the necessary environment runes for the backend sanctum.
+- To harmonize the frontiers of the frontend realm, edit the scrolls within `src/config/env/dev.json` and `src/config/env/prd.json` with the wisdom of configuration.
 - Invoke `npm install` to align the stars and gather the necessary elements.
 - Chant `npm run dev` to awaken the spirits within and step through the portal to your local realm.
 
