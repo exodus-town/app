@@ -91,9 +91,7 @@ async function wire(
 
   // read file
   storage.handle("read_file", async ({ path }) => {
-    if (canWrite) {
-      checkIdle();
-    }
+    checkIdle();
     switch (path) {
       case Path.PREFERENCES: {
         const preferences = createPreferences();
@@ -171,9 +169,6 @@ async function wire(
         onLoad();
       }, 3000);
     }
-  }
-  if (!canWrite && onLoad) {
-    onLoad();
   }
 }
 
