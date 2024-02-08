@@ -8,8 +8,8 @@ type ComponentData = {
 
 export function createComposite(tokenId: string) {
   const { base, parcels } = toLayout(tokenId);
-  const scene: ComponentData = {
-    name: "inspector::Scene",
+  const metadata: ComponentData = {
+    name: "inspector::SceneMetadata",
     data: {
       "0": {
         json: {
@@ -57,6 +57,10 @@ export function createComposite(tokenId: string) {
       },
     },
   };
+  const lock: ComponentData = {
+    name: "inspector::Lock",
+    data: {},
+  };
   for (let i = 0; i < parcels.length; i++) {
     const entity = 513 + i;
     gltf.data[entity] = {
@@ -79,9 +83,14 @@ export function createComposite(tokenId: string) {
         value: `Ground ${i + 1}`,
       },
     };
+    lock.data[entity] = {
+      json: {
+        value: true,
+      },
+    };
     children.push(entity);
   }
   return {
-    components: [scene, gltf, transform, name, nodes],
+    components: [metadata, gltf, transform, name, nodes, lock],
   };
 }

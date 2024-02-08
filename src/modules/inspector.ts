@@ -56,7 +56,7 @@ export async function init(
   // setup ui
   const promises: Promise<unknown>[] = [];
   promises.push(ui.selectAssetsTab("AssetsPack"));
-  promises.push(ui.toggleComponent("inspector::Scene", false));
+  promises.push(ui.toggleComponent("inspector::SceneMetadata", false));
   promises.push(ui.toggleGizmos(false));
   if (!canWrite) {
     promises.push(ui.togglePanel("assets", false));
