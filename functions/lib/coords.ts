@@ -1,6 +1,10 @@
 import { toLayout } from "./layout";
 
-export function toCoords(tokenId: number | string): [number, number] {
+export function reduceCoords<T>(
+  tokenId: number | string,
+  reducer: (acc: T, item: { x: number; y: number; step: number }) => T,
+  init: T
+): T {
   const id = typeof tokenId === "string" ? Number(tokenId) : tokenId;
   if (isNaN(id)) {
     throw new Error(`Invalid tokenId=${tokenId}`);
@@ -16,11 +20,13 @@ export function toCoords(tokenId: number | string): [number, number] {
   let step = 0;
   let length = 1;
   let increase = false;
+  let acc = reducer(init, { x, y, step });
   while (step < id) {
     for (let i = 0; i < length; i++) {
       x += dx[turn % 4];
       y += dy[turn % 4];
       step++;
+      acc = reducer(acc, { x, y, step });
       if (step === id) break;
     }
     if (increase) {
@@ -31,50 +37,43 @@ export function toCoords(tokenId: number | string): [number, number] {
     }
     turn++;
   }
-  return [x, y];
+  return acc;
+}
+
+export function toCoords(tokenId: number | string): [number, number] {
+  const coords = reduceCoords<[number, number]>(
+    tokenId,
+    (_, { x, y }) => [x, y],
+    [0, 0]
+  );
+  return coords;
 }
 
 export function toId(x: number, y: number) {
   return `${x},${y}`;
 }
 
-export function getCoordsToTokenIdMappings(
-  maxTokenId: number | string
-): Record<string, string> {
-  const id = typeof maxTokenId === "string" ? Number(maxTokenId) : maxTokenId;
-  if (isNaN(id)) {
-    throw new Error(`Invalid maxTokenId=${maxTokenId}`);
-  }
-  if (id < 0) {
-    throw new Error(`Invalid maxTokenId can't be less than 0`);
-  }
-  const mappings: Record<string, string> = {
-    [toId(0, 0)]: "0",
-  };
-  const dx = [1, 0, -1, 0];
-  const dy = [0, 1, 0, -1];
-  let x = 0;
-  let y = 0;
-  let turn = 0;
-  let step = 0;
-  let length = 1;
-  let increase = false;
-  while (step < id) {
-    for (let i = 0; i < length; i++) {
-      x += dx[turn % 4];
-      y += dy[turn % 4];
-      step++;
-      mappings[toId(x, y)] = step.toString();
-      if (step === id) break;
-    }
-    if (increase) {
-      length++;
-      increase = false;
-    } else {
-      increase = true;
-    }
-    turn++;
-  }
+export function getCoordsToTokenIdMappings(maxTokenId: number | string) {
+  const mappings = reduceCoords<Record<string, string>>(
+    maxTokenId,
+    (acc, { x, y, step }) => {
+      acc[toId(x, y)] = step.toString();
+      return acc;
+    },
+    {}
+  );
+  return mappings;
+}
+
+export function getTokenIdToCoordsMappings(maxTokenId: number | string) {
+  const mappings = reduceCoords<Record<string, [number, number]>>(
+    maxTokenId,
+    (acc, { x, y, step }) => {
+      acc[step.toString()] = [x, y];
+      return acc;
+    },
+    {}
+  );
   return mappings;
 }
 
@@ -102,12 +101,9 @@ export function getTokenIdsFromPointers(
 ) {
   const mappings = getPointerToTokenIdMappings(maxTokenId);
 
-  console.log("mappings", mappings);
-
   const ids = new Set<string>();
   for (const pointer of pointers) {
     const id = mappings[pointer];
-    console.log("fromPointer", pointer, id);
     if (id) {
       ids.add(id);
     }

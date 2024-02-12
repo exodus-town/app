@@ -1,5 +1,5 @@
 import { getAuctionHouse } from "./contracts";
-import { toCoords } from "./coords";
+import { getTokenIdToCoordsMappings } from "./coords";
 import { Entity, getEntity } from "./entity";
 import { Env } from "./env";
 
@@ -93,10 +93,11 @@ async function getUrns(env: Env, maxTokenId: number, tokenId: string = "0") {
     });
   }
   // sort scenes by distance to the target parcel
-  const [x, y] = toCoords(tokenId);
+  const mappings = getTokenIdToCoordsMappings(maxTokenId);
+  const [x, y] = mappings[tokenId];
   promises.sort((a, b) => {
-    const [x1, y1] = toCoords(a.tokenId);
-    const [x2, y2] = toCoords(b.tokenId);
+    const [x1, y1] = mappings[a.tokenId];
+    const [x2, y2] = mappings[b.tokenId];
     const dist1 = Math.abs(x - x1) + Math.abs(y - y1);
     const dist2 = Math.abs(x - x2) + Math.abs(y - y2);
     return dist1 > dist2 ? 1 : -1;
