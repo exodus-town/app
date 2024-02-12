@@ -4,6 +4,9 @@ import { CRDT, FLOOR_MODEL, FLOOR_TEXTURE } from "./files";
 import { hashV1 } from "./hash";
 import { Path, getContentPath, getMutableHash } from "./mappings";
 import { createScene } from "./scene";
+import { getAuctionHouse } from "./contracts";
+import { Env } from "./env";
+import { reduceCoords } from "./coords";
 
 export type Entity = {
   id: string;
@@ -72,11 +75,11 @@ export async function getEntity(storage: R2Bucket, tokenId: string) {
 }
 
 export async function addContent(
-  storage: R2Bucket,
+  env: Env,
   tokenId: string,
   mappings: Map<string, string>
 ): Promise<Entity> {
-  const entity = await getEntity(storage, tokenId);
+  const entity = await getEntity(env.storage, tokenId);
   let hasChanges = false;
   if (mappings.size > 0) {
     for (const [path, hash] of mappings) {
@@ -98,21 +101,18 @@ export async function addContent(
     }
 
     if (hasChanges) {
-      await storage.put(
-        getContentPath(entity.id),
-        JSON.stringify(entity, null, 2)
-      );
+      await saveEntity(env, tokenId, entity);
     }
   }
   return entity;
 }
 
 export async function removeContent(
-  storage: R2Bucket,
+  env: Env,
   tokenId: string,
   paths: Set<string>
 ): Promise<Entity> {
-  const entity = await getEntity(storage, tokenId);
+  const entity = await getEntity(env.storage, tokenId);
   let hasChanges = false;
   if (paths.size > 0) {
     for (const path of paths) {
@@ -125,11 +125,87 @@ export async function removeContent(
     }
 
     if (hasChanges) {
-      await storage.put(
-        getContentPath(entity.id),
-        JSON.stringify(entity, null, 2)
-      );
+      await saveEntity(env, tokenId, entity);
     }
   }
   return entity;
+}
+
+export async function getEntityMappings(
+  env: Env
+): Promise<
+  Record<string, { hash: string; x: number; y: number; tokenId: string }>
+> {
+  // get max token id from auction house
+  const auctionHouse = getAuctionHouse(env);
+  const [maxTokenId] = await auctionHouse.read.auction();
+
+  // load cached entities
+  let entities: Record<
+    string,
+    { hash: string; x: number; y: number; tokenId }
+  > = {};
+  try {
+    const obj = await env.storage.get("entities.json");
+    entities = await obj.json<
+      Record<string, { hash: string; x: number; y: number; tokenId: string }>
+    >();
+  } catch (error) {
+    console.log("entities.json does not exist yet");
+  }
+
+  // generate missing entities
+  const promises = reduceCoords<
+    Promise<{
+      hash: string;
+      x: number;
+      y: number;
+      tokenId: string;
+    }>[]
+  >(
+    Number(maxTokenId),
+    (acc, { x, y, step }) => {
+      const exists = step.toString() in entities;
+      if (!exists) {
+        acc.push(
+          getEntity(env.storage, step.toString()).then((entity) => {
+            return { hash: entity.id, x, y, tokenId: step.toString() };
+          })
+        );
+      }
+      return acc;
+    },
+    []
+  );
+
+  // insert missing entities
+  const missing = await Promise.all(promises);
+  for (const entity of missing) {
+    entities[entity.tokenId] = entity;
+  }
+
+  // save entities to cache if new entities were added
+  if (missing.length > 0) {
+    await env.storage.put("entities.json", JSON.stringify(entities, null, 2));
+  }
+
+  // return entities
+  return entities;
+}
+
+export async function saveEntity(env: Env, tokenId: string, entity: Entity) {
+  // update mappings
+  const mappings = await getEntityMappings(env);
+  const prev = mappings[tokenId];
+  mappings[tokenId] = {
+    ...prev,
+    hash: entity.id,
+  };
+  env.storage.put("entities.json", JSON.stringify(mappings, null, 2));
+
+  // update entity
+  await env.storage.put(
+    getContentPath(entity.id),
+    JSON.stringify(entity, null, 2)
+  );
 }

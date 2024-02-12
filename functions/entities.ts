@@ -8,7 +8,7 @@ import { getTokenIdsFromPointers, toCoords, toId } from "./lib/coords";
 import { getTownToken } from "./lib/contracts";
 import { toLayout } from "./lib/layout";
 import { hashV1 } from "./lib/hash";
-import { Entity, getEntity } from "./lib/entity";
+import { Entity, getEntity, saveEntity } from "./lib/entity";
 
 export function extractAuthChain(formData: FormData): AuthChain {
   const ret: AuthChain = [];
@@ -232,10 +232,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   console.log("newEntity.content", JSON.stringify(newEntity.content, null, 2));
 
   console.log(`Saving entity...`);
-  await env.storage.put(
-    getContentPath(newEntity.id),
-    JSON.stringify(newEntity, null, 2)
-  );
+  await saveEntity(env, tokenId, newEntity);
   console.log(`done!`);
 
   return json({

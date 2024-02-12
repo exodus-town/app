@@ -1,6 +1,4 @@
-import { getAuctionHouse } from "./contracts";
-import { getTokenIdToCoordsMappings } from "./coords";
-import { Entity, getEntity } from "./entity";
+import { getEntityMappings } from "./entity";
 import { Env } from "./env";
 
 export type About = {
@@ -38,24 +36,13 @@ export async function getAbout(
   env: Env,
   tokenId: string = "0"
 ): Promise<About> {
-  const auctionHouse = getAuctionHouse(env);
-  const [maxTokenId] = await auctionHouse.read.auction();
-  if (isNaN(+tokenId)) {
-    throw new Error(`Invalid tokenId=${tokenId} must be a number`);
-  }
-  if (+tokenId > maxTokenId) {
-    throw new Error(`Invalid tokenId=${tokenId} and maxTokenId=${maxTokenId}`);
-  }
-  if (+tokenId < 0) {
-    throw new Error(`Invalid tokenId=${tokenId} can't be less than 0`);
-  }
   return {
     healthy: true,
     acceptingUsers: true,
     configurations: {
       networkId: 1,
       globalScenesUrn: [],
-      scenesUrn: await getUrns(env, Number(maxTokenId), tokenId),
+      scenesUrn: await getUrns(env, tokenId),
       minimap: {
         enabled: false,
       },
@@ -81,30 +68,19 @@ export async function getAbout(
   };
 }
 
-async function getUrns(env: Env, maxTokenId: number, tokenId: string = "0") {
-  const promises: { tokenId: string; entity: Promise<Entity> }[] = [
-    { tokenId, entity: getEntity(env.storage, tokenId) },
-  ];
-  for (let id = 0; id < maxTokenId; id++) {
-    if (id === Number(tokenId)) continue;
-    promises.push({
-      tokenId: id.toString(),
-      entity: getEntity(env.storage, id.toString()),
-    });
-  }
+async function getUrns(env: Env, tokenId: string = "0") {
+  const mappings = await getEntityMappings(env);
+  const entities = Object.values(mappings);
   // sort scenes by distance to the target parcel
-  const mappings = getTokenIdToCoordsMappings(maxTokenId);
-  const [x, y] = mappings[tokenId];
-  promises.sort((a, b) => {
-    const [x1, y1] = mappings[a.tokenId];
-    const [x2, y2] = mappings[b.tokenId];
-    const dist1 = Math.abs(x - x1) + Math.abs(y - y1);
-    const dist2 = Math.abs(x - x2) + Math.abs(y - y2);
+  const target = mappings[tokenId];
+  entities.sort((a, b) => {
+    const dist1 = Math.abs(target.x - a.x) + Math.abs(target.y - a.y);
+    const dist2 = Math.abs(target.x - b.x) + Math.abs(target.y - b.y);
     return dist1 > dist2 ? 1 : -1;
   });
-  const entities = await Promise.all(promises.map((promise) => promise.entity));
+  // map urns
   return entities.map(
     (entity) =>
-      `urn:decentraland:entity:${entity.id}?=&baseUrl=https://exodus.town/api/contents/`
+      `urn:decentraland:entity:${entity.hash}?=&baseUrl=https://exodus.town/api/contents/`
   );
 }

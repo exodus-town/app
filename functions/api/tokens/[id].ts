@@ -51,7 +51,7 @@ export const onRequestPost: PagesFunction<Env, "id"> = async (context) => {
   }
 
   // add to entity
-  const entity = await addContent(context.env.storage, tokenId, mappings);
+  const entity = await addContent(context.env, tokenId, mappings);
 
   return json(entity);
 };
@@ -70,7 +70,7 @@ export const onRequestDelete: PagesFunction<Env, "id"> = async (context) => {
   }
 
   // remove from entity
-  const entity = await removeContent(context.env.storage, tokenId, paths);
+  const entity = await removeContent(context.env, tokenId, paths);
 
   return json(entity);
 };
