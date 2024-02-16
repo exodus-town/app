@@ -188,19 +188,6 @@ export const HomePage = memo(() => {
                   coding skills.
                 </p>
               </Accordion>
-              {maxTokenId < 100 && (
-                <Accordion title="The Awakening">
-                  <p>
-                    During its initial phase, the Exodus DAO will be in "sleep
-                    mode" on which proposals will be disabled. This is to guard
-                    against potential 51% attacks while the TOWN token supply is
-                    too low. Once the supply reaches the pivotal count of 100,
-                    the Exodus DAO will automatically enter in "awake mode" and
-                    TOWN holders will be able to start submitting proposals and
-                    make use of the treasury.
-                  </p>
-                </Accordion>
-              )}
               <Accordion title="The Source">
                 <p>
                   The{" "}
