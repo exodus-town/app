@@ -187,6 +187,10 @@ export const HomePage = memo(() => {
                   parcels. The editor is open to everyone and doesn't require
                   coding skills.
                 </p>
+                <p>
+                  Advanced users can also deploy content to Exodus Town using
+                  the official Decentraland CLI.
+                </p>
               </Accordion>
               <Accordion title="The Source">
                 <p>
