@@ -31,6 +31,7 @@ import { ClaimModal } from "./ClaimModal";
 import { Preview } from "./Preview";
 import { User } from "./User";
 import "./Auction.css";
+import { toLayout } from "../lib/layout";
 
 type Props = {
   tokenId?: string;
@@ -247,6 +248,11 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
     </div>
   );
 
+  const base = useMemo(
+    () => (tokenId ? toLayout(tokenId).base : { x: 0, y: 0 }),
+    [tokenId]
+  );
+
   return (
     <div className={`Auction ${isLoading ? "loading" : ""}`.trim()}>
       {isLoading ? (
@@ -300,7 +306,7 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
                   <Button
                     primary
                     className="action-button"
-                    href={`https://decentraland.org/play?realm=exodus.town/${tokenId}`}
+                    href={`https://decentraland.org/play?realm=exodus.town&position=${base.x},${base.y}`}
                   >
                     Jump In <i className="jump-in-icon" />
                   </Button>

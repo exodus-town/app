@@ -32,17 +32,14 @@ export type About = {
   };
 };
 
-export async function getAbout(
-  env: Env,
-  tokenId: string = "0"
-): Promise<About> {
+export function getAbout(): About {
   return {
     healthy: true,
     acceptingUsers: true,
     configurations: {
       networkId: 1,
       globalScenesUrn: [],
-      scenesUrn: await getUrns(env, tokenId),
+      cityLoaderContentServer: "https://exodus.town/api",
       minimap: {
         enabled: false,
       },
@@ -68,7 +65,7 @@ export async function getAbout(
   };
 }
 
-async function getUrns(env: Env, tokenId: string = "0") {
+export async function getUrns(env: Env, tokenId: string = "0") {
   const mappings = await getEntityMappings(env);
   const entities = Object.values(mappings);
   // sort scenes by distance to the target parcel
