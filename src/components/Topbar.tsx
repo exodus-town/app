@@ -57,7 +57,7 @@ export const Topbar = memo<Props>(
                   </Button>
                 ) : null}
                 <Button
-                  href={`https://decentraland.org/play?realm=exodus.town&position=${base.x},${base.y}`}
+                  href={`https://decentraland.org/play?realm=exodus.town&position=${base.x},${base.y}&skipSetup=true`}
                   primary
                   size="small"
                   target="_blank"
