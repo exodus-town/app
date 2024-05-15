@@ -6,10 +6,11 @@ import { FaTerminal as TerminalIcon } from "react-icons/fa";
 import { useAccount } from "wagmi";
 import { Button } from "decentraland-ui";
 import { toCoords } from "../lib/coords";
+import { CliModal } from "./CliModal";
+import { toLayout } from "../lib/layout";
 import { useLogin } from "../modules/login";
 import { useToken } from "../modules/token";
 import "./Topbar.css";
-import { CliModal } from "./CliModal";
 
 type Props = {
   hasSignedMessage: boolean;
@@ -28,6 +29,11 @@ export const Topbar = memo<Props>(
     const [x, y] = useMemo(() => {
       return tokenId ? toCoords(tokenId) : ([0, 0] as const);
     }, [tokenId]);
+
+    const base = useMemo(
+      () => (tokenId ? toLayout(tokenId).base : { x: 0, y: 0 }),
+      [tokenId]
+    );
 
     return (
       <div className="Topbar">
@@ -51,7 +57,7 @@ export const Topbar = memo<Props>(
                   </Button>
                 ) : null}
                 <Button
-                  href={`https://decentraland.org/play?realm=exodus.town/${tokenId}`}
+                  href={`https://decentraland.org/play?realm=exodus.town&position=${base.x},${base.y}`}
                   primary
                   size="small"
                   target="_blank"
