@@ -9,10 +9,11 @@ type Props = {
   isOwner?: boolean;
   signedMessage?: string | null;
   onLoad?: (iframe: HTMLIFrameElement, data: { isCLI: boolean }) => void;
+  onReady?: (iframe: HTMLIFrameElement) => void;
 };
 
 export const Inspector = memo<Props>(
-  ({ tokenId, isOwner, signedMessage, onLoad }) => {
+  ({ tokenId, isOwner, signedMessage, onLoad, onReady }) => {
     const iframeRef = useRef<HTMLIFrameElement | null>(null);
     const disposeRef = useRef<(() => void) | null>(null);
 
@@ -32,6 +33,7 @@ export const Inspector = memo<Props>(
         if (!iframe) return;
 
         setIsLocked(!signedMessage);
+        onReady && onReady(iframe);
         init(iframe, {
           tokenId,
           isOwner,
@@ -42,7 +44,7 @@ export const Inspector = memo<Props>(
           disposeRef.current = dispose;
         });
       }
-    }, [isLoading, isReady, tokenId, isOwner, signedMessage, onLoad]);
+    }, [isLoading, isReady, tokenId, isOwner, signedMessage, onLoad, onReady]);
 
     useEffect(() => {
       if (isOwner && isLocked && isReady && signedMessage) {
