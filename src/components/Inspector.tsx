@@ -69,7 +69,7 @@ export const Inspector = memo<Props>(
           "is-ready": isReady,
         })}
       >
-        {isLoading && <Loader active />}
+        {(isLoading || !isReady) && <Loader active />}
         <iframe
           src={`${window.location.origin}/inspector.html?dataLayerRpcParentUrl=${window.location.origin}&binIndexJsUrl=${window.location.origin}/bin/index.js`}
           ref={iframeRef}

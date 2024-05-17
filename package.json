@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@dcl/crypto": "^3.4.5",
-    "@dcl/inspector": "^7.4.21",
+    "@dcl/inspector": "^7.4.22-9129040248.commit-e3dda7a",
     "@dcl/mini-rpc": "^1.0.7",
     "@dcl/schemas": "^9.4.1",
     "@dcl/ui-env": "^1.4.0",

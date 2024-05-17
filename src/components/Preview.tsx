@@ -1,7 +1,7 @@
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import cx from "classnames";
 import { MessageTransport } from "@dcl/mini-rpc";
-import { CameraClient, UiClient } from "@dcl/inspector";
+import { CameraClient } from "@dcl/inspector";
 import { Loader } from "decentraland-ui";
 import { Inspector } from "./Inspector";
 import "./Preview.css";
@@ -22,11 +22,6 @@ export const Preview = memo<Props>(({ tokenId }) => {
         iframe.contentWindow!,
         "*"
       );
-      const ui = new UiClient(transport);
-      await Promise.all([
-        ui.toggleGroundGrid(false),
-        ui.togglePanel("shortcuts", false),
-      ]);
       cameraRef.current = new CameraClient(transport);
     },
     [setIsLoading]
@@ -41,10 +36,10 @@ export const Preview = memo<Props>(({ tokenId }) => {
     const cx = 24; // center x
     const cz = 24; // center z
     const interval = setInterval(async () => {
-      const x = Math.sin(i) * r + cx;
-      const z = Math.cos(i) * r + cz;
-      i += (Math.PI / 180) * s;
       if (cameraRef.current) {
+        const x = Math.sin(i) * r + cx;
+        const z = Math.cos(i) * r + cz;
+        i += (Math.PI / 180) * s;
         const camera = cameraRef.current;
         await Promise.all([
           camera.setPosition(x, y, z),
