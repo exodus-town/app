@@ -27,7 +27,9 @@ export function createComposite(tokenId: string) {
   };
   const transform: ComponentData = {
     name: "core::Transform",
-    data: {},
+    data: {
+      512: { json: { position: { x: 0, y: 0, z: 0 }, parent: 0 } },
+    },
   };
   const name: ComponentData = {
     name: "core-schema::Name",
