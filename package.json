@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@dcl/crypto": "^3.4.5",
-    "@dcl/inspector": "^7.4.22-9129040248.commit-e3dda7a",
+    "@dcl/inspector": "^7.5.0",
     "@dcl/mini-rpc": "^1.0.7",
     "@dcl/schemas": "^9.4.1",
     "@dcl/ui-env": "^1.4.0",
@@ -40,8 +40,7 @@
     "redux-logger": "^3.0.6",
     "swr": "^2.2.4",
     "ts-node": "^10.9.1",
-    "viem": "^2.11.0",
-    "view": "^1.1.1",
+    "viem": "^2.12.0",
     "vite-plugin-node-polyfills": "^0.21.0",
     "wagmi": "^2.9.2"
   },
