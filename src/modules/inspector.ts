@@ -33,8 +33,6 @@ export async function init(
   const isCLI = !!(entity.metadata as { cli?: boolean }).cli;
   const canWrite = hasSigned() && !!isOwner && !isCLI;
 
-  console.log("inspector::isCLI", isCLI);
-
   async function handleLoad() {
     if (canWrite) {
       await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -63,6 +61,9 @@ export async function init(
     promises.push(ui.togglePanel("components", false));
     promises.push(ui.togglePanel("entities", false));
     promises.push(ui.togglePanel("toolbar", false));
+    promises.push(ui.togglePanel("shortcuts", false));
+    promises.push(ui.togglePanel("metrics", false));
+    promises.push(ui.toggleGroundGrid(false));
   }
   await Promise.all(promises);
 
@@ -186,6 +187,9 @@ export async function unlock(iframe: HTMLIFrameElement, signedMessage: string) {
   promises.push(ui.togglePanel("components", true));
   promises.push(ui.togglePanel("entities", true));
   promises.push(ui.togglePanel("toolbar", true));
+  promises.push(ui.togglePanel("shortcuts", true));
+  promises.push(ui.togglePanel("metrics", true));
+  promises.push(ui.toggleGroundGrid(true));
 
   await Promise.all(promises);
 }

@@ -27,7 +27,9 @@ export function createComposite(tokenId: string) {
   };
   const transform: ComponentData = {
     name: "core::Transform",
-    data: {},
+    data: {
+      512: { json: { position: { x: 0, y: 0, z: 0 }, parent: 0 } },
+    },
   };
   const name: ComponentData = {
     name: "core-schema::Name",
@@ -59,8 +61,22 @@ export function createComposite(tokenId: string) {
   };
   const lock: ComponentData = {
     name: "inspector::Lock",
+    data: {
+      512: { json: { value: true } },
+    },
+  };
+  const ground: ComponentData = {
+    name: "inspector::Ground",
+    data: {
+      512: { json: {} },
+    },
+  };
+
+  const tile: ComponentData = {
+    name: "inspector::Tile",
     data: {},
   };
+
   for (let i = 0; i < parcels.length; i++) {
     const entity = 513 + i;
     gltf.data[entity] = {
@@ -80,7 +96,7 @@ export function createComposite(tokenId: string) {
     };
     name.data[entity] = {
       json: {
-        value: `Ground ${i + 1}`,
+        value: `Tile ${i + 1}`,
       },
     };
     lock.data[entity] = {
@@ -88,9 +104,13 @@ export function createComposite(tokenId: string) {
         value: true,
       },
     };
+    tile.data[entity] = {
+      json: {},
+    };
+
     children.push(entity);
   }
   return {
-    components: [metadata, gltf, transform, name, nodes, lock],
+    components: [metadata, gltf, transform, name, nodes, lock, ground, tile],
   };
 }

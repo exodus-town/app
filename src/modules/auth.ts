@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useAccount, useSignMessage } from "wagmi";
-import { LOCAL_STORAGE_KEY, SIGN_MESSAGE } from "../lib/auth";
+import { LOCAL_STORAGE_KEY } from "../lib/auth";
 
 export const useAuth = () => {
   const { address } = useAccount();
@@ -23,12 +23,10 @@ export const useAuth = () => {
   const [signedMessage, setSignedMessage] = useState(storedSignedMessage);
   const {
     data,
-    isLoading: isSigningMessage,
+    isIdle: isSigningMessage,
     signMessage,
     isSuccess,
-  } = useSignMessage({
-    message: SIGN_MESSAGE,
-  });
+  } = useSignMessage();
   useEffect(() => {
     if (address && data) {
       const newStoredSignedMessages = {

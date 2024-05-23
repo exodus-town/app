@@ -1,14 +1,18 @@
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
-import { formatUnits, hexToNumber, parseUnits } from "viem";
 import {
-  erc20ABI,
-  erc721ABI,
+  formatUnits,
+  hexToNumber,
+  parseUnits,
+  erc20Abi,
+  erc721Abi,
+} from "viem";
+import { useWeb3Modal } from "@web3modal/wagmi/react";
+import {
   useAccount,
-  useContractRead,
-  useContractWrite,
-  useNetwork,
-  useSwitchNetwork,
-  useWaitForTransaction,
+  useReadContract,
+  useWriteContract,
+  useSwitchChain,
+  useWaitForTransactionReceipt,
 } from "wagmi";
 import { formatDistanceToNow } from "date-fns";
 import { Button, Loader, Mana } from "decentraland-ui";
@@ -24,14 +28,13 @@ import {
   getChain,
 } from "../eth";
 import { toCoords } from "../lib/coords";
-import { useLogin } from "../modules/login";
+import { toLayout } from "../lib/layout";
 import { useTown } from "../modules/town";
 import { useAuction } from "../modules/auction";
 import { ClaimModal } from "./ClaimModal";
 import { Preview } from "./Preview";
 import { User } from "./User";
 import "./Auction.css";
-import { toLayout } from "../lib/layout";
 
 type Props = {
   tokenId?: string;
@@ -48,23 +51,22 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
     hasBidder,
     maxTokenId,
   } = useAuction();
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, chain } = useAccount();
   const [bidAmount, setBidAmount] = useState("");
   const [shouldApprove, setShouldApprove] = useState(false);
   const [bidError, setBidError] = useState<Error>();
-  const { login, isLoggingIn } = useLogin();
-  const { chain } = useNetwork();
   const {
-    switchNetwork,
-    isLoading: isSwitchingNetwork,
-    error: switchNetworkError,
-  } = useSwitchNetwork({ chainId: getChain().id });
+    switchChain,
+    isIdle: isSwitchingChain,
+    error: switchChainNetwork,
+  } = useSwitchChain();
   const [won, setWon] = useState<string | null>(null);
   const { reload: reloadTown } = useTown();
+  const { open } = useWeb3Modal();
 
-  const { data: mana } = useContractRead({
+  const { data: mana } = useReadContract({
     address: MANA_TOKEN_CONTRACT_ADDRESS,
-    abi: erc20ABI,
+    abi: erc20Abi,
     functionName: "balanceOf",
     args: [address!],
   });
@@ -73,9 +75,9 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
     data: allowance,
     isLoading: isLoadingAllowance,
     refetch: refechAllowance,
-  } = useContractRead({
+  } = useReadContract({
     address: MANA_TOKEN_CONTRACT_ADDRESS,
-    abi: erc20ABI,
+    abi: erc20Abi,
     functionName: "allowance",
     args: [address!, AUCTION_HOUSE_CONTRACT_ADDRESS],
   });
@@ -91,74 +93,61 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
   );
 
   const {
-    write: approve,
+    writeContract: approve,
     status: approveStatus,
-    data: approveData,
     error: approveError,
-  } = useContractWrite({
-    address: MANA_TOKEN_CONTRACT_ADDRESS,
-    abi: erc20ABI,
-    functionName: "approve",
-    args: [AUCTION_HOUSE_CONTRACT_ADDRESS, 2n ** 256n - 1n],
-  });
+    data: approveHash,
+  } = useWriteContract();
 
-  const { error: approveTxError, status: approveTxStatus } =
-    useWaitForTransaction(approveData);
+  const { status: approveTxStatus, error: approveTxError } =
+    useWaitForTransactionReceipt({ hash: approveHash });
 
   const {
-    write: createBid,
+    writeContract: createBid,
     status: createBidStatus,
-    data: createBidData,
     error: createBidError,
-  } = useContractWrite({
-    address: AUCTION_HOUSE_CONTRACT_ADDRESS,
-    abi: auctionHouseABI,
-    functionName: "createBid",
-    args: [
-      BigInt(auction?.tokenId || 0),
-      parseUnits(parseInt(bidAmount || "0").toString(), 18),
-    ],
-  });
+    data: createBidHash,
+  } = useWriteContract();
 
-  const { error: createBidTxError, status: createBidTxStatus } =
-    useWaitForTransaction(createBidData);
+  const { status: createBidTxStatus, error: createBidTxError } =
+    useWaitForTransactionReceipt({
+      hash: createBidHash,
+    });
 
   const {
-    write: settle,
+    writeContract: settle,
     status: settleStatus,
-    data: settleData,
     error: settleError,
-  } = useContractWrite({
-    address: AUCTION_HOUSE_CONTRACT_ADDRESS,
-    abi: auctionHouseABI,
-    functionName: "settleCurrentAndCreateNewAuction",
-  });
+    data: settleHash,
+  } = useWriteContract();
+
+  const { status: settleTxStatus, error: settleTxError } =
+    useWaitForTransactionReceipt({
+      hash: settleHash,
+    });
 
   const ownerOf =
     Number(tokenId) <= Number(auction?.tokenId)
       ? parseUnits(tokenId || "0", 0)
       : undefined;
-  const { data: owner } = useContractRead({
+  const { data: owner } = useReadContract({
     address: TOWN_TOKEN_CONTRACT_ADDRESS,
-    abi: erc721ABI,
+    abi: erc721Abi,
     functionName: "ownerOf",
     args: [ownerOf!],
   });
 
-  const { error: settleTxError, status: settleTxStatus } =
-    useWaitForTransaction(settleData);
-
   const isWrongNetwork = chain?.id !== getChain().id;
 
   const error =
-    switchNetworkError ||
+    switchChainNetwork ||
     approveError ||
-    approveTxError ||
     createBidError ||
-    createBidTxError ||
     settleError ||
-    settleTxError ||
-    bidError;
+    bidError ||
+    approveTxError ||
+    createBidTxError ||
+    settleTxError;
 
   const handlePlaceBid = useCallback(() => {
     if (!auction || typeof mana === "undefined") return;
@@ -182,7 +171,15 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
     } else {
       setShouldApprove(false);
       setBidError(void 0);
-      createBid();
+      createBid({
+        address: AUCTION_HOUSE_CONTRACT_ADDRESS,
+        abi: auctionHouseABI,
+        functionName: "createBid",
+        args: [
+          BigInt(auction?.tokenId || 0),
+          parseUnits(parseInt(bidAmount || "0").toString(), 18),
+        ],
+      });
     }
   }, [createBid, mana, auction, bidAmount, isApproved, setBidError]);
 
@@ -354,13 +351,7 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
                 {!isConnected ? (
                   <>
                     {auctionEndsIn}
-                    <Button
-                      className="login"
-                      primary
-                      onClick={login}
-                      disabled={isLoggingIn}
-                      loading={isLoggingIn}
-                    >
+                    <Button className="login" primary onClick={() => open()}>
                       Sign in
                     </Button>
                   </>
@@ -370,8 +361,12 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
                     <Button
                       className="switch-network"
                       primary
-                      onClick={() => (switchNetwork ? switchNetwork() : void 0)}
-                      disabled={isSwitchingNetwork}
+                      onClick={() =>
+                        switchChain
+                          ? switchChain({ chainId: getChain().id })
+                          : void 0
+                      }
+                      disabled={isSwitchingChain}
                     >
                       Switch Network
                     </Button>
@@ -389,15 +384,26 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
                       <Button
                         primary
                         loading={
-                          isLoadingAllowance || approveTxStatus === "loading"
+                          isLoadingAllowance ||
+                          (approveHash && approveTxStatus === "pending")
                         }
                         disabled={
                           isLoadingAllowance ||
-                          approveStatus === "loading" ||
-                          approveTxStatus === "loading"
+                          approveStatus === "pending" ||
+                          (approveHash && approveTxStatus === "pending")
                         }
                         className="approve"
-                        onClick={() => approve()}
+                        onClick={() =>
+                          approve({
+                            address: MANA_TOKEN_CONTRACT_ADDRESS,
+                            abi: erc20Abi,
+                            functionName: "approve",
+                            args: [
+                              AUCTION_HOUSE_CONTRACT_ADDRESS,
+                              2n ** 256n - 1n,
+                            ],
+                          })
+                        }
                       >
                         Approve
                       </Button>
@@ -407,11 +413,18 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
                   <Button
                     className="settle"
                     primary
-                    loading={settleTxStatus === "loading"}
+                    loading={settleHash && settleTxStatus === "pending"}
                     disabled={
-                      settleStatus === "loading" || settleTxStatus === "loading"
+                      settleStatus === "pending" ||
+                      (settleHash && settleTxStatus === "pending")
                     }
-                    onClick={() => settle()}
+                    onClick={() =>
+                      settle({
+                        address: AUCTION_HOUSE_CONTRACT_ADDRESS,
+                        abi: auctionHouseABI,
+                        functionName: "settleCurrentAndCreateNewAuction",
+                      })
+                    }
                   >
                     {address === auction!.bidder ? "Claim" : "Start Auction"}
                   </Button>
@@ -428,10 +441,12 @@ export const Auction = memo<Props>(({ tokenId, setTokenId }) => {
                       <Button
                         className="bid"
                         primary
-                        loading={createBidTxStatus === "loading"}
+                        loading={
+                          createBidHash && createBidTxStatus === "pending"
+                        }
                         disabled={
-                          createBidStatus === "loading" ||
-                          createBidTxStatus === "loading" ||
+                          createBidStatus === "pending" ||
+                          (createBidHash && createBidTxStatus === "pending") ||
                           (bidAmount !== "" && isNaN(Number(bidAmount)))
                         }
                         onClick={handlePlaceBid}

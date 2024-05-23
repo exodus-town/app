@@ -2,10 +2,11 @@ import { memo, useState } from "react";
 import { useParams } from "react-router";
 import { Topbar } from "../components/Topbar";
 import { Inspector } from "../components/Inspector";
+import { ResetModal } from "../components/ResetModal";
 import { useToken } from "../modules/token";
 import { useAuth } from "../modules/auth";
+import { SIGN_MESSAGE } from "../lib/auth";
 import "./TokenPage.css";
-import { ResetModal } from "../components/ResetModal";
 
 export const TokenPage = memo(() => {
   const { tokenId } = useParams();
@@ -18,7 +19,7 @@ export const TokenPage = memo(() => {
       <Topbar
         hasSignedMessage={!!signedMessage}
         isSigningMessage={isSigningMessage}
-        onSignMessage={signMessage}
+        onSignMessage={() => signMessage({ message: SIGN_MESSAGE })}
       />
       <Inspector
         tokenId={tokenId}

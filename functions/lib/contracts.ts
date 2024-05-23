@@ -1,30 +1,27 @@
-import { createPublicClient, fallback, getContract, http } from "viem";
-import { auctionHouseABI, townTokenABI } from "@exodus.town/contracts";
+import { createPublicClient, fallback, http } from "viem";
 import { Env } from "./env";
+import { auctionHouseABI, townTokenABI } from "@exodus.town/contracts";
 
 export function getClient(env: Env) {
   const client = createPublicClient({
+    batch: {
+      multicall: true,
+    },
     transport: fallback([http(env.ALCHEMY_RPC_URL), http(env.INFURA_RPC_URL)]),
   });
   return client;
 }
 
 export function getAuctionHouse(env: Env) {
-  const client = getClient(env);
-  const contract = getContract({
-    publicClient: client,
+  return {
     address: env.AUCTION_HOUSE_CONTRACT_ADDRESS,
     abi: auctionHouseABI,
-  });
-  return contract;
+  };
 }
 
 export function getTownToken(env: Env) {
-  const client = getClient(env);
-  const contract = getContract({
-    publicClient: client,
+  return {
     address: env.TOWN_TOKEN_CONTRACT_ADDRESS,
     abi: townTokenABI,
-  });
-  return contract;
+  };
 }

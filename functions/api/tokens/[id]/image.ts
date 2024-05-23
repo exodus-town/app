@@ -5,7 +5,7 @@ import {
   toId,
 } from "../../../lib/coords";
 import { error } from "../../../lib/response";
-import { getAuctionHouse } from "../../../lib/contracts";
+import { getAuctionHouse, getClient } from "../../../lib/contracts";
 
 enum Colors {
   EVEN = `#100e13`,
@@ -18,8 +18,12 @@ enum Colors {
 export const onRequestGet: PagesFunction<Env, "id"> = async (context) => {
   const tokenId = context.params.id as string;
 
+  const client = getClient(context.env);
   const auctionHouse = getAuctionHouse(context.env);
-  const [maxTokenId] = await auctionHouse.read.auction();
+  const [maxTokenId] = await client.readContract({
+    ...auctionHouse,
+    functionName: "auction",
+  });
 
   if (isNaN(+tokenId)) {
     return error(`Invalid tokenId=${tokenId} must be a number`, 400);

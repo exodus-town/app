@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import cx from "classnames";
 import { MessageTransport } from "@dcl/mini-rpc";
 import { CameraClient } from "@dcl/inspector";
@@ -11,56 +11,49 @@ type Props = {
 };
 
 export const Preview = memo<Props>(({ tokenId }) => {
-  const [screenshots, setScreenshots] = useState<Record<string, string>>({});
-  const [isRendering, setIsRendering] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const cameraRef = useRef<CameraClient | null>(null);
 
-  const takeScreenshot = useCallback(
+  const handleOnReady = useCallback(
     async (iframe: HTMLIFrameElement) => {
+      setIsLoading(false);
       const transport = new MessageTransport(
         window,
         iframe.contentWindow!,
         "*"
       );
-      const camera = new CameraClient(transport);
-      const screenshot = await camera.takeScreenshot(1024, 812);
-      setScreenshots({
-        ...screenshots,
-        [tokenId!]: screenshot,
-      });
-      setIsRendering(false);
-      camera.dispose();
+      cameraRef.current = new CameraClient(transport);
     },
-    [tokenId, screenshots, setScreenshots]
+    [setIsLoading]
   );
 
-  const screenshot = useMemo(
-    () => (tokenId && screenshots[tokenId]) || null,
-    [tokenId, screenshots]
-  );
-
+  // spin
   useEffect(() => {
-    setIsRendering(true);
+    let i = 0; // current angle
+    const s = 0.5; // speed
+    const r = 48; // radius
+    const y = 24; // height
+    const cx = 24; // center x
+    const cz = 24; // center z
+    const interval = setInterval(async () => {
+      if (cameraRef.current) {
+        const x = Math.sin(i) * r + cx;
+        const z = Math.cos(i) * r + cz;
+        i += (Math.PI / 180) * s;
+        const camera = cameraRef.current;
+        await Promise.all([
+          camera.setPosition(x, y, z),
+          camera.setTarget(cx, 0, cz),
+        ]);
+      }
+    }, 32);
+    return () => clearInterval(interval);
   }, [tokenId]);
 
   return (
-    <>
-      <div className={cx("Preview", { "is-rendering": isRendering })}>
-        <div
-          className="image"
-          style={{
-            filter: screenshot ? "" : "blur(1px)",
-            backgroundImage: screenshot
-              ? `url(${screenshot})`
-              : `url(/api/tokens/${tokenId}/preview)`,
-          }}
-        ></div>
-        {!screenshot && <Loader active size="small" />}
-      </div>
-      {isRendering && (
-        <div className="generate-preview">
-          <Inspector tokenId={tokenId} key={tokenId} onLoad={takeScreenshot} />
-        </div>
-      )}
-    </>
+    <div className={cx("Preview", { "is-loading": isLoading })}>
+      <Inspector tokenId={tokenId} key={tokenId} onReady={handleOnReady} />
+      {isLoading && <Loader active />}
+    </div>
   );
 });
