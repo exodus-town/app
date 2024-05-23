@@ -1,32 +1,29 @@
-import React from 'react'
-import { Provider } from 'react-redux'
-import ReactDOM from 'react-dom/client'
-import { RouterProvider } from 'react-router-dom'
-import { WagmiConfig } from 'wagmi'
-import { Web3Modal } from '@web3modal/react'
-import { EthereumClient } from '@web3modal/ethereum'
+import React from "react";
+import { Provider } from "react-redux";
+import ReactDOM from "react-dom/client";
+import { RouterProvider } from "react-router-dom";
+import { WagmiProvider } from "wagmi";
+import { createWeb3Modal } from "@web3modal/wagmi/react";
+import { QueryClientProvider } from "@tanstack/react-query";
 
-import { store } from './store'
-import { router } from './router'
-import { chains, config, walletConnectProjectId } from './wagmi'
+import { store } from "./store";
+import { router } from "./router";
+import { queryClient, wagmiConfig, walletConnectProjectId } from "./wagmi";
 
-import 'decentraland-ui/lib/styles.css'
-import 'decentraland-ui/lib/dark-theme.css'
-import './theme.css'
+import "decentraland-ui/lib/styles.css";
+import "decentraland-ui/lib/dark-theme.css";
+import "./theme.css";
 
+createWeb3Modal({ wagmiConfig, projectId: walletConnectProjectId });
 
-const ethereumClient = new EthereumClient(config, chains)
-
-ReactDOM.createRoot(document.getElementById('root')!).render(
+ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <Provider store={store}>
-      <WagmiConfig config={config}>
-        <RouterProvider router={router} />
-        <Web3Modal
-          projectId={walletConnectProjectId}
-          ethereumClient={ethereumClient}
-        />
-    </WagmiConfig>
+      <WagmiProvider config={wagmiConfig}>
+        <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router} />
+        </QueryClientProvider>
+      </WagmiProvider>
     </Provider>
-  </React.StrictMode>,
-)
+  </React.StrictMode>
+);

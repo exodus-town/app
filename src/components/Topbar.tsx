@@ -1,4 +1,5 @@
 import { memo, useMemo, useState } from "react";
+import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
 import { MdOutlineArrowBackIosNew as Back } from "react-icons/md";
@@ -8,7 +9,6 @@ import { Button } from "decentraland-ui";
 import { toCoords } from "../lib/coords";
 import { CliModal } from "./CliModal";
 import { toLayout } from "../lib/layout";
-import { useLogin } from "../modules/login";
 import { useToken } from "../modules/token";
 import "./Topbar.css";
 
@@ -22,7 +22,7 @@ export const Topbar = memo<Props>(
   ({ hasSignedMessage, isSigningMessage, onSignMessage }) => {
     const { tokenId } = useParams();
     const { isConnected } = useAccount();
-    const { login, isLoggingIn } = useLogin();
+    const { open } = useWeb3Modal();
     const { isOwner } = useToken(tokenId);
     const [showCliModal, setShowCliModal] = useState(false);
 
@@ -78,13 +78,7 @@ export const Topbar = memo<Props>(
               </Button>
             )
           ) : (
-            <Button
-              primary
-              size="small"
-              onClick={login}
-              disabled={isLoggingIn}
-              loading={isLoggingIn}
-            >
+            <Button primary size="small" onClick={() => open()}>
               Sign In
             </Button>
           )}

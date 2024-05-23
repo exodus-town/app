@@ -1,10 +1,10 @@
 import { memo, useEffect } from "react";
-import { formatEther } from "viem";
-import { erc20ABI, useAccount, useContractRead, useDisconnect } from "wagmi";
+import { formatEther, erc20Abi } from "viem";
+import { useWeb3Modal } from "@web3modal/wagmi/react";
+import { useAccount, useReadContract, useDisconnect } from "wagmi";
 import { Container, Mana, Menu, UserMenu } from "decentraland-ui";
 import { Network } from "@dcl/schemas";
 import { useAvatar } from "../modules/avatar";
-import { useLogin } from "../modules/login";
 import { useAuction } from "../modules/auction";
 import { MANA_TOKEN_CONTRACT_ADDRESS } from "../eth";
 import { config } from "../config";
@@ -12,7 +12,7 @@ import "./Navbar.css";
 
 export const Navbar = memo(() => {
   const { address, isConnected } = useAccount();
-  const { login, isLoggingIn } = useLogin();
+  const { open } = useWeb3Modal();
   const { disconnect } = useDisconnect();
   const { avatar } = useAvatar(address);
   const { auction } = useAuction();
@@ -21,9 +21,9 @@ export const Navbar = memo(() => {
     data: mana,
     isLoading: isLoadingBalance,
     refetch,
-  } = useContractRead({
+  } = useReadContract({
     address: MANA_TOKEN_CONTRACT_ADDRESS,
-    abi: erc20ABI,
+    abi: erc20Abi,
     functionName: "balanceOf",
     args: [address!],
   });
@@ -70,9 +70,7 @@ export const Navbar = memo(() => {
                 />
               </>
             ) : (
-              <Menu.Item disabled={isLoggingIn} onClick={login}>
-                Sign In
-              </Menu.Item>
+              <Menu.Item onClick={() => open()}>Sign In</Menu.Item>
             )}
           </Menu>
         </div>

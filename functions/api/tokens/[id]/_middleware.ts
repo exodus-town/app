@@ -1,8 +1,9 @@
 import { recoverMessageAddress } from "viem";
 import { SIGNED_MESSAGE_HEADER, SIGN_MESSAGE } from "../../../lib/auth";
 import { error } from "../../../lib/response";
-import { getTownToken } from "../../../lib/contracts";
 import { Env } from "../../../lib/env";
+import { getClient } from "../../../lib/contracts";
+import { townTokenABI } from "@exodus.town/contracts";
 
 export const onRequestPost: PagesFunction<Env, "id"> = async (context) => {
   const tokenId = context.params.id;
@@ -18,8 +19,13 @@ export const onRequestPost: PagesFunction<Env, "id"> = async (context) => {
     signature: signedMessage as `0x${string}`,
   });
 
-  const town = getTownToken(context.env);
-  const owner = await town.read.ownerOf([BigInt(tokenId)]);
+  const client = getClient(context.env);
+  const owner = await client.readContract({
+    abi: townTokenABI,
+    address: context.env.TOWN_TOKEN_CONTRACT_ADDRESS,
+    functionName: "ownerOf",
+    args: [BigInt(tokenId)],
+  });
 
   if (owner !== address) {
     return error(`Unauthorized: owner=${owner} and address=${address}`, 401);

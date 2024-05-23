@@ -5,7 +5,7 @@ import { Env } from "./lib/env";
 import { error, json } from "./lib/response";
 import { getContentPath } from "./lib/mappings";
 import { getTokenIdsFromPointers, toCoords, toId } from "./lib/coords";
-import { getTownToken } from "./lib/contracts";
+import { getClient, getTownToken } from "./lib/contracts";
 import { toLayout } from "./lib/layout";
 import { hashV1 } from "./lib/hash";
 import { Entity, getEntity, saveEntity } from "./lib/entity";
@@ -120,8 +120,12 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   }
 
   // recover token id from parcels
-  const town = getTownToken(context.env);
-  const totalSupply = await town.read.totalSupply();
+  const client = getClient(context.env);
+  const townToken = getTownToken(context.env);
+  const totalSupply = await client.readContract({
+    ...townToken,
+    functionName: "totalSupply",
+  });
   const tokenIds = getTokenIdsFromPointers(`${totalSupply}`, parcels);
 
   if (tokenIds.length === 0) {
@@ -146,7 +150,13 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   // check ownership
   const address = authChain[0].payload.toLowerCase();
   console.log("address", address);
-  const owner = (await town.read.ownerOf([BigInt(tokenId)])).toLowerCase();
+  const owner = (
+    await client.readContract({
+      ...townToken,
+      functionName: "ownerOf",
+      args: [BigInt(tokenId)],
+    })
+  ).toLowerCase();
 
   if (owner !== address) {
     return error(

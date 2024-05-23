@@ -1,4 +1,4 @@
-import { getTownToken } from "../../lib/contracts";
+import { getClient, getTownToken } from "../../lib/contracts";
 import { getTokenIdsFromPointers } from "../../lib/coords";
 import { getEntity } from "../../lib/entity";
 import { Env } from "../../lib/env";
@@ -15,9 +15,13 @@ export const onRequestPost: PagesFunction<Env, "id"> = async (context) => {
     );
     return error(`Invalid pointer=${invalid}`, 400);
   }
-  const town = getTownToken(context.env);
+  const client = getClient(context.env);
+  const townToken = getTownToken(context.env);
 
-  const totalSupply = await town.read.totalSupply();
+  const totalSupply = await client.readContract({
+    ...townToken,
+    functionName: "totalSupply",
+  });
 
   const ids = getTokenIdsFromPointers(`${totalSupply}`, pointers);
 

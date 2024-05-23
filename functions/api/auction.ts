@@ -1,20 +1,29 @@
 import { formatEther } from "viem";
 import { Auction } from "../../src/types";
 import { Env } from "../lib/env";
-import { getAuctionHouse } from "../lib/contracts";
+import { getAuctionHouse, getClient } from "../lib/contracts";
 import { json } from "../lib/response";
 
 export const onRequest: PagesFunction<Env> = async (context) => {
+  const client = getClient(context.env);
   const auctionHouse = getAuctionHouse(context.env);
-
   const [
     [tokenId, amount, startTime, endTime, bidder, settled],
     reserve,
     minBidIncrementPercentage,
   ] = await Promise.all([
-    auctionHouse.read.auction(),
-    auctionHouse.read.reservePrice(),
-    auctionHouse.read.minBidIncrementPercentage(),
+    client.readContract({
+      ...auctionHouse,
+      functionName: "auction",
+    }),
+    client.readContract({
+      ...auctionHouse,
+      functionName: "reservePrice",
+    }),
+    client.readContract({
+      ...auctionHouse,
+      functionName: "minBidIncrementPercentage",
+    }),
   ]);
 
   const auction: Auction = {
