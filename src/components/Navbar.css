@@ -46,3 +46,13 @@
     margin: 0px;
   }
 }
+
+/* decentraland-ui 7 dims secondary menu items on the dark theme */
+.Navbar.dcl.navbar .ui.secondary.menu .item {
+  color: var(--text, #fff);
+  font-weight: 600;
+}
+
+.Navbar.dcl.navbar .ui.secondary.menu a.item:hover {
+  color: var(--primary-hover);
+}

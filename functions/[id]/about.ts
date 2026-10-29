@@ -7,8 +7,9 @@ export const onRequestGet: PagesFunction<Env, "id"> = async (context) => {
   if (!tokenId || Array.isArray(tokenId) || isNaN(Number(tokenId))) {
     return error(`Invalid tokenId=${tokenId}`, 400);
   }
-  const about = getAbout();
+  const origin = new URL(context.request.url).origin;
+  const about = getAbout(origin);
   delete about.configurations.cityLoaderContentServer;
-  about.configurations.scenesUrn = await getUrns(context.env, tokenId);
+  about.configurations.scenesUrn = await getUrns(context.env, origin, tokenId);
   return json(about);
 };

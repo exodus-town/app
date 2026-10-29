@@ -1,4 +1,4 @@
-.Auction {
+.ParcelPanel {
   position: relative;
   background-color: #2a262f;
   padding: 24px;
@@ -7,18 +7,18 @@
   justify-content: stretch;
 }
 
-.Auction.loading {
+.ParcelPanel.loading {
   min-height: 212px;
 }
 
-.Auction .header {
+.ParcelPanel .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
 }
 
-.Auction .parcel {
+.ParcelPanel .parcel {
   display: flex;
   align-items: center;
   font-size: larger;
@@ -26,13 +26,13 @@
   font-weight: bold;
 }
 
-.Auction .controls {
+.ParcelPanel .controls {
   display: flex;
   align-items: center;
   flex: 0 0;
 }
 
-.Auction .coords {
+.ParcelPanel .coords {
   background-color: var(--secondary-on-modal);
   padding: 4px 8px;
   border-radius: 8px;
@@ -43,7 +43,7 @@
   padding-right: 12px;
 }
 
-.Auction .coords .pin {
+.ParcelPanel .coords .pin {
   background-image: url(../images/pin.svg);
   background-repeat: no-repeat;
   background-position: center;
@@ -53,80 +53,80 @@
   height: 20px;
 }
 
-.Auction .row {
+.ParcelPanel .row {
   display: flex;
   flex-direction: row;
 }
 
-.Auction .column {
+.ParcelPanel .column {
   display: flex;
   flex-direction: column;
 }
 
-.Auction .column.right .dcl.avatar-face.small {
+.ParcelPanel .column.right .dcl.avatar-face.small {
   width: 24px;
   height: 24px;
 }
 
-.Auction .column.owner {
+.ParcelPanel .column.owner {
   flex: 1 1 auto;
   overflow: hidden;
   margin-right: 8px;
 }
 
-.Auction .info {
+.ParcelPanel .info {
   justify-content: space-between;
   margin-bottom: 16px;
 }
 
-.Auction .label {
+.ParcelPanel .label {
   color: var(--secondary-text);
   text-transform: uppercase;
   margin-bottom: 4px;
 }
 
-.Auction .action .ui.button {
+.ParcelPanel .action .ui.button {
   width: 100%;
 }
 
-.Auction .action .approve-amount .ui.button.approve {
+.ParcelPanel .action .approve-amount .ui.button.approve {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.Auction .action .approve-amount {
+.ParcelPanel .action .approve-amount {
   display: flex;
 }
 
-.Auction .action .approve-amount .ui.button + .ui.button {
+.ParcelPanel .action .approve-amount .ui.button + .ui.button {
   margin-left: 10px;
 }
 
-.Auction .action .approve-amount .ui.button.cancel-approve {
+.ParcelPanel .action .approve-amount .ui.button.cancel-approve {
   background-color: var(--secondary-on-modal);
 }
 
-.Auction .action .info {
+.ParcelPanel .action .info {
   margin-bottom: 16px;
   margin-top: 16px;
   color: var(--secondary-text);
 }
 
-.Auction .action .info b {
+.ParcelPanel .action .info b {
   color: var(--text);
 }
 
-.Auction .action .info a {
+.ParcelPanel .action .info a {
   color: var(--text);
 }
 
-.Auction .action .place-bid {
+.ParcelPanel .action .place-bid {
   display: flex;
   position: relative;
 }
 
-.Auction .action .bid-amount {
+.ParcelPanel .action .bid-amount {
   flex: 1 1 auto;
   outline: none;
   border: none;
@@ -138,43 +138,43 @@
   overflow: hidden;
 }
 
-.Auction .action .ui.button.bid {
+.ParcelPanel .action .ui.button.bid {
   width: auto;
   border-top-left-radius: 0px;
   border-bottom-left-radius: 0px;
   flex: none;
 }
 
-.Auction .action .ui.button.bid:hover {
+.ParcelPanel .action .ui.button.bid:hover {
   transform: none;
 }
 
-.Auction .controls svg {
+.ParcelPanel .controls svg {
   width: 28px;
   height: 28px;
   opacity: 0.5;
   user-select: none;
 }
 
-.Auction .controls svg + svg {
+.ParcelPanel .controls svg + svg {
   margin-left: 2px;
 }
 
-.Auction .controls svg.enabled {
+.ParcelPanel .controls svg.enabled {
   cursor: pointer;
   opacity: 1;
 }
 
-.Auction .owner-info {
+.ParcelPanel .owner-info {
   margin-bottom: 0px;
   align-items: end;
 }
 
-.Auction .owner-info .User {
+.ParcelPanel .owner-info .User {
   margin-top: 8px;
 }
 
-.Auction .ui.button.action-button {
+.ParcelPanel .ui.button.action-button {
   display: flex;
   align-items: center;
   font-size: 13px;
@@ -186,20 +186,20 @@
   flex: none;
 }
 
-.Auction .ui.button.action-button svg {
+.ParcelPanel .ui.button.action-button svg {
   margin-left: 4px;
 }
 
-.Auction .ui.button.action-button:hover {
+.ParcelPanel .ui.button.action-button:hover {
   transform: none;
 }
 
-.Auction .error {
+.ParcelPanel .error {
   margin-top: 16px;
   color: var(--error);
 }
 
-.Auction .jump-in-icon {
+.ParcelPanel .jump-in-icon {
   display: inline-block;
   background-image: url(../images/jump_in.svg);
   background-repeat: no-repeat;
@@ -209,4 +209,24 @@
   width: 12px;
   height: 12px;
   margin-left: 6px;
+}
+
+.ParcelPanel .owner-info .sold {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--secondary-text);
+}
+
+.ParcelPanel .owner-info .sold .mana {
+  margin: 0 0 0 4px;
+}
+
+.ParcelPanel .owner-info .buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: stretch;
 }

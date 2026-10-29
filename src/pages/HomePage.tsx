@@ -4,14 +4,16 @@ import { SlMagnifier } from "react-icons/sl";
 import { IoMdWarning, IoMdLogIn } from "react-icons/io";
 import { FaDiscord } from "react-icons/fa";
 import { Navbar } from "../components/Navbar";
-import { Auction } from "../components/Auction";
+import { ParcelPanel } from "../components/ParcelPanel";
 import { Tiles } from "../components/Tiles";
 import { Accordion } from "../components/Accordion";
-import { useAuction } from "../modules/auction";
+import { useTown } from "../modules/town";
 import { useTreasury } from "../modules/treasury";
 import { INVITE_LINK, useDiscord } from "../modules/discord";
 import { useOnline } from "../modules/online";
+import { Link } from "react-router-dom";
 import { config } from "../config";
+import { PROPOSAL_NUMBER } from "../lib/unwind";
 import {
   AUCTION_HOUSE_CONTRACT_ADDRESS,
   EXODUS_DAO_CONTRACT_ADDRESS,
@@ -19,17 +21,23 @@ import {
   getContractUrl,
 } from "../eth";
 import "./HomePage.css";
+import { getPlayUrl } from "../lib/play";
 
 export const HomePage = memo(() => {
-  const { maxTokenId } = useAuction();
+  const { owners, lastTokenId } = useTown();
   const [tokenId, setTokenId] = useState<string>();
   const { members, isLoading: isLoadingMembers } = useDiscord();
   const { treasury, isLoading: isLoadingTreasury } = useTreasury();
   const { users, isLoading: isLoadingUsers } = useOnline();
 
+  // Start on the last plot sold (the last one minted may still sit unsold in the auction house).
+  const lastSold = owners.findLastIndex(
+    ({ owner }) =>
+      owner.toLowerCase() !== AUCTION_HOUSE_CONTRACT_ADDRESS.toLowerCase()
+  );
   useEffect(() => {
-    setTokenId(maxTokenId.toString());
-  }, [maxTokenId]);
+    if (lastSold >= 0 && tokenId === undefined) setTokenId(String(lastSold));
+  }, [lastSold, tokenId]);
 
   return (
     <>
@@ -37,7 +45,7 @@ export const HomePage = memo(() => {
       <Tiles tokenId={tokenId} setTokenId={setTokenId} />
       <div className="HomePage dcl page">
         <Container className="content">
-          <Auction tokenId={tokenId} setTokenId={setTokenId} />
+          <ParcelPanel tokenId={tokenId} setTokenId={setTokenId} />
           <div className="content">
             <div className="welcome">
               <h1 className="title">
@@ -46,7 +54,7 @@ export const HomePage = memo(() => {
                   size="large"
                   primary
                   className="jump-in"
-                  href="https://decentraland.org/play?realm=exodus.town"
+                  href={getPlayUrl()}
                 >
                   <span className="text">Jump In</span>{" "}
                   <i className="jump-in-icon" />
@@ -55,18 +63,24 @@ export const HomePage = memo(() => {
               <p>
                 Exodus Town is an experiment on Decentraland Worlds, continuous
                 issuance, and DAOs. Originating from the 0,0 coordinate, it
-                expands in a never-ending spiral, growing{" "}
-                <b>one parcel per day, forever</b>.
+                grew in a spiral, <b>one parcel per day</b>, for{" "}
+                {lastTokenId > 0 ? lastTokenId : "229"} days.
               </p>
               <p>
-                Every 24 hours, a TOWN token is auctioned off in exchange for
+                Every 24 hours, a TOWN token was auctioned off in exchange for
                 MANA, granting the holder the ability to publish content to
-                Exodus Town. Importantly, all auction proceeds flow directly
-                into the on-chain governed{" "}
-                <a href={config.get("DAO_URL")} target="_blank">
-                  Exodus DAO
-                </a>
-                , steered exclusively by TOWN token holders.
+                Exodus Town. All auction proceeds flowed into the on-chain
+                governed Exodus DAO, steered exclusively by TOWN token holders.
+              </p>
+              <p className="unwinding">
+                <b>Exodus Town is unwinding.</b> With proposal #
+                {PROPOSAL_NUMBER}, the DAO voted to return each plot's
+                contribution: every plot can be handed back to the DAO for the
+                MANA it sold for at auction. The town stays online as an
+                archive: the owners at the time of the vote keep their plots on
+                the map and can keep building on them, even after returning
+                them.{" "}
+                <Link to="/unwind">Unwind your plots →</Link>
               </p>
             </div>
 
@@ -74,7 +88,7 @@ export const HomePage = memo(() => {
               size="large"
               primary
               className="jump-in-mobile"
-              href="https://decentraland.org/play?realm=exodus.town"
+              href={getPlayUrl()}
             >
               <span className="text">Jump In</span>{" "}
               <i className="jump-in-icon" />
@@ -131,8 +145,7 @@ export const HomePage = memo(() => {
                       ? `1 User`
                       : `${users} Users`}{" "}
                     <Button
-                      href="https://decentraland.org/play?realm=exodus.town"
-                      target="_blank"
+                      href={getPlayUrl()}
                       primary
                       size="small"
                       inverted
@@ -159,10 +172,10 @@ export const HomePage = memo(() => {
               </Accordion>
               <Accordion title="The Auction">
                 <p>
-                  Exodus Town features daily auctions in which one TOWN token is
+                  Exodus Town held daily auctions in which one TOWN token was
                   made available for purchase using MANA every 24 hours, and
-                  100% of the proceeds from the auction go directly into the
-                  Exodus DAO.
+                  100% of the proceeds went directly into the Exodus DAO. The
+                  auctions are paused as part of the unwind.
                 </p>
               </Accordion>
               <Accordion title="The DAO">
@@ -178,6 +191,12 @@ export const HomePage = memo(() => {
                   TOWN token is equivalent to one vote, and these votes directly
                   control the treasury and any proposals, without requiring
                   off-chain actions or human intervention.
+                </p>
+                <p>
+                  Proposal #{PROPOSAL_NUMBER} unwinds the DAO: it moves the MANA
+                  paid in every auction into a refund contract, where each plot
+                  can be exchanged for what it sold for.{" "}
+                  <Link to="/unwind">Read more</Link>.
                 </p>
               </Accordion>
               <Accordion title="The Editor">

@@ -1,0 +1,147 @@
+.UnwindPage {
+  padding-top: 32px;
+  padding-bottom: 64px;
+  font-size: 15px;
+  line-height: 24px;
+}
+
+.UnwindPage a {
+  color: var(--primary-hover);
+}
+
+.UnwindPage .eyebrow {
+  color: var(--primary-hover);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+
+.UnwindPage .hero h1 {
+  font-size: 40px;
+  line-height: 48px;
+  margin: 0 0 16px;
+}
+
+.UnwindPage .hero .intro {
+  max-width: 720px;
+  font-size: 17px;
+  line-height: 28px;
+}
+
+.UnwindPage .stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin: 32px 0;
+}
+
+.UnwindPage .stats > div,
+.UnwindPage .card {
+  background-color: #2a262f;
+  border-radius: 12px;
+  padding: 20px 24px;
+}
+
+.UnwindPage .stats span {
+  display: block;
+  color: #7e7a87;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.UnwindPage .stats strong {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 22px;
+  line-height: 34px;
+}
+
+.UnwindPage .stats small {
+  color: #a09bab;
+}
+
+.UnwindPage .columns {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.UnwindPage .card h2 {
+  font-size: 22px;
+  margin: 0 0 8px;
+}
+
+.UnwindPage .card ul {
+  padding-left: 18px;
+}
+
+.UnwindPage .card li {
+  margin-bottom: 8px;
+}
+
+.UnwindPage .links {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.UnwindPage .empty {
+  margin-top: 24px;
+  color: #a09bab;
+}
+
+.UnwindPage .plots {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.UnwindPage .plot {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: 16px;
+  background-color: #34303a;
+  border-radius: 8px;
+  padding: 10px 16px;
+  cursor: pointer;
+}
+
+.UnwindPage .plot.disabled {
+  cursor: default;
+}
+
+.UnwindPage .plot small {
+  color: #7e7a87;
+  margin-left: 6px;
+}
+
+.UnwindPage .plot .amount {
+  font-weight: 700;
+}
+
+.UnwindPage .actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.UnwindPage .error {
+  margin-top: 16px;
+  color: #ff6b6b;
+  word-break: break-word;
+}
+
+@media only screen and (max-width: 767px) {
+  .UnwindPage .stats,
+  .UnwindPage .columns {
+    grid-template-columns: 1fr;
+  }
+}

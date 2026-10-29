@@ -1,67 +1,42 @@
-import { useCallback, useMemo } from "react";
-import { formatUnits, parseUnits } from "viem";
-import { useAccount, useContractRead, useContractReads } from "wagmi";
-import { townTokenABI } from "@exodus.town/contracts";
-import { TOWN_TOKEN_CONTRACT_ADDRESS } from "../eth";
+import { useMemo } from "react";
+import { useAccount } from "wagmi";
+import { useGetOwnersQuery } from "./api";
 import { toCoords } from "../lib/coords";
 
+/** Every plot's owner of record, and the plots the connected account owns. */
 export const useTown = () => {
   const { address } = useAccount();
-
-  const { data: balance, refetch: refetchBalance } = useContractRead({
-    abi: townTokenABI,
-    address: TOWN_TOKEN_CONTRACT_ADDRESS,
-    functionName: "balanceOf",
-    args: [address!],
+  const { data: owners = [], refetch, isLoading } = useGetOwnersQuery(undefined, {
+    pollingInterval: 60_000,
   });
 
-  const indexes = useMemo(() => {
-    const indexes: number[] = [];
-    if (balance) {
-      const maxIndex = +formatUnits(balance, 0);
-      if (maxIndex > 0) {
-        for (let i = 0; i < maxIndex; i++) {
-          indexes.push(i);
-        }
-      }
-    }
-    return indexes;
-  }, [balance]);
+  const tokenIds = useMemo(
+    () =>
+      address
+        ? owners.flatMap(({ owner }, id) =>
+            owner.toLowerCase() === address.toLowerCase() ? [String(id)] : []
+          )
+        : [],
+    [owners, address]
+  );
 
-  const { data: tokens, refetch: refetchTokens } = useContractReads({
-    contracts: indexes.map((index) => ({
-      abi: townTokenABI,
-      address: TOWN_TOKEN_CONTRACT_ADDRESS,
-      functionName: "tokenOfOwnerByIndex",
-      args: [address!, parseUnits(index.toString(), 0)],
-    })),
-  });
+  const ownedCoords = useMemo(
+    () =>
+      new Set(
+        tokenIds.map((tokenId) => {
+          const [x, y] = toCoords(tokenId);
+          return `${x},${y}`;
+        })
+      ),
+    [tokenIds]
+  );
 
-  const tokenIds = useMemo(() => {
-    if (tokens) {
-      return tokens
-        .filter(
-          ({ status, result }) =>
-            status === "success" && typeof result !== "undefined"
-        )
-        .map(({ result }) => formatUnits(result as bigint, 0));
-    }
-    return [];
-  }, [tokens]);
-
-  const ownedCoords = useMemo(() => {
-    return new Set(
-      tokenIds?.map((tokenId) => {
-        const [x, y] = toCoords(tokenId);
-        return `${x},${y}`;
-      })
-    );
-  }, [tokenIds]);
-
-  const reload = useCallback(() => {
-    refetchBalance();
-    refetchTokens();
-  }, [refetchBalance, refetchTokens]);
-
-  return { balance, tokenIds, ownedCoords, reload };
+  return {
+    owners,
+    tokenIds,
+    ownedCoords,
+    isLoading,
+    lastTokenId: owners.length - 1,
+    reload: refetch,
+  };
 };

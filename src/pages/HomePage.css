@@ -2,7 +2,7 @@
   position: relative;
 }
 
-.HomePage .Auction {
+.HomePage .ParcelPanel {
   position: absolute;
   right: 0px;
   top: -285px;
@@ -151,7 +151,7 @@
 }
 
 @media (max-width: 991px) {
-  .HomePage .Auction {
+  .HomePage .ParcelPanel {
     position: relative;
     margin-top: 420px;
     left: 20px;

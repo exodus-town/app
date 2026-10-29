@@ -1,5 +1,5 @@
 import { MessageTransport } from "@dcl/mini-rpc";
-import { UiClient, IframeStorage, CameraClient } from "@dcl/inspector";
+import { SceneClient, StorageServer } from "../lib/inspector-rpc";
 import { Path, getContentPath } from "../lib/path";
 import { createPreferences } from "../lib/preferences";
 import { hasSigned, remove, save, setSignedMessage } from "../lib/storage";
@@ -26,9 +26,9 @@ export async function init(
 
   // transports and rpcs
   const transport = new MessageTransport(window, iframe.contentWindow!, "*");
-  const ui = new UiClient(transport);
-  const camera = new CameraClient(transport);
-  const storage = new IframeStorage.Server(transport);
+  const ui = new SceneClient(transport);
+  const camera = ui;
+  const storage = new StorageServer(transport);
 
   const isCLI = !!(entity.metadata as { cli?: boolean }).cli;
   const canWrite = hasSigned() && !!isOwner && !isCLI;
@@ -45,7 +45,7 @@ export async function init(
       await ui.toggleGizmos(true);
     }
     // callback
-    onLoad && onLoad({ isCLI });
+    onLoad?.({ isCLI });
   }
 
   // wire handlers
@@ -63,6 +63,8 @@ export async function init(
     promises.push(ui.togglePanel("toolbar", false));
     promises.push(ui.togglePanel("shortcuts", false));
     promises.push(ui.togglePanel("metrics", false));
+    promises.push(ui.togglePanel("scene_info", false));
+    promises.push(ui.togglePanel("ui_designer", false));
     promises.push(ui.toggleGroundGrid(false));
   }
   await Promise.all(promises);
@@ -82,7 +84,7 @@ type WireOptions = Omit<InitOptions, "signedMessage" | "isOwner" | "onLoad"> & {
   onLoad: () => void;
 };
 async function wire(
-  storage: IframeStorage.Server,
+  storage: StorageServer,
   { tokenId, canWrite, entity, onLoad }: WireOptions
 ) {
   const mappings = new Map<string, string>();
@@ -99,7 +101,8 @@ async function wire(
         return json(preferences);
       }
       default: {
-        const hash = mappings.get(path)!;
+        const hash = mappings.get(path);
+        if (!hash) throw new Error(`File not found: ${path}`);
         const resp = await fetch(getContentPath(hash));
         const arrayBuffer = await resp.arrayBuffer();
         const content = Buffer.from(arrayBuffer);
@@ -157,6 +160,22 @@ async function wire(
     mappings.delete(path);
   });
 
+  storage.handle("rmdir", async ({ path }) => {
+    const prefix = path.endsWith("/") ? path : `${path}/`;
+    for (const file of [...mappings.keys()]) {
+      if (!file.startsWith(prefix)) continue;
+      await remove(tokenId, file);
+      mappings.delete(file);
+    }
+  });
+
+  storage.handle("stat", async ({ path }) => {
+    const hash = mappings.get(path);
+    if (!hash) throw new Error(`File not found: ${path}`);
+    const resp = await fetch(getContentPath(hash), { method: "HEAD" });
+    return { size: Number(resp.headers.get("Content-Length") ?? 0) };
+  });
+
   // idle
   let timeout: NodeJS.Timeout | null = null;
   let loaded = false;
@@ -178,7 +197,7 @@ export async function unlock(iframe: HTMLIFrameElement, signedMessage: string) {
   setSignedMessage(signedMessage);
 
   const transport = new MessageTransport(window, iframe.contentWindow!, "*");
-  const ui = new UiClient(transport);
+  const ui = new SceneClient(transport);
 
   // setup ui
   const promises: Promise<unknown>[] = [];
@@ -189,6 +208,7 @@ export async function unlock(iframe: HTMLIFrameElement, signedMessage: string) {
   promises.push(ui.togglePanel("toolbar", true));
   promises.push(ui.togglePanel("shortcuts", true));
   promises.push(ui.togglePanel("metrics", true));
+  promises.push(ui.togglePanel("scene_info", true));
   promises.push(ui.toggleGroundGrid(true));
 
   await Promise.all(promises);

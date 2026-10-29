@@ -2,10 +2,16 @@
   "compilerOptions": {
     "target": "esnext",
     "module": "esnext",
-    "lib": ["esnext"],
-    "types": ["@cloudflare/workers-types", "node"],
-    "moduleResolution": "node",
+    "lib": [
+      "esnext"
+    ],
+    "types": [
+      "@cloudflare/workers-types",
+      "node"
+    ],
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "noEmit": true
   }
 }

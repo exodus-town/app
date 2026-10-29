@@ -9,7 +9,7 @@ export const useAuth = () => {
     if (stored) {
       try {
         return JSON.parse(stored) as Record<string, string>;
-      } catch (error) {
+      } catch {
         // ignore
       }
     }
