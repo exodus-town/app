@@ -77,8 +77,9 @@ export const HomePage = memo(() => {
                 {PROPOSAL_NUMBER}, the DAO voted to return each plot's
                 contribution: every plot can be handed back to the DAO for the
                 MANA it sold for at auction. The town stays online as an
-                archive, and owners keep their plots on the map and can keep
-                building on them, even after returning them.{" "}
+                archive: the owners at the time of the vote keep their plots on
+                the map and can keep building on them, even after returning
+                them.{" "}
                 <Link to="/unwind">Unwind your plots →</Link>
               </p>
             </div>

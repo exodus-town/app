@@ -1,5 +1,5 @@
 export type Owner = {
-  /** The owner of record: the holder, or for a plot returned to the DAO, who returned it. */
+  /** The plot's owner in the archive's frozen snapshot (src/data/owners-snapshot.json). */
   owner: `0x${string}`;
   /** Whether the plot was returned to the DAO through the unwind. */
   returned: boolean;

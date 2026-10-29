@@ -4,8 +4,6 @@
 // these exact actions and description, so they must not change.
 
 export const REFUND_CONTRACT_ADDRESS = "0x4597d46C178C0B11d0F17ACb62bE81555D471524" as const;
-/** First block with TownRefund code, for scanning its Refunded events. */
-export const REFUND_DEPLOY_BLOCK = 96052069n;
 export const SNAPSHOT_URL = "/unwind/0x11cb2dc9e270fca11a72ec801cd20b34856f7925aa549b98437aad2cd08bc9da.json";
 export const SNAPSHOT_HASH = "0x11cb2dc9e270fca11a72ec801cd20b34856f7925aa549b98437aad2cd08bc9da";
 export const MERKLE_ROOT = "0xb37eb4c5eac13888782e8ad9a820240e4701363e3727b838344516aa35b1b4e6";

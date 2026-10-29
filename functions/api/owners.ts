@@ -4,7 +4,8 @@ import { json } from "../lib/response";
 
 const MAX_AGE = 60;
 
-// The owner of record of every plot (see lib/owners.ts), cached at the edge for a minute.
+// Every plot's snapshot owner and whether it was returned (see lib/owners.ts), cached at the
+// edge for a minute.
 export const onRequestGet: PagesFunction<Env> = async (context) => {
   const cache = caches.default;
   const key = new Request(new URL("/api/owners", context.request.url).toString());

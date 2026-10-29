@@ -32,6 +32,7 @@ import {
 } from "../lib/unwind";
 import { useTown } from "../modules/town";
 import { useSnapshot } from "../modules/snapshot";
+import { useHoldings } from "../modules/holdings";
 import "./UnwindPage.css";
 
 const SUCCEEDED = 4;
@@ -46,6 +47,7 @@ export const UnwindPage = memo(() => {
   const { address, isConnected } = useAccount();
   const { open } = useAppKit();
   const { owners, reload } = useTown();
+  const { tokenIds: held, reload: reloadHoldings } = useHoldings();
   const { snapshot, amounts, getProof } = useSnapshot();
   const { data: block } = useBlockNumber({ watch: true });
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -89,23 +91,23 @@ export const UnwindPage = memo(() => {
     if (isSuccess) {
       refetch();
       reload();
+      reloadHoldings();
       setSelected(new Set());
       reset();
     }
-  }, [isSuccess, refetch, reload, reset]);
+  }, [isSuccess, refetch, reload, reloadHoldings, reset]);
 
-  // The plots this account holds now (returned ones are listed too, as returned).
-  const mine = useMemo(
-    () =>
-      address
-        ? owners.flatMap(({ owner, returned }, id) =>
-            owner.toLowerCase() === address.toLowerCase()
-              ? [{ id: String(id), returned, amount: amounts.get(String(id)) }]
-              : []
-          )
-        : [],
-    [owners, address, amounts]
-  );
+  // The plots this account holds onchain, which it can return, and the ones it already returned.
+  const mine = useMemo(() => {
+    if (!address) return [];
+    const holding = held.map((id) => ({ id, returned: false, amount: amounts.get(id) }));
+    const returned = owners.flatMap(({ owner, returned }, id) =>
+      returned && owner.toLowerCase() === address.toLowerCase() && !held.includes(String(id))
+        ? [{ id: String(id), returned: true, amount: amounts.get(String(id)) }]
+        : []
+    );
+    return [...holding, ...returned].sort((a, b) => Number(a.id) - Number(b.id));
+  }, [owners, held, address, amounts]);
   const returnable = mine.filter((p) => !p.returned && p.amount !== undefined);
   const chosen = returnable.filter((p) => selected.has(p.id));
   const chosenTotal = chosen.reduce((sum, p) => sum + (p.amount ?? 0n), 0n);
@@ -328,8 +330,9 @@ export const UnwindPage = memo(() => {
                 <li>Each plot returns the MANA it sold for at auction, from a snapshot of every settled auction.</li>
                 <li>Returned plots go to the Exodus DAO, and each plot can be returned once.</li>
                 <li>
-                  Plots stay on the map with their owners. After returning a plot you can still edit
-                  its content and publish it, as before.
+                  The archive keeps each plot's owner as of a snapshot taken when the proposal
+                  passed. That owner can still edit and publish the plot's content, even after
+                  returning it.
                 </li>
                 <li>There is no deadline.</li>
               </ul>
