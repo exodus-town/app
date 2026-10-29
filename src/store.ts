@@ -1,6 +1,6 @@
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
-import { AnyAction, ThunkDispatch, configureStore } from "@reduxjs/toolkit";
-import { setupListeners } from "@reduxjs/toolkit/dist/query/react";
+import { UnknownAction, ThunkDispatch, configureStore } from "@reduxjs/toolkit";
+import { setupListeners } from "@reduxjs/toolkit/query/react";
 import { Env } from "@dcl/ui-env";
 import { reducer } from "./reducer";
 import { config } from "./config";
@@ -19,7 +19,7 @@ export { store };
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
-export type AppThunkDispatch = ThunkDispatch<RootState, unknown, AnyAction>;
+export type AppThunkDispatch = ThunkDispatch<RootState, unknown, UnknownAction>;
 export const useAppDispatch: () => AppThunkDispatch =
   useDispatch<AppThunkDispatch>;
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;

@@ -1,7 +1,7 @@
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import cx from "classnames";
 import { MessageTransport } from "@dcl/mini-rpc";
-import { CameraClient } from "@dcl/inspector";
+import { SceneClient as CameraClient } from "../lib/inspector-rpc";
 import { Loader } from "decentraland-ui";
 import { Inspector } from "./Inspector";
 import "./Preview.css";

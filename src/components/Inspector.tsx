@@ -33,7 +33,7 @@ export const Inspector = memo<Props>(
         if (!iframe) return;
 
         setIsLocked(!signedMessage);
-        onReady && onReady(iframe);
+        onReady?.(iframe);
         init(iframe, {
           tokenId,
           isOwner,

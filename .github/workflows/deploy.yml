@@ -1,0 +1,62 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      PROJECT: exodus-town-archive
+      BRANCH: ${{ github.head_ref || github.ref_name }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      R2_BUCKET: ${{ vars.R2_BUCKET }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+
+      # main deploys production (exodus-town-archive.pages.dev); any other branch a preview,
+      # bound to the same bucket.
+      - name: Deploy to Cloudflare Pages
+        id: deploy
+        if: env.CLOUDFLARE_API_TOKEN != '' && env.CLOUDFLARE_ACCOUNT_ID != '' && env.R2_BUCKET != ''
+        run: |
+          sed -i "s/^bucket_name = .*/bucket_name = \"$R2_BUCKET\"/" wrangler.toml
+          if ! npx wrangler pages project list | grep -q "$PROJECT"; then
+            npx wrangler pages project create "$PROJECT" --production-branch main
+          fi
+          npx wrangler pages deploy --project-name "$PROJECT" --branch "$BRANCH" \
+            --commit-hash "${{ github.event.pull_request.head.sha || github.sha }}" | tee deploy.log
+          echo "url=$(grep -oE 'https://[a-z0-9.-]+\.pages\.dev' deploy.log | tail -1)" >> "$GITHUB_OUTPUT"
+
+      - name: Explain the skipped deploy
+        if: steps.deploy.outcome == 'skipped'
+        run: echo "::warning::Not deployed. Set the CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID secrets and the R2_BUCKET variable."
+
+      - name: Comment the preview URL
+        if: github.event_name == 'pull_request' && steps.deploy.outputs.url != ''
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              ...context.repo,
+              issue_number: context.issue.number,
+              body: `Preview: ${{ steps.deploy.outputs.url }}\n\nIt is bound to the production bucket: edits made on the preview are real.`,
+            })

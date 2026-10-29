@@ -1,4 +1,4 @@
-import future from "fp-future";
+import { future } from "fp-future";
 import { SIGNED_MESSAGE_HEADER } from "./auth";
 import { Entity } from "./entity";
 
@@ -21,7 +21,7 @@ export function save(
   path: string,
   content: Buffer
 ): Promise<Entity> {
-  const blob = new Blob([content]);
+  const blob = new Blob([new Uint8Array(content)]);
 
   batch.set(path, blob);
 

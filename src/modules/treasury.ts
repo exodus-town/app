@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useContractRead } from "wagmi";
+import { useReadContract } from "wagmi";
 import { formatEther } from "viem";
 import { erc20ABI } from "@exodus.town/contracts";
 import {
@@ -27,7 +27,7 @@ export const useTreasury = () => {
     data: balance,
     error: balanceError,
     isLoading: isLoadingBalance,
-  } = useContractRead({
+  } = useReadContract({
     abi: erc20ABI,
     address: MANA_TOKEN_CONTRACT_ADDRESS,
     functionName: "balanceOf",

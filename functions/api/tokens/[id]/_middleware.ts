@@ -2,8 +2,7 @@ import { recoverMessageAddress } from "viem";
 import { SIGNED_MESSAGE_HEADER, SIGN_MESSAGE } from "../../../lib/auth";
 import { error } from "../../../lib/response";
 import { Env } from "../../../lib/env";
-import { getClient } from "../../../lib/contracts";
-import { townTokenABI } from "@exodus.town/contracts";
+import { getOwner } from "../../../lib/owners";
 
 export const onRequestPost: PagesFunction<Env, "id"> = async (context) => {
   const tokenId = context.params.id;
@@ -19,13 +18,8 @@ export const onRequestPost: PagesFunction<Env, "id"> = async (context) => {
     signature: signedMessage as `0x${string}`,
   });
 
-  const client = getClient(context.env);
-  const owner = await client.readContract({
-    abi: townTokenABI,
-    address: context.env.TOWN_TOKEN_CONTRACT_ADDRESS,
-    functionName: "ownerOf",
-    args: [BigInt(tokenId)],
-  });
+  // The owner of record keeps editing rights after returning the plot to the DAO.
+  const { owner } = await getOwner(context.env, tokenId);
 
   if (owner !== address) {
     return error(`Unauthorized: owner=${owner} and address=${address}`, 401);

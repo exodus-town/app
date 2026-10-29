@@ -1,26 +1,35 @@
-import { memo, useEffect } from "react";
+import { memo } from "react";
+import { Link } from "react-router-dom";
 import { formatEther, erc20Abi } from "viem";
-import { useWeb3Modal } from "@web3modal/wagmi/react";
+import { useAppKit } from "@reown/appkit/react";
 import { useAccount, useReadContract, useDisconnect } from "wagmi";
 import { Container, Mana, Menu, UserMenu } from "decentraland-ui";
 import { Network } from "@dcl/schemas";
 import { useAvatar } from "../modules/avatar";
-import { useAuction } from "../modules/auction";
 import { MANA_TOKEN_CONTRACT_ADDRESS } from "../eth";
-import { config } from "../config";
 import "./Navbar.css";
+import { getPlayUrl } from "../lib/play";
+
+const USER_MENU_I18N = {
+  myAssets: "My Assets",
+  account: "Account Settings",
+  viewProfile: "View Profile",
+  signIn: "Sign In",
+  signOut: "Log Out",
+  guest: "Guest",
+  marketplaceAuthorizations: "Marketplace Authorizations",
+  download: "Download",
+};
 
 export const Navbar = memo(() => {
   const { address, isConnected } = useAccount();
-  const { open } = useWeb3Modal();
+  const { open } = useAppKit();
   const { disconnect } = useDisconnect();
   const { avatar } = useAvatar(address);
-  const { auction } = useAuction();
 
   const {
     data: mana,
     isLoading: isLoadingBalance,
-    refetch,
   } = useReadContract({
     address: MANA_TOKEN_CONTRACT_ADDRESS,
     abi: erc20Abi,
@@ -31,26 +40,22 @@ export const Navbar = memo(() => {
   const balance = mana ? +formatEther(mana) | 0 : 0;
   const prettyBalance = balance.toLocaleString();
 
-  useEffect(() => {
-    if (auction) {
-      refetch();
-    }
-  }, [auction, refetch]);
-
   return (
     <div className="dcl navbar Navbar">
       <Container className="row">
         <Menu secondary className="dcl navbar-menu">
-          <div className="dcl navbar-logo">
+          <Link to="/" className="dcl navbar-logo">
             <div className="dcl logo"></div>
-          </div>
-          <Menu.Item href="https://decentraland.org/play?realm=exodus.town">
-            Play
+          </Link>
+          <Menu.Item href={getPlayUrl()}>
+            PLAY
           </Menu.Item>
           <Menu.Item href={"https://opensea.io/collection/exodus-town"}>
             MARKET
           </Menu.Item>
-          <Menu.Item href={config.get("DAO_URL")}>DAO</Menu.Item>
+          <Menu.Item as={Link} to="/unwind">
+            UNWIND
+          </Menu.Item>
           <Menu.Item href="https://x.com/ExodusTown">NEWS</Menu.Item>
         </Menu>
         <div className="dcl navbar-account">
@@ -65,7 +70,8 @@ export const Navbar = memo(() => {
                 <UserMenu
                   address={address}
                   avatar={avatar}
-                  onSignOut={disconnect}
+                  onClickSignOut={() => disconnect()}
+                  i18n={USER_MENU_I18N}
                   isSignedIn
                 />
               </>

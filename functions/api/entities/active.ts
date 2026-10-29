@@ -1,10 +1,12 @@
 import { getClient, getTownToken } from "../../lib/contracts";
 import { getTokenIdsFromPointers } from "../../lib/coords";
-import { getEntity } from "../../lib/entity";
+import { getEntity, withRuntime } from "../../lib/entity";
 import { Env } from "../../lib/env";
 import { error, json } from "../../lib/response";
 
-export const onRequestPost: PagesFunction<Env, "id"> = async (context) => {
+export const onRequestPost: PagesFunction<Env & { ASSETS: Fetcher }, "id"> = async (
+  context
+) => {
   const { pointers } = await context.request.json<{ pointers: string[] }>();
   if (!Array.isArray(pointers)) {
     return error(`Invalid pointers=${pointers}`, 400);
@@ -25,8 +27,11 @@ export const onRequestPost: PagesFunction<Env, "id"> = async (context) => {
 
   const ids = getTokenIdsFromPointers(`${totalSupply}`, pointers);
 
+  const origin = new URL(context.request.url).origin;
   const entities = await Promise.all(
-    ids.map((id) => getEntity(context.env.storage, id))
+    ids.map(async (id) =>
+      withRuntime(context.env, origin, await getEntity(context.env.storage, id))
+    )
   );
 
   return json(entities);
