@@ -56,3 +56,25 @@
 .Navbar.dcl.navbar .ui.secondary.menu a.item:hover {
   color: var(--primary-hover);
 }
+
+.Navbar.dcl.navbar {
+  padding: 12px 0;
+}
+
+.Navbar.dcl.navbar .ui.secondary.menu.navbar-menu {
+  margin-bottom: 0;
+}
+
+/* the account menu (SIGN IN, or the balance and avatar once signed in) sits on the right */
+.Navbar.dcl.navbar .ui.container.row {
+  align-items: center;
+}
+
+.Navbar.dcl.navbar .dcl.navbar-account {
+  margin-left: auto;
+}
+
+/* decentraland-ui's user menu always renders a Decentraland desktop client download button */
+.Navbar.dcl.navbar .user-menu__download {
+  display: none;
+}

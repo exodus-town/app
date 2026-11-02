@@ -1,6 +1,7 @@
-.UnwindPage {
+/* .dcl.page (decentraland-ui) resets padding, so match its specificity */
+.UnwindPage.dcl.page {
   padding-top: 32px;
-  padding-bottom: 64px;
+  padding-bottom: 96px;
   font-size: 15px;
   line-height: 24px;
 }

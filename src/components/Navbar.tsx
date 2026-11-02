@@ -50,13 +50,9 @@ export const Navbar = memo(() => {
           <Menu.Item href={getPlayUrl()}>
             PLAY
           </Menu.Item>
-          <Menu.Item href={"https://opensea.io/collection/exodus-town"}>
-            MARKET
-          </Menu.Item>
           <Menu.Item as={Link} to="/unwind">
             UNWIND
           </Menu.Item>
-          <Menu.Item href="https://x.com/ExodusTown">NEWS</Menu.Item>
         </Menu>
         <div className="dcl navbar-account">
           <Menu secondary className="dcl navbar-account-menu">
@@ -76,7 +72,7 @@ export const Navbar = memo(() => {
                 />
               </>
             ) : (
-              <Menu.Item onClick={() => open()}>Sign In</Menu.Item>
+              <Menu.Item onClick={() => open()}>SIGN IN</Menu.Item>
             )}
           </Menu>
         </div>

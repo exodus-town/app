@@ -1,48 +1,42 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAccount, useSignMessage } from "wagmi";
 import { LOCAL_STORAGE_KEY } from "../lib/auth";
 
+function readStored(): Record<string, string> {
+  const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
+  if (stored) {
+    try {
+      return JSON.parse(stored) as Record<string, string>;
+    } catch {
+      // ignore
+    }
+  }
+  return {};
+}
+
+/** The connected wallet's signed sign-in message, which the backend checks for every upload. */
 export const useAuth = () => {
   const { address } = useAccount();
-  const storedSignedMessages = useMemo(() => {
-    const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
-    if (stored) {
-      try {
-        return JSON.parse(stored) as Record<string, string>;
-      } catch {
-        // ignore
-      }
-    }
-    return {};
-  }, []);
-  const storedSignedMessage = useMemo(() => {
-    if (address) {
-      return storedSignedMessages[address];
-    }
-  }, [address, storedSignedMessages]);
-  const [signedMessage, setSignedMessage] = useState(storedSignedMessage);
+  // Kept in state so a new signature re-renders; read per address, since the wallet reconnects
+  // after the first render.
+  const [stored, setStored] = useState(readStored);
   const {
     data,
-    isIdle: isSigningMessage,
+    isPending: isSigningMessage,
     signMessage,
     isSuccess,
   } = useSignMessage();
+
   useEffect(() => {
-    if (address && data) {
-      const newStoredSignedMessages = {
-        ...storedSignedMessages,
-        [address]: data,
-      };
-      localStorage.setItem(
-        LOCAL_STORAGE_KEY,
-        JSON.stringify(newStoredSignedMessages)
-      );
-      setSignedMessage(data);
+    if (address && data && stored[address] !== data) {
+      const next = { ...readStored(), [address]: data };
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(next));
+      setStored(next);
     }
-  }, [data, address, storedSignedMessages]);
+  }, [data, address, stored]);
 
   return {
-    signedMessage,
+    signedMessage: address ? stored[address] : undefined,
     isSigningMessage,
     signMessage,
     isSuccess,

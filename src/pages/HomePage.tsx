@@ -1,18 +1,15 @@
 import { memo, useEffect, useState } from "react";
 import { Button, Container } from "decentraland-ui";
-import { SlMagnifier } from "react-icons/sl";
 import { IoMdWarning, IoMdLogIn } from "react-icons/io";
-import { FaDiscord } from "react-icons/fa";
 import { Navbar } from "../components/Navbar";
 import { ParcelPanel } from "../components/ParcelPanel";
 import { Tiles } from "../components/Tiles";
 import { Accordion } from "../components/Accordion";
 import { useTown } from "../modules/town";
-import { useTreasury } from "../modules/treasury";
-import { INVITE_LINK, useDiscord } from "../modules/discord";
+import { useUnwindProgress } from "../modules/unwind";
+import { formatEther } from "viem";
 import { useOnline } from "../modules/online";
 import { Link } from "react-router-dom";
-import { config } from "../config";
 import { PROPOSAL_NUMBER } from "../lib/unwind";
 import {
   AUCTION_HOUSE_CONTRACT_ADDRESS,
@@ -23,11 +20,13 @@ import {
 import "./HomePage.css";
 import { getPlayUrl } from "../lib/play";
 
+const mana = (amount: bigint) =>
+  Math.round(Number(formatEther(amount))).toLocaleString("en-US");
+
 export const HomePage = memo(() => {
   const { owners, lastTokenId } = useTown();
   const [tokenId, setTokenId] = useState<string>();
-  const { members, isLoading: isLoadingMembers } = useDiscord();
-  const { treasury, isLoading: isLoadingTreasury } = useTreasury();
+  const progress = useUnwindProgress();
   const { users, isLoading: isLoadingUsers } = useOnline();
 
   // Start on the last plot sold (the last one minted may still sit unsold in the auction house).
@@ -61,7 +60,7 @@ export const HomePage = memo(() => {
                 </Button>
               </h1>
               <p>
-                Exodus Town is an experiment on Decentraland Worlds, continuous
+                Exodus Town was an experiment on Decentraland Worlds, continuous
                 issuance, and DAOs. Originating from the 0,0 coordinate, it
                 grew in a spiral, <b>one parcel per day</b>, for{" "}
                 {lastTokenId > 0 ? lastTokenId : "229"} days.
@@ -72,17 +71,23 @@ export const HomePage = memo(() => {
                 Exodus Town. All auction proceeds flowed into the on-chain
                 governed Exodus DAO, steered exclusively by TOWN token holders.
               </p>
-              <p className="unwinding">
-                <b>Exodus Town is unwinding.</b> With proposal #
-                {PROPOSAL_NUMBER}, the DAO voted to return each plot's
-                contribution: every plot can be handed back to the DAO for the
-                MANA it sold for at auction. The town stays online as an
+
+            </div>
+
+            <section className="unwind">
+              <h2>Exodus Town is unwinding</h2>
+              <p>
+                With proposal #{PROPOSAL_NUMBER}, the DAO voted to return each
+                plot's contribution: every plot can be handed back to the DAO
+                for the MANA it sold for at auction. The town stays online as an
                 archive: the owners at the time of the vote keep their plots on
                 the map and can keep building on them, even after returning
-                them.{" "}
-                <Link to="/unwind">Unwind your plots →</Link>
+                them.
               </p>
-            </div>
+              <Button as={Link} to="/unwind" primary>
+                Unwind your plots
+              </Button>
+            </section>
 
             <Button
               size="large"
@@ -96,47 +101,28 @@ export const HomePage = memo(() => {
 
             <div className="stats">
               <div className="stat">
-                <h2>Treasury</h2>
+                <h2>{progress.isComplete ? "Refunded" : "Left to refund"}</h2>
                 <p className="value">
-                  {isLoadingTreasury
+                  {progress.isLoading || progress.total === undefined
                     ? "Loading..."
-                    : `$${(+(treasury?.toFixed(2) || "0")).toLocaleString()}`}
-                  <Button
-                    href={`${config.get(
-                      "BLOCK_EXPLORER_URL"
-                    )}/tokenholdings?a=${config.get(
-                      "EXODUS_DAO_CONTRACT_ADDRESS"
-                    )}`}
-                    target="_blank"
-                    primary
-                    size="small"
-                    inverted
-                    className="discord"
-                  >
-                    <SlMagnifier className="magnifier-icon" /> View
-                  </Button>
+                    : progress.isComplete
+                    ? `All ${mana(progress.total)} MANA refunded`
+                    : `${mana(progress.remaining ?? 0n)} / ${mana(progress.total)} MANA`}
                 </p>
               </div>
 
               <div className="stat">
-                <h2>Community</h2>
+                <h2>Parcels returned</h2>
                 <p className="value">
-                  {isLoadingMembers ? "Loading..." : `${members} Members`}{" "}
-                  <Button
-                    href={INVITE_LINK}
-                    target="_blank"
-                    primary
-                    size="small"
-                    inverted
-                    className="discord"
-                  >
-                    <FaDiscord className="discord-icon" /> Join
-                  </Button>
+                  {progress.isLoading
+                    ? "Loading..."
+                    : progress.returned === progress.parcels
+                    ? `All ${progress.parcels} parcels returned`
+                    : `${progress.returned} / ${progress.parcels}`}
                 </p>
               </div>
 
-              {users > 0 ? (
-                <div className="stat">
+              <div className="stat">
                   <h2>Online</h2>
                   <p className="value">
                     {isLoadingUsers
@@ -156,7 +142,6 @@ export const HomePage = memo(() => {
                     </Button>
                   </p>
                 </div>
-              ) : null}
             </div>
 
             <div className="learn-more">
@@ -164,10 +149,10 @@ export const HomePage = memo(() => {
 
               <Accordion title="The Token">
                 <p>
-                  The TOWN token allows its holder to publish content on Exodus
+                  The TOWN token allowed its holder to publish content on Exodus
                   Town parcels, akin to Decentraland's LAND token. But parcels
-                  in Exodus Town are equivalent to a 3x3 Estate in Genesis City,
-                  so they are 9 times larger.
+                  in Exodus Town were equivalent to a 3x3 Estate in Genesis
+                  City, so they were 9 times larger.
                 </p>
               </Accordion>
               <Accordion title="The Auction">
@@ -175,25 +160,25 @@ export const HomePage = memo(() => {
                   Exodus Town held daily auctions in which one TOWN token was
                   made available for purchase using MANA every 24 hours, and
                   100% of the proceeds went directly into the Exodus DAO. The
-                  auctions are paused as part of the unwind.
+                  auctions were paused as part of the unwind.
                 </p>
               </Accordion>
               <Accordion title="The DAO">
                 <p>
-                  The Exodus DAO governance is fully on-chain, based on{" "}
+                  The Exodus DAO governance was fully on-chain, based on{" "}
                   <a
                     href="https://docs.openzeppelin.com/contracts/4.x/api/governance#governor"
                     target="_blank"
                   >
                     OpenZeppelin's Governor
                   </a>
-                  . This stands in contrast to snapshot-based DAOs. Here, each
-                  TOWN token is equivalent to one vote, and these votes directly
-                  control the treasury and any proposals, without requiring
-                  off-chain actions or human intervention.
+                  . This stood in contrast to snapshot-based DAOs. Here, each
+                  TOWN token was equivalent to one vote, and these votes
+                  directly controlled the treasury and any proposals, without
+                  requiring off-chain actions or human intervention.
                 </p>
                 <p>
-                  Proposal #{PROPOSAL_NUMBER} unwinds the DAO: it moves the MANA
+                  Proposal #{PROPOSAL_NUMBER} unwound the DAO: it moved the MANA
                   paid in every auction into a refund contract, where each plot
                   can be exchanged for what it sold for.{" "}
                   <Link to="/unwind">Read more</Link>.
@@ -201,13 +186,13 @@ export const HomePage = memo(() => {
               </Accordion>
               <Accordion title="The Editor">
                 <p>
-                  The Decentraland's Web Editor is integrated into Exodus Town,
+                  Decentraland's Web Editor was integrated into Exodus Town,
                   allowing content to be created and published directly onto
-                  parcels. The editor is open to everyone and doesn't require
+                  parcels. The editor was open to everyone and didn't require
                   coding skills.
                 </p>
                 <p>
-                  Advanced users can also deploy content to Exodus Town using
+                  Advanced users could also deploy content to Exodus Town using
                   the official Decentraland CLI.
                 </p>
               </Accordion>
@@ -229,26 +214,26 @@ export const HomePage = memo(() => {
                   <a href={getContractUrl(AUCTION_HOUSE_CONTRACT_ADDRESS)}>
                     AuctionHouse.sol
                   </a>{" "}
-                  is a fork of <a href="https://nouns.wtf">NounsDAO</a>'s{" "}
+                  was a fork of <a href="https://nouns.wtf">NounsDAO</a>'s{" "}
                   <a href="https://github.com/nounsDAO/nouns-monorepo/blob/master/packages/nouns-contracts/contracts/NounsAuctionHouse.sol">
                     NounsAuctionHouse
                   </a>
                   .
                 </p>
                 <p>
-                  All the contracts are deployed on the Polygon network and
+                  All the contracts were deployed on the Polygon network and
                   verified on PolygonScan.
                 </p>
                 <p>
-                  Exodus Town uses a custom realm to integrate the TOWN token
+                  Exodus Town used a custom realm to integrate the TOWN token
                   and serve the contents of the world.
                 </p>
                 <p>
-                  Everything, including this interface, is public and{" "}
+                  Everything, including this interface, was public and{" "}
                   <a href="https://github.com/exodus-town">open source</a>.
                 </p>
                 <p>
-                  There is{" "}
+                  There was{" "}
                   <b className="warning">
                     <IoMdWarning />
                     NO AUDIT
@@ -264,12 +249,12 @@ export const HomePage = memo(() => {
                 Please note that none of the information provided here
                 constitutes financial advice. Exercise your own judgment and
                 consult professionals before making any investment decisions.
-                It's important to understand that this is an independent
-                community project, and is neither affiliated with nor endorsed
-                by the Decentraland Foundation. Exodus Town is a product of what
+                It's important to understand that this was an independent
+                community project, and was neither affiliated with nor endorsed
+                by the Decentraland Foundation. Exodus Town was a product of what
                 might be described as a self-hatred fueled, narcotics-induced
-                coding extravaganza. To put it bluntly, this is a high-risk
-                experiment in the Metaverse; it's uncharted waters with
+                coding extravaganza. To put it bluntly, it was a high-risk
+                experiment in the Metaverse; it was uncharted waters with
                 unpredictable tides. By interacting with Exodus Town through
                 this interface, you implicitly agree to not expect any
                 guaranteed outcome, benefit, or return on investment. You

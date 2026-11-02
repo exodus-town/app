@@ -32,7 +32,9 @@ export const Inspector = memo<Props>(
         const iframe = iframeRef.current;
         if (!iframe) return;
 
-        setIsLocked(!signedMessage);
+        // Ownership and the wallet's signature can both arrive after the iframe loads; until init
+        // could write, unlock (below) runs as soon as both are there.
+        setIsLocked(!(signedMessage && isOwner));
         onReady?.(iframe);
         init(iframe, {
           tokenId,
@@ -51,6 +53,7 @@ export const Inspector = memo<Props>(
         const iframe = iframeRef.current;
         if (!iframe) return;
         unlock(iframe, signedMessage);
+        setIsLocked(false);
       }
     }, [isOwner, isLocked, isReady, signedMessage]);
 
