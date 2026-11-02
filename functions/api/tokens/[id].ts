@@ -11,12 +11,13 @@ export const onRequestGet: PagesFunction<Env, "id"> = async (context) => {
   const [x, y] = toCoords(tokenId);
   const { base } = toLayout(tokenId);
   const name = `${x},${y}`;
+  const origin = new URL(context.request.url).origin;
   const result = {
     id: context.params.id,
     name,
     description: `Parcel ${name} at Exodus Town`,
-    image: `https://exodus.town/api/tokens/${tokenId}/image`,
-    external_url: `https://decentraland.org/play?realm=exodus.town&position=${base.x},${base.y}`,
+    image: `${origin}/api/tokens/${tokenId}/image`,
+    external_url: `${origin}/play/?realm=${origin}&position=${base.x},${base.y}`,
     attributes: [
       { trait_type: "X", value: x, display_type: "number" },
       { trait_type: "Y", value: y, display_type: "number" },

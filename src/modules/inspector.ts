@@ -1,9 +1,14 @@
 import { MessageTransport } from "@dcl/mini-rpc";
-import { UiClient, IframeStorage, CameraClient } from "@dcl/inspector";
+import { SceneClient, StorageServer } from "../lib/inspector-rpc";
 import { Path, getContentPath } from "../lib/path";
 import { createPreferences } from "../lib/preferences";
 import { hasSigned, remove, save, setSignedMessage } from "../lib/storage";
 import { Entity, getEntity } from "../lib/entity";
+
+// Whether the open inspector may save. Set by init, and by unlock once the owner signs in after
+// the inspector loaded: the storage handlers read it on every write.
+let writable = false;
+let isCLIScene = false;
 
 type InitOptions = {
   tokenId: string;
@@ -26,12 +31,14 @@ export async function init(
 
   // transports and rpcs
   const transport = new MessageTransport(window, iframe.contentWindow!, "*");
-  const ui = new UiClient(transport);
-  const camera = new CameraClient(transport);
-  const storage = new IframeStorage.Server(transport);
+  const ui = new SceneClient(transport);
+  const camera = ui;
+  const storage = new StorageServer(transport);
 
   const isCLI = !!(entity.metadata as { cli?: boolean }).cli;
   const canWrite = hasSigned() && !!isOwner && !isCLI;
+  writable = canWrite;
+  isCLIScene = isCLI;
 
   async function handleLoad() {
     if (canWrite) {
@@ -45,11 +52,11 @@ export async function init(
       await ui.toggleGizmos(true);
     }
     // callback
-    onLoad && onLoad({ isCLI });
+    onLoad?.({ isCLI });
   }
 
   // wire handlers
-  await wire(storage, { tokenId, canWrite, entity, onLoad: handleLoad });
+  await wire(storage, { tokenId, entity, onLoad: handleLoad });
 
   // setup ui
   const promises: Promise<unknown>[] = [];
@@ -63,6 +70,8 @@ export async function init(
     promises.push(ui.togglePanel("toolbar", false));
     promises.push(ui.togglePanel("shortcuts", false));
     promises.push(ui.togglePanel("metrics", false));
+    promises.push(ui.togglePanel("scene_info", false));
+    promises.push(ui.togglePanel("ui_designer", false));
     promises.push(ui.toggleGroundGrid(false));
   }
   await Promise.all(promises);
@@ -78,12 +87,11 @@ function json(value: unknown) {
 
 type WireOptions = Omit<InitOptions, "signedMessage" | "isOwner" | "onLoad"> & {
   entity: Entity;
-  canWrite: boolean;
   onLoad: () => void;
 };
 async function wire(
-  storage: IframeStorage.Server,
-  { tokenId, canWrite, entity, onLoad }: WireOptions
+  storage: StorageServer,
+  { tokenId, entity, onLoad }: WireOptions
 ) {
   const mappings = new Map<string, string>();
   for (const { file, hash } of entity.content) {
@@ -99,7 +107,8 @@ async function wire(
         return json(preferences);
       }
       default: {
-        const hash = mappings.get(path)!;
+        const hash = mappings.get(path);
+        if (!hash) throw new Error(`File not found: ${path}`);
         const resp = await fetch(getContentPath(hash));
         const arrayBuffer = await resp.arrayBuffer();
         const content = Buffer.from(arrayBuffer);
@@ -110,7 +119,7 @@ async function wire(
 
   // write file
   storage.handle("write_file", async ({ path, content }) => {
-    if (!canWrite) return;
+    if (!writable) return;
     const entity = await save(tokenId, path, content);
     for (const { file, hash } of entity.content) {
       mappings.set(file, hash);
@@ -153,8 +162,26 @@ async function wire(
   });
 
   storage.handle("delete", async ({ path }) => {
+    if (!writable) return;
     await remove(tokenId, path);
     mappings.delete(path);
+  });
+
+  storage.handle("rmdir", async ({ path }) => {
+    if (!writable) return;
+    const prefix = path.endsWith("/") ? path : `${path}/`;
+    for (const file of [...mappings.keys()]) {
+      if (!file.startsWith(prefix)) continue;
+      await remove(tokenId, file);
+      mappings.delete(file);
+    }
+  });
+
+  storage.handle("stat", async ({ path }) => {
+    const hash = mappings.get(path);
+    if (!hash) throw new Error(`File not found: ${path}`);
+    const resp = await fetch(getContentPath(hash), { method: "HEAD" });
+    return { size: Number(resp.headers.get("Content-Length") ?? 0) };
   });
 
   // idle
@@ -176,9 +203,12 @@ async function wire(
 // unlock
 export async function unlock(iframe: HTMLIFrameElement, signedMessage: string) {
   setSignedMessage(signedMessage);
+  // A scene deployed with the CLI stays read-only here (the reset modal offers to replace it).
+  if (isCLIScene) return;
+  writable = true;
 
   const transport = new MessageTransport(window, iframe.contentWindow!, "*");
-  const ui = new UiClient(transport);
+  const ui = new SceneClient(transport);
 
   // setup ui
   const promises: Promise<unknown>[] = [];
@@ -189,6 +219,7 @@ export async function unlock(iframe: HTMLIFrameElement, signedMessage: string) {
   promises.push(ui.togglePanel("toolbar", true));
   promises.push(ui.togglePanel("shortcuts", true));
   promises.push(ui.togglePanel("metrics", true));
+  promises.push(ui.togglePanel("scene_info", true));
   promises.push(ui.toggleGroundGrid(true));
 
   await Promise.all(promises);

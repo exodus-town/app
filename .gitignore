@@ -30,3 +30,9 @@ public/bin
 public/bundle*
 public/inspector.html
 static
+# copied from node_modules by scripts/postinstall.ts
+public/play
+public/bevy-engine
+public/bevy-agent
+.vercel
+.env*.local

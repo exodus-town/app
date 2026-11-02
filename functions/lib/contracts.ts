@@ -1,9 +1,11 @@
 import { createPublicClient, fallback, http } from "viem";
+import { polygon } from "viem/chains";
 import { Env } from "./env";
 import { auctionHouseABI, townTokenABI } from "@exodus.town/contracts";
 
 export function getClient(env: Env) {
   const client = createPublicClient({
+    chain: polygon,
     batch: {
       multicall: true,
     },

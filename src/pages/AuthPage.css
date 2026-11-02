@@ -1,0 +1,33 @@
+.AuthPage.dcl.page {
+  padding-top: 64px;
+  padding-bottom: 64px;
+}
+
+.AuthPage .card {
+  max-width: 520px;
+  margin: 0 auto;
+  background-color: #2a262f;
+  border-radius: 12px;
+  padding: 32px;
+  font-size: 15px;
+  line-height: 24px;
+}
+
+.AuthPage .card h1 {
+  font-size: 28px;
+  margin: 0 0 12px;
+}
+
+.AuthPage .error {
+  margin-top: 16px;
+  color: #ff6b6b;
+  word-break: break-word;
+}
+
+.AuthPage .back {
+  margin-top: 24px;
+}
+
+.AuthPage .back a {
+  color: var(--primary-hover);
+}

@@ -1,1 +1,21 @@
-compatibility_flags = [ "nodejs_compat" ]
+# Cloudflare Pages project, deployed by .github/workflows/deploy.yml. This file is the source of
+# truth for the project's bindings and variables: deploys apply it to production and previews.
+name = "exodus-town-archive"
+pages_build_output_dir = "./dist"
+compatibility_date = "2024-05-15"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+MANA_TOKEN_CONTRACT_ADDRESS = "0xA1c57f48F0Deb89f569dFbE6E2B7f46D33606fD4"
+TOWN_TOKEN_CONTRACT_ADDRESS = "0xAE38E6d941Fb364c142CC90df285CEEF85713467"
+AUCTION_HOUSE_CONTRACT_ADDRESS = "0x0Ff58e235b154dd7785C4829D48948CE114248C4"
+EXODUS_DAO_CONTRACT_ADDRESS = "0x7E96f5242D1256E56E15b46EB2Fa1b1152dF5923"
+# Public Polygon RPCs; the names predate them.
+ALCHEMY_RPC_URL = "https://polygon.gateway.tenderly.co"
+INFURA_RPC_URL = "https://polygon-bor-rpc.publicnode.com"
+
+# The bucket holding every plot's published content. CI fills in its name from the R2_BUCKET
+# Actions variable (locally, wrangler simulates a bucket).
+[[r2_buckets]]
+binding = "storage"
+bucket_name = "exodus-town-content"

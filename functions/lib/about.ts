@@ -1,5 +1,7 @@
 import { getEntityMappings } from "./entity";
 import { Env } from "./env";
+import { toLayout } from "./layout";
+import { getClient, getTownToken } from "./contracts";
 
 export type About = {
   healthy: boolean;
@@ -11,6 +13,10 @@ export type About = {
     cityLoaderContentServer?: string;
     minimap: {
       enabled: boolean;
+    };
+    map?: {
+      minimapEnabled: boolean;
+      sizes: { left: number; right: number; top: number; bottom: number }[];
     };
     skybox: {
       fixedHour: number;
@@ -32,14 +38,15 @@ export type About = {
   };
 };
 
-export function getAbout(): About {
+// `origin` is the site serving this realm (its contents API lives under /api).
+export function getAbout(origin: string): About {
   return {
     healthy: true,
     acceptingUsers: true,
     configurations: {
       networkId: 1,
       globalScenesUrn: [],
-      cityLoaderContentServer: "https://exodus.town/api",
+      cityLoaderContentServer: `${origin}/api`,
       minimap: {
         enabled: false,
       },
@@ -65,7 +72,11 @@ export function getAbout(): About {
   };
 }
 
-export async function getUrns(env: Env, tokenId: string = "0") {
+export async function getUrns(
+  env: Env,
+  origin: string,
+  tokenId: string = "0"
+) {
   const mappings = await getEntityMappings(env);
   const entities = Object.values(mappings);
   // sort scenes by distance to the target parcel
@@ -78,6 +89,36 @@ export async function getUrns(env: Env, tokenId: string = "0") {
   // map urns
   return entities.map(
     (entity) =>
-      `urn:decentraland:entity:${entity.hash}?=&baseUrl=https://exodus.town/api/contents/`
+      `urn:decentraland:entity:${entity.hash}?=&baseUrl=${origin}/api/contents/`
   );
+}
+
+let townBounds: Promise<{ left: number; right: number; top: number; bottom: number }> | undefined;
+
+/**
+ * The parcels every minted plot covers. The web explorer (bevy-explorer) only requests scenes from
+ * `cityLoaderContentServer` inside the regions in `configurations.map.sizes`, so a realm without
+ * them loads nothing. Plots are no longer minted once the auction house is paused, so this is
+ * computed once per isolate.
+ */
+export function getTownBounds(env: Env) {
+  townBounds ??= getClient(env)
+    .readContract({ ...getTownToken(env), functionName: "totalSupply" })
+    .then((supply) => {
+      const bounds = { left: Infinity, right: -Infinity, top: -Infinity, bottom: Infinity };
+      for (let id = 0; id < Number(supply); id++) {
+        for (const { x, y } of toLayout(id).parcels) {
+          bounds.left = Math.min(bounds.left, x);
+          bounds.right = Math.max(bounds.right, x);
+          bounds.bottom = Math.min(bounds.bottom, y);
+          bounds.top = Math.max(bounds.top, y);
+        }
+      }
+      return bounds;
+    })
+    .catch((error) => {
+      townBounds = undefined;
+      throw error;
+    });
+  return townBounds;
 }

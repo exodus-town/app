@@ -1,24 +1,23 @@
-import { defaultWagmiConfig } from "@web3modal/wagmi/react/config";
+import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
 import { QueryClient } from "@tanstack/react-query";
+import type { AppKitNetwork } from "@reown/appkit/networks";
 import { getChain } from "./eth";
-import { Chain } from "viem";
 
 export const walletConnectProjectId = "3fc6e87bfba56db006d7cc717107019f";
-const chains: readonly [Chain, ...Chain[]] = [getChain()];
+export const networks: [AppKitNetwork, ...AppKitNetwork[]] = [getChain()];
 
 export const queryClient = new QueryClient();
 
-const metadata = {
+export const metadata = {
   name: "Exodus Town",
   description: "Long live the serpent 🐍🌀",
-  url: "https://exodus.town",
-  icons: ["https://exodus.town/logo.png"],
+  url: window.location.origin,
+  icons: [`${window.location.origin}/logo.png`],
 };
 
-export const wagmiConfig = defaultWagmiConfig({
-  chains,
+export const wagmiAdapter = new WagmiAdapter({
+  networks,
   projectId: walletConnectProjectId,
-  metadata,
 });
 
-export { chains };
+export const wagmiConfig = wagmiAdapter.wagmiConfig;

@@ -213,3 +213,30 @@ export async function saveEntity(env: Env, tokenId: string, entity: Entity) {
     JSON.stringify(entity, null, 2)
   );
 }
+
+let runtime: Promise<{ file: string; hash: string }> | undefined;
+
+/**
+ * Scenes name `bin/index.js` (the inspector's scene runtime, served at /bin/index.js) as their
+ * main script, but the inspector only uploads it when a plot is published, so a plot that was
+ * never edited has none and the explorer can't start its scene. Add the runtime to any entity
+ * without it, storing it content-addressed in the bucket on first use.
+ */
+export async function withRuntime(
+  env: Env & { ASSETS: Fetcher },
+  origin: string,
+  entity: Entity
+): Promise<Entity> {
+  if (entity.content.some(({ file }) => file === Path.JS)) return entity;
+  runtime ??= env.ASSETS.fetch(`${origin}/${Path.JS}`)
+    .then((resp) => {
+      if (!resp.ok) throw new Error(`Missing scene runtime: HTTP ${resp.status}`);
+      return resp.arrayBuffer();
+    })
+    .then((data) => upload(env.storage, Path.JS, Buffer.from(data)))
+    .catch((error) => {
+      runtime = undefined;
+      throw error;
+    });
+  return { ...entity, content: [...entity.content, await runtime] };
+}

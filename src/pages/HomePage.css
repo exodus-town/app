@@ -2,7 +2,7 @@
   position: relative;
 }
 
-.HomePage .Auction {
+.HomePage .ParcelPanel {
   position: absolute;
   right: 0px;
   top: -285px;
@@ -151,7 +151,7 @@
 }
 
 @media (max-width: 991px) {
-  .HomePage .Auction {
+  .HomePage .ParcelPanel {
     position: relative;
     margin-top: 420px;
     left: 20px;
@@ -163,7 +163,8 @@
     margin-top: -220px;
   }
 
-  .HomePage .welcome p {
+  .HomePage .welcome p,
+  .HomePage .content .unwind p {
     font-size: 16px;
     line-height: 28px;
   }
@@ -210,4 +211,24 @@
   .HomePage .content .ui.button.jump-in {
     display: none;
   }
+}
+
+.HomePage .content .unwind {
+  margin-top: 32px;
+  padding: 24px 28px;
+  background-color: #2a262f;
+  border-radius: 12px;
+}
+
+.HomePage .content .unwind p {
+  font-size: 20px;
+  line-height: 28px;
+}
+
+.HomePage .content .unwind h2 {
+  margin: 0 0 8px;
+}
+
+.HomePage .content .unwind .ui.button {
+  margin-top: 8px;
 }

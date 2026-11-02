@@ -1,5 +1,5 @@
 import { memo, useMemo, useState } from "react";
-import { useWeb3Modal } from "@web3modal/wagmi/react";
+import { useAppKit } from "@reown/appkit/react";
 import { useParams } from "react-router";
 import { Link } from "react-router-dom";
 import { MdOutlineArrowBackIosNew as Back } from "react-icons/md";
@@ -11,6 +11,7 @@ import { CliModal } from "./CliModal";
 import { toLayout } from "../lib/layout";
 import { useToken } from "../modules/token";
 import "./Topbar.css";
+import { getPlayUrl } from "../lib/play";
 
 type Props = {
   hasSignedMessage: boolean;
@@ -22,7 +23,7 @@ export const Topbar = memo<Props>(
   ({ hasSignedMessage, isSigningMessage, onSignMessage }) => {
     const { tokenId } = useParams();
     const { isConnected } = useAccount();
-    const { open } = useWeb3Modal();
+    const { open } = useAppKit();
     const { isOwner } = useToken(tokenId);
     const [showCliModal, setShowCliModal] = useState(false);
 
@@ -57,10 +58,9 @@ export const Topbar = memo<Props>(
                   </Button>
                 ) : null}
                 <Button
-                  href={`https://decentraland.org/play?realm=exodus.town&position=${base.x},${base.y}&skipSetup=true`}
+                  href={getPlayUrl(base)}
                   primary
                   size="small"
-                  target="_blank"
                   className="jump-in"
                 >
                   Jump In <i className="jump-in-icon" />
